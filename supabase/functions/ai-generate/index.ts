@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 interface GenerationRequest {
+  mode?: "final";
   type: string;
   brief: string;
   brandKitId?: string | null;
@@ -58,6 +59,14 @@ Deno.serve(async (req: Request) => {
 
     const body: GenerationRequest = await req.json();
     const { type, brief, brandKitId, style, format, projectId, campaignId } = body;
+
+    // Paid generation endpoint is intentionally final-only.
+    // Free previews are handled by designly-agent and never deduct credits here.
+    if (body.mode && body.mode !== "final") {
+      return new Response(JSON.stringify({ error: "INVALID_GENERATION_MODE", message: "Preview generation must use the free DESIGNLY Master Agent." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!type || !brief) {
       return new Response(JSON.stringify({ error: "Missing type or brief" }), {
