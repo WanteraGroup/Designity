@@ -14,7 +14,7 @@ interface CreatePageProps {
 }
 
 export function CreatePage({ onNavigate }: CreatePageProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { profile, isOwner, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<ProjectType | null>(null);
