@@ -120,14 +120,44 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       await new Promise((r) => setTimeout(r, 900));
     }
 
-    // Call the server-side AI generation edge function
+    // Create the project first so the server-side generation job is linked
+    // to a real project from the beginning. This prevents a successful AI
+    // generation from becoming orphaned if project persistence fails later.
+    const { data: projectData, error: insertError } = await supabase
+      .from('projects')
+      .insert({
+        user_id: profile.id,
+        name: brief.slice(0, 50) || `${selectedType} project`,
+        type: selectedType,
+        status: 'processing',
+        brief,
+        brand_kit_id: selectedBrand,
+        config: { type: selectedType, brief, brand_kit_id: selectedBrand },
+      })
+      .select()
+      .single();
+
+    if (insertError || !projectData) {
+      setError(insertError?.message || t('gen.failed'));
+      setGenerating(false);
+      return;
+    }
+
+    // Final generation is the only paid generation path.
+    // The preview path above never calls this endpoint.
     const genResult = await generateDesign({
       type: selectedType,
       brief,
       brandKitId: selectedBrand,
+      projectId: projectData.id,
     });
 
     if (!genResult.success) {
+      await supabase
+        .from('projects')
+        .update({ status: 'failed', updated_at: new Date().toISOString() })
+        .eq('id', projectData.id);
+
       if (genResult.providerNotConfigured) {
         setError(genResult.message || t('ad.providerNotConfigured'));
       } else if (genResult.errorCode === 'INSUFFICIENT_CREDITS') {
@@ -135,27 +165,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       } else {
         setError(genResult.message || t('gen.failed'));
       }
-      setGenerating(false);
-      return;
-    }
-
-    // Create the project record
-    const { data: projectData, error: insertError } = await supabase
-      .from('projects')
-      .insert({
-        user_id: profile.id,
-        name: brief.slice(0, 50) || `${selectedType} project`,
-        type: selectedType,
-        status: 'completed',
-        brief,
-        brand_kit_id: selectedBrand,
-        config: genResult.result || { type: selectedType, brief, brand_kit_id: selectedBrand },
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      setError(insertError.message);
       setGenerating(false);
       return;
     }
