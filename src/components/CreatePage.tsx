@@ -5,6 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS, getCreditsForType } from '@/lib/constants';
 import { generateDesign } from '@/lib/ai';
+import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
 import type { ProjectType, BrandKit } from '@/types';
 
@@ -24,6 +25,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [genStep, setGenStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [createdProject, setCreatedProject] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [preview, setPreview] = useState<AgentDesignBrief | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [approved, setApproved] = useState(false);
 
   useEffect(() => {
     async function loadBrands() {
@@ -41,8 +46,53 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
 
+  const getAgentOutput = (): DesignOutput => {
+    const map: Record<string, DesignOutput> = {
+      logo: 'logo',
+      brand_identity: 'brand_identity',
+      business_card: 'business_card',
+      invitation: 'invitation',
+      flyer: 'flyer',
+      poster: 'poster',
+      social_post: 'social_post',
+      social_story: 'social_story',
+      landing_page: 'landing_page',
+      website: 'website',
+      presentation: 'presentation',
+      brochure: 'brochure',
+      price_list: 'price_list',
+      digital_business_card: 'digital_business_card',
+    };
+    return map[selectedType || ''] || 'brand_identity';
+  };
+
+  const handlePreview = async () => {
+    if (!selectedType || brief.trim().length < 5) return;
+    setPreviewError(null);
+    setPreview(null);
+    setApproved(false);
+    setPreviewLoading(true);
+
+    const result = await runDesignlyMasterAgent({
+      brief,
+      brandKitId: selectedBrand,
+      requestedOutputs: [getAgentOutput()],
+      mode: 'preview',
+    });
+
+    setPreviewLoading(false);
+
+    if (!result.success || !result.designBrief) {
+      setPreviewError(result.message || 'The free design preview could not be created.');
+      return;
+    }
+
+    setPreview(result.designBrief);
+    setStep(3);
+  };
+
   const handleGenerate = async () => {
-    if (!profile || !selectedType) return;
+    if (!profile || !selectedType || !approved) return;
     setError(null);
 
     if (!isOwner && (profile.credits ?? 0) < cost) {
@@ -199,89 +249,138 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               {t('common.back')}
             </button>
             <button
-              onClick={() => setStep(3)}
-              disabled={brief.trim().length < 5}
+              onClick={handlePreview}
+              disabled={brief.trim().length < 5 || previewLoading}
               className="btn-gold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {t('common.continue')}
+              {previewLoading ? t('common.loading') : 'AI Preview — 0 credits'}
             </button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Review and generate */}
+      {/* Step 3: Free AI preview -> explicit approval -> paid final generation */}
       {step === 3 && selectedType && (
         <div className="animate-fade-in space-y-6">
-          <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">{t('cw.reviewGenerate')}</h2>
+          <div className="text-center">
+            <h2 className="text-xl font-display font-bold text-cream-50 mb-2">AI Design Preview</h2>
+            <p className="text-sm text-cream-300/50">Explore the design direction for free. Credits are charged only after you explicitly approve the final generation.</p>
+          </div>
 
-          <div className="card-lux p-6 space-y-4">
-            <div className="flex justify-between items-center pb-3 border-b border-ink-600/40">
-              <span className="text-sm text-cream-300/60">{t('cw.designType')}</span>
-              <span className="text-sm font-medium text-gold-200 capitalize">{selectedType.replace('_', ' ')}</span>
+          {previewError && (
+            <div className="card-lux p-4 border-red-500/30 bg-red-500/5 text-sm text-red-300">
+              {previewError}
             </div>
+          )}
 
-            <div className="pb-3 border-b border-ink-600/40">
-              <span className="text-sm text-cream-300/60 block mb-1">{t('cw.brief')}</span>
-              <span className="text-sm text-cream-100">{brief}</span>
-            </div>
-
-            {brands.length > 0 && (
-              <div className="pb-3 border-b border-ink-600/40">
-                <span className="text-sm text-cream-300/60 block mb-2">{t('cw.brandKit')}</span>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedBrand(null)}
-                    className={`chip transition-all ${!selectedBrand ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}
-                  >
-                    {t('cw.brandKitNone')}
-                  </button>
-                  {brands.map((b) => (
-                    <button
-                      key={b.id}
-                      onClick={() => setSelectedBrand(b.id)}
-                      className={`chip transition-all ${selectedBrand === b.id ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}
-                    >
-                      {b.name}
-                    </button>
-                  ))}
+          {preview && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="card-lux p-5 space-y-4">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Visual direction</span>
+                  <p className="text-sm text-cream-100 mt-1">{preview.visualStyle || 'Premium'}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Mood</span>
+                  <p className="text-sm text-cream-100 mt-1">{preview.mood || 'Refined and distinctive'}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Typography</span>
+                  <p className="text-sm text-cream-100 mt-1">{preview.typographyDirection || 'Premium modern typography'}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Imagery</span>
+                  <p className="text-sm text-cream-100 mt-1">{preview.imageryDirection || 'Brand-consistent imagery'}</p>
                 </div>
               </div>
-            )}
 
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-sm text-cream-300/60 block">{t('cw.creditCost')}</span>
-                <span className="text-lg font-display font-bold gold-text">{isOwner ? '∞' : cost}</span>
-              </div>
-              <div className="text-right">
-                <span className="text-sm text-cream-300/60 block">{t('cw.currentBalance')}</span>
-                <span className="text-lg font-display font-bold text-cream-50">
-                  {isOwner ? '∞' : profile?.credits ?? 0}
-                </span>
+              <div className="card-lux p-5 space-y-4">
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Color palette</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {[...preview.primaryColors, ...preview.secondaryColors].slice(0, 8).map((color, i) => (
+                      <span key={i} className="px-2.5 py-1 rounded-full border border-gold-600/20 bg-ink-800/70 text-xs text-cream-200">
+                        {color}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Outputs</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {preview.requiredOutputs.map((output) => (
+                      <span key={output} className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize">
+                        {output.replaceAll('_', ' ')}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-ink-600/40">
+                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Preview cost</span>
+                  <p className="text-lg font-display font-bold text-gold-300 mt-1">0 credits</p>
+                </div>
               </div>
             </div>
+          )}
 
-            {!hasEnoughCredits && (
-              <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{t('gen.insufficientCredits')} <button onClick={() => onNavigate('credits')} className="underline">{t('credits.buyCredits')}</button> <button onClick={() => onNavigate('billing')} className="underline">{t('settings.changePlan')}</button>.</span>
+          {!approved ? (
+            <div className="card-lux p-6 space-y-4 border-gold-600/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm text-cream-300/60 block">Final generation cost</span>
+                  <span className="text-xl font-display font-bold gold-text">{isOwner ? '∞' : cost} credits</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm text-cream-300/60 block">Current balance</span>
+                  <span className="text-xl font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
+                </div>
               </div>
-            )}
-          </div>
-
-          <div className="flex justify-between items-center">
-            <button onClick={() => setStep(2)} className="btn-ghost text-sm">
-              {t('common.back')}
-            </button>
-            <button
-              onClick={handleGenerate}
-              disabled={!hasEnoughCredits}
-              className="btn-gold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Sparkles className="w-4 h-4" />
-              {t('common.generate')}
-            </button>
-          </div>
+              {!hasEnoughCredits && (
+                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{t('gen.insufficientCredits')} <button onClick={() => onNavigate('credits')} className="underline">{t('credits.buyCredits')}</button>.</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center gap-3">
+                <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
+                <button
+                  onClick={() => setApproved(true)}
+                  disabled={!preview || !hasEnoughCredits}
+                  className="btn-gold text-sm disabled:opacity-40"
+                >
+                  EZT VÁLASZTOM
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="card-lux p-6 space-y-5 border-gold-500/40 bg-gold-500/5">
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-wider text-gold-400/70">Final confirmation</div>
+                <h3 className="text-lg font-display font-bold text-cream-50 mt-1">A kiválasztott előnézet véglegesítése</h3>
+                <p className="text-sm text-cream-300/60 mt-2">Ekkor még egyszer megmutatjuk a levonandó kreditet. A levonás csak a végső generálás indításakor történik.</p>
+              </div>
+              <div className="flex items-center justify-between rounded-lg border border-gold-600/20 bg-ink-900/60 p-4">
+                <div>
+                  <span className="text-xs text-cream-300/60 block">Levonás</span>
+                  <span className="text-2xl font-display font-bold gold-text">{isOwner ? '∞' : cost} kredit</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-cream-300/60 block">Marad</span>
+                  <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
+                </div>
+              </div>
+              <div className="flex justify-between items-center gap-3">
+                <button onClick={() => setApproved(false)} className="btn-ghost text-sm">Módosítom</button>
+                <button
+                  onClick={handleGenerate}
+                  disabled={!hasEnoughCredits}
+                  className="btn-gold text-sm disabled:opacity-40"
+                >
+                  MEHET TOVÁBB – {isOwner ? '∞' : cost} KREDIT
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
