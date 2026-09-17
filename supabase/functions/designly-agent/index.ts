@@ -20,7 +20,11 @@ type DesignOutput =
   | "presentation"
   | "brochure"
   | "invitation"
-  | "digital_business_card";
+  | "digital_business_card"
+  | "menu"
+  | "banner"
+  | "campaign"
+  | "custom";
 
 interface DesignBrief {
   businessName: string | null;
@@ -49,7 +53,7 @@ interface AgentRequest {
 const allowedOutputs = new Set<DesignOutput>([
   "logo", "brand_identity", "business_card", "flyer", "poster", "social_post",
   "social_story", "price_list", "landing_page", "website", "presentation",
-  "brochure", "invitation", "digital_business_card",
+  "brochure", "invitation", "digital_business_card", "menu", "banner", "campaign", "custom",
 ]);
 
 function json(data: unknown, status = 200) {
