@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html {
+    min-height: 100%;
+    background: #050505;
+  }
+
+  body {
+    @apply bg-ink-950 text-cream-100 font-sans antialiased;
+    min-height: 100%;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(196, 154, 46, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(196, 154, 46, 0.04) 0%, transparent 40%);
+  }
+
+  #root {
+    min-height: 100vh;
+    background: #050505;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+    line-height: 1.2;
+  }
+
+  ::selection {
+    @apply bg-gold-500/30 text-cream-50;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-600 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gold-600;
+  }
+}
+
+@layer components {
+  .gold-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #e0c066 0%, #f5ebcc 35%, #d4ab3d 50%, #e0c066 65%, #a87f24 100%);
+  }
+
+  .gold-border {
+    border-image: linear-gradient(135deg, #a87f24, #e0c066, #a87f24) 1;
+  }
+
+  .btn-gold {
+    @apply relative inline-flex items-center justify-center gap-2 px-7 py-3.5 font-medium text-ink-950 rounded-lg transition-all duration-300 overflow-hidden;
+    background: linear-gradient(135deg, #c49a2e 0%, #f5ebcc 50%, #c49a2e 100%);
+    background-size: 200% 200%;
+  }
+  .btn-gold:hover {
+    background-position: 100% 100%;
+    box-shadow: 0 0 30px rgba(196, 154, 46, 0.35), 0 4px 12px rgba(0,0,0,0.4);
+    transform: translateY(-1px);
+  }
+  .btn-gold:active {
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 font-medium text-cream-200 rounded-lg border border-gold-600/30 hover:border-gold-500/60 hover:text-gold-200 transition-all duration-300;
+    background: rgba(20, 20, 23, 0.6);
+  }
+  .btn-ghost:hover {
+    background: rgba(196, 154, 46, 0.08);
+  }
+
+  .card-lux {
+    @apply relative rounded-xl border border-ink-700/60 bg-ink-850/80 backdrop-blur-sm transition-all duration-500;
+  }
+  .card-lux:hover {
+    @apply border-gold-600/40;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(196,154,46,0.1);
+  }
+
+  .input-lux {
+    @apply w-full px-4 py-3 bg-ink-800/80 border border-ink-600/60 rounded-lg text-cream-100 placeholder-cream-400/40 focus:outline-none focus:border-gold-600/60 focus:ring-1 focus:ring-gold-600/30 transition-all duration-300;
+  }
+
+  .label-lux {
+    @apply block text-sm font-medium text-gold-200/80 mb-2;
+  }
+
+  .section-pad {
+    @apply px-5 sm:px-8 lg:px-12 xl:px-16;
+  }
+
+  .nav-link {
+    @apply relative text-sm text-cream-300 hover:text-gold-200 transition-colors duration-300;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 w-0 h-px bg-gold-500 transition-all duration-300;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+  .nav-link--active {
+    @apply text-gold-200;
+  }
+  .nav-link--active::after {
+    @apply w-full;
+    background: linear-gradient(90deg, transparent, #e5c96b, transparent);
+    box-shadow: 0 0 8px rgba(229, 201, 107, 0.6);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(196,154,46,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(196,154,46,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+.hero-cinematic {
+  isolation: isolate;
+  background: #050505;
+}
+
+.hero-reference-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/designly-viking-hero.webp');
+  background-size: cover;
+  background-position: center top;
+  opacity: 0.9;
+  filter: saturate(0.95) contrast(1.05);
+  transform: translateZ(0);
+  will-change: opacity;
+}
+
+.hero-art-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 5, 0.4) 0%, transparent 22%, transparent 78%, rgba(5, 5, 5, 0.4) 100%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0.25) 0%, transparent 32%, rgba(5, 5, 5, 0.5) 85%, #050505 100%);
+}
+
+.hero-copy {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+}
+
+.celtic-header {
+  position: relative;
+  transition: background-color 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.celtic-header--top {
+  background-color: rgba(5, 5, 5, 0.35);
+  border-bottom-color: rgba(196, 154, 46, 0.08);
+}
+.celtic-header--scrolled {
+  background-color: rgba(5, 5, 5, 0.94);
+  border-bottom-color: rgba(196, 154, 46, 0.22);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+.celtic-header--scrolled .celtic-header-accent {
+  opacity: 1;
+}
+.celtic-header--top .celtic-header-accent {
+  opacity: 0.5;
+}
+
+.celtic-header-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 154, 46, 0.3) 20%,
+    rgba(229, 201, 107, 0.6) 50%,
+    rgba(196, 154, 46, 0.3) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes smoke-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.28; }
+  50% { transform: translate3d(30px, -20px, 0) scale(1.12); opacity: 0.22; }
+}
+
+@keyframes mist-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.18; }
+  50% { transform: translate3d(40px, 0, 0) scale(1.08); opacity: 0.14; }
+}
+
+@keyframes gold-glow {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.2; }
+}
+
+.smoke-layer {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 1;
+  contain: paint;
+  will-change: transform, opacity;
+}
+
+.smoke-1 {
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(45, 45, 52, 0.6) 0%, transparent 70%);
+  top: 20%; left: 15%;
+  animation: smoke-drift 20s ease-in-out infinite;
+}
+
+.smoke-2 {
+  width: 500px; height: 350px;
+  background: radial-gradient(ellipse, rgba(35, 35, 40, 0.5) 0%, transparent 70%);
+  bottom: 10%; right: 10%;
+  animation: smoke-drift 25s ease-in-out infinite reverse;
+  animation-delay: -5s;
+}
+
+.smoke-3 {
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse, rgba(40, 40, 46, 0.4) 0%, transparent 70%);
+  top: 40%; left: 50%;
+  animation: smoke-drift 30s ease-in-out infinite;
+  animation-delay: -10s;
+}
+
+.mist-layer {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(40px);
+  z-index: 1;
+  contain: paint;
+  will-change: transform, opacity;
+}
+
+.mist-1 {
+  width: 100%; height: 200px;
+  background: linear-gradient(to top, rgba(30, 30, 35, 0.4), transparent);
+  bottom: 0; left: 0;
+  animation: mist-drift 30s ease-in-out infinite;
+}
+
+.mist-2 {
+  width: 80%; height: 150px;
+  background: linear-gradient(to top, rgba(25, 25, 30, 0.3), transparent);
+  bottom: 5%; left: 10%;
+  animation: mist-drift 35s ease-in-out infinite reverse;
+  animation-delay: -8s;
+}
+
+.gold-light {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 1;
+  background: radial-gradient(ellipse, rgba(196, 154, 46, 0.08) 0%, transparent 60%);
+  animation: gold-glow 24s ease-in-out infinite;
+  contain: paint;
+  will-change: opacity;
+}
+
+@media (max-width: 640px) {
+  .hero-reference-art {
+    background-position: 50% 12%;
+    opacity: 0.8;
+  }
+
+  .smoke-layer {
+    filter: blur(36px);
+    transform: translateZ(0) scale(0.8);
+  }
+
+  .mist-layer {
+    filter: blur(28px);
+  }
+
+  .gold-light {
+    filter: blur(52px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-spin-slow,
+  .animate-spin-slow-reverse {
+    animation: none !important;
+  }
+  .smoke-layer, .mist-layer, .gold-light {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,7 @@
+[functions.ai-generate]
+verify_jwt = true
+entrypoint = "./functions/ai-generate/index.ts"
+
+[functions.payment-checkout]
+verify_jwt = true
+entrypoint = "./functions/payment-checkout/index.ts"
