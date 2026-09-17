@@ -1,10 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const supabaseUrl =
+  (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||
+  'https://mxrgdcvmxzhocbdhtlhg.supabase.co';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase environment variables are missing. Please check your .env file.');
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+if (!supabaseAnonKey) {
+  throw new Error(
+    'Supabase publishable/anon key is missing. Set VITE_SUPABASE_ANON_KEY in Vercel or .env.'
+  );
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
