@@ -1,6 +1,8 @@
 import { supabase } from './supabase';
 
 export interface GenerationParams {
+  /** Final generation only. Preview requests are handled by designly-agent and never reach this endpoint. */
+  mode?: 'final';
   type: string;
   brief: string;
   brandKitId?: string | null;
