@@ -257,7 +257,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               disabled={brief.trim().length < 5 || previewLoading}
               className="btn-gold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {previewLoading ? t('common.loading') : '{t('designer.previewFree')}'}
+              {previewLoading ? t('common.loading') : t('designer.previewFree')}
             </button>
           </div>
         </div>
