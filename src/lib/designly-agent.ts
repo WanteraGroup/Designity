@@ -3,7 +3,7 @@ import { supabase } from './supabase';
 export type DesignOutput =
   | 'logo' | 'brand_identity' | 'business_card' | 'flyer' | 'poster'
   | 'social_post' | 'social_story' | 'price_list' | 'landing_page'
-  | 'website' | 'presentation' | 'brochure' | 'invitation' | 'digital_business_card';
+  | 'website' | 'presentation' | 'brochure' | 'invitation' | 'digital_business_card' | 'menu' | 'banner' | 'campaign' | 'custom';
 
 export interface DesignBrief {
   businessName: string | null;
