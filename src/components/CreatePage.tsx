@@ -146,6 +146,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     // Final generation is the only paid generation path.
     // The preview path above never calls this endpoint.
     const genResult = await generateDesign({
+      mode: 'final',
       type: selectedType,
       brief,
       brandKitId: selectedBrand,
