@@ -48,20 +48,23 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   const getAgentOutput = (): DesignOutput => {
     const map: Record<string, DesignOutput> = {
+      website: 'website',
+      landing: 'landing_page',
       logo: 'logo',
-      brand_identity: 'brand_identity',
+      brand: 'brand_identity',
       business_card: 'business_card',
       invitation: 'invitation',
       flyer: 'flyer',
-      poster: 'poster',
-      social_post: 'social_post',
-      social_story: 'social_story',
-      landing_page: 'landing_page',
-      website: 'website',
-      presentation: 'presentation',
+      social: 'social_post',
       brochure: 'brochure',
-      price_list: 'price_list',
-      digital_business_card: 'digital_business_card',
+      menu: 'menu',
+      presentation: 'presentation',
+      poster: 'poster',
+      advertisement: 'custom',
+      banner: 'banner',
+      pricelist: 'price_list',
+      campaign: 'campaign',
+      custom: 'custom',
     };
     return map[selectedType || ''] || 'brand_identity';
   };
@@ -77,6 +80,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       brief,
       brandKitId: selectedBrand,
       requestedOutputs: [getAgentOutput()],
+      language: lang,
       mode: 'preview',
     });
 
@@ -253,7 +257,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               disabled={brief.trim().length < 5 || previewLoading}
               className="btn-gold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {previewLoading ? t('common.loading') : 'AI Preview — 0 credits'}
+              {previewLoading ? t('common.loading') : '{t('designer.previewFree')}'}
             </button>
           </div>
         </div>
@@ -263,8 +267,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       {step === 3 && selectedType && (
         <div className="animate-fade-in space-y-6">
           <div className="text-center">
-            <h2 className="text-xl font-display font-bold text-cream-50 mb-2">AI Design Preview</h2>
-            <p className="text-sm text-cream-300/50">Explore the design direction for free. Credits are charged only after you explicitly approve the final generation.</p>
+            <h2 className="text-xl font-display font-bold text-cream-50 mb-2">{t('designer.previewTitle')}</h2>
+            <p className="text-sm text-cream-300/50">{t('designer.previewDesc')}</p>
           </div>
 
           {previewError && (
@@ -327,11 +331,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             <div className="card-lux p-6 space-y-4 border-gold-600/20">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-sm text-cream-300/60 block">Final generation cost</span>
+                  <span className="text-sm text-cream-300/60 block">{t('designer.finalCost')}</span>
                   <span className="text-xl font-display font-bold gold-text">{isOwner ? '∞' : cost} credits</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm text-cream-300/60 block">Current balance</span>
+                  <span className="text-sm text-cream-300/60 block">{t('credits.currentBalance')}</span>
                   <span className="text-xl font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
                 </div>
               </div>
@@ -348,35 +352,35 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   disabled={!preview || !hasEnoughCredits}
                   className="btn-gold text-sm disabled:opacity-40"
                 >
-                  EZT VÁLASZTOM
+                  {t('designer.select')}
                 </button>
               </div>
             </div>
           ) : (
             <div className="card-lux p-6 space-y-5 border-gold-500/40 bg-gold-500/5">
               <div className="text-center">
-                <div className="text-[10px] uppercase tracking-wider text-gold-400/70">Final confirmation</div>
-                <h3 className="text-lg font-display font-bold text-cream-50 mt-1">A kiválasztott előnézet véglegesítése</h3>
-                <p className="text-sm text-cream-300/60 mt-2">Ekkor még egyszer megmutatjuk a levonandó kreditet. A levonás csak a végső generálás indításakor történik.</p>
+                <div className="text-[10px] uppercase tracking-wider text-gold-400/70">{t('designer.finalConfirm')}</div>
+                <h3 className="text-lg font-display font-bold text-cream-50 mt-1">{t('designer.finalConfirm')}</h3>
+                <p className="text-sm text-cream-300/60 mt-2">{t('designer.finalConfirmDesc')}</p>
               </div>
               <div className="flex items-center justify-between rounded-lg border border-gold-600/20 bg-ink-900/60 p-4">
                 <div>
-                  <span className="text-xs text-cream-300/60 block">Levonás</span>
+                  <span className="text-xs text-cream-300/60 block">{t('designer.finalCost')}</span>
                   <span className="text-2xl font-display font-bold gold-text">{isOwner ? '∞' : cost} kredit</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs text-cream-300/60 block">Marad</span>
+                  <span className="text-xs text-cream-300/60 block">{t('designer.remaining')}</span>
                   <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
                 </div>
               </div>
               <div className="flex justify-between items-center gap-3">
-                <button onClick={() => setApproved(false)} className="btn-ghost text-sm">Módosítom</button>
+                <button onClick={() => setApproved(false)} className="btn-ghost text-sm">{t('designer.modify')}</button>
                 <button
                   onClick={handleGenerate}
                   disabled={!hasEnoughCredits}
                   className="btn-gold text-sm disabled:opacity-40"
                 >
-                  MEHET TOVÁBB – {isOwner ? '∞' : cost} KREDIT
+                  {t('designer.continue').replace('{credits}', isOwner ? '∞' : String(cost))}
                 </button>
               </div>
             </div>
