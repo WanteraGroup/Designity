@@ -11,11 +11,13 @@ interface BillingPageProps {
 
 export function BillingPage({ onNavigate }: BillingPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner } = useAuth();
+  const { profile, isOwner, isUnlimited } = useAuth();
   const [tab, setTab] = useState<'plans' | 'credits' | 'history'>('plans');
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [plans, setPlans] = useState(PUBLIC_PLANS);
+  const [packages, setPackages] = useState(CREDIT_PACKAGES);
 
   useEffect(() => {
     async function loadHistory() {
@@ -31,7 +33,27 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
     loadHistory();
   }, [profile]);
 
-  const handleSubscribe = async (planId: string) => {
+
+
+  useEffect(() => {
+    Promise.all([
+      supabase.from('plans').select('id,name,price_monthly,credits_monthly,project_limit,features,is_public,sort_order').eq('is_public', true).order('sort_order'),
+      supabase.from('credit_packages').select('id,credits,price,label,sort_order').order('sort_order'),
+    ]).then(([planResult, packageResult]) => {
+      if (planResult.data?.length) {
+        setPlans(planResult.data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          priceMonthly: p.price_monthly,
+          creditsMonthly: p.credits_monthly,
+          projectLimit: p.project_limit,
+          features: Array.isArray(p.features) ? p.features : [],
+          highlighted: p.id === 'pro',
+        })));
+      }
+      if (packageResult.data?.length) setPackages(packageResult.data as any);
+    });
+  }, []);  const handleSubscribe = async (planId: string) => {
     setCheckoutError(null);
     onNavigate('checkout', { type: 'subscription', itemId: planId });
   };
@@ -42,7 +64,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
     onNavigate('checkout', { type: 'credit_package', itemId: selectedPackage });
   };
 
-  if (isOwner) {
+  if (isOwner || isUnlimited) {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-display font-bold text-cream-50">{t('nav.billing')}</h1>
@@ -90,7 +112,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
       {/* Plans tab */}
       {tab === 'plans' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PUBLIC_PLANS.map((plan) => {
+          {plans.map((plan) => {
             const isCurrent = profile?.plan_id === plan.id;
             return (
               <div key={plan.id} className={`card-lux p-6 flex flex-col ${plan.highlighted ? 'border-gold-600/40' : ''}`}>
