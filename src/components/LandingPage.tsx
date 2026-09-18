@@ -15,12 +15,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   const { t } = useI18n();
 
   const capabilities = [
-    { icon: Globe2, eyebrow: '01 / WEB', title: t('create.websites'), desc: t('create.websitesDesc') },
-    { icon: Palette, eyebrow: '02 / BRAND', title: t('create.brands'), desc: t('create.brandsDesc') },
-    { icon: Layout, eyebrow: '03 / LANDING', title: t('create.landing'), desc: t('create.landingDesc') },
-    { icon: Layers, eyebrow: '04 / SOCIAL', title: t('create.cards'), desc: t('create.cardsDesc') },
-    { icon: Sparkles, eyebrow: '05 / EVENTS', title: t('create.invitations'), desc: t('create.invitationsDesc') },
-    { icon: Zap, eyebrow: '06 / CAMPAIGN', title: t('create.social'), desc: t('create.socialDesc') },
+    { icon: Wand2, eyebrow: '01 / CREATE', title: 'Create Design', desc: 'Posters, flyers, ads and more — built from one brief.' },
+    { icon: Zap, eyebrow: '02 / ADVERTISING', title: 'AI Advertising Studio', desc: 'Complete ad concepts, copy and visual directions in one workflow.' },
+    { icon: Layers, eyebrow: '03 / CAMPAIGN', title: 'Campaign Generator', desc: 'Multi-format campaigns with consistent brand language and visuals.' },
+    { icon: Layout, eyebrow: '04 / EDITOR', title: 'Visual Editor', desc: 'Edit, refine and perfect your generated designs.' },
+    { icon: Palette, eyebrow: '05 / BRAND', title: 'Brand Kit', desc: 'Keep colors, typography and identity consistent everywhere.' },
+    { icon: Sparkles, eyebrow: '06 / LIBRARY', title: 'Templates', desc: 'Thousands of directions across print, digital, brand and marketing.' },
   ];
 
   const workflow = [
@@ -54,30 +54,29 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="designly-hero-copy">
           <div className="designly-kicker">
             <span />
-            AI CREATIVE INTELLIGENCE
+            AI-POWERED CREATIVE STUDIO
             <span />
           </div>
           <h1>
-            CREATE
-            <strong>WITHOUT</strong>
-            LIMITS.
+            Create <strong>extraordinary designs</strong> with AI.
           </h1>
           <p>
-            DESIGNLY STUDIO turns one idea into a complete visual world —
-            websites, brands, campaigns, content and music.
+            Websites, brands, invitations, business materials and everything you imagine.
+            Professional. Fast. Effortless.
           </p>
           <div className="designly-hero-actions">
             <button className="btn-gold designly-primary-cta" onClick={() => onNavigate('signup')}>
-              Start creating <ArrowRight className="w-4 h-4" />
+              Start Creating <ArrowRight className="w-4 h-4" />
             </button>
             <button className="designly-outline-cta" onClick={() => onNavigate('features')}>
-              <Play className="w-4 h-4" /> Explore the studio
+              <Play className="w-4 h-4" /> Watch Demo
             </button>
           </div>
           <div className="designly-proof">
-            <span><i /> AI-powered</span>
-            <span><i /> One creative workspace</span>
-            <span><i /> Built for speed</span>
+            <span><i /> AI Powered</span>
+            <span><i /> Premium Templates</span>
+            <span><i /> Brand Consistency</span>
+            <span><i /> Save Time</span>
           </div>
         </div>
 
@@ -86,16 +85,18 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
       </section>
 
-      <section className="designly-manifesto">
-        <div className="designly-manifesto-mark"><CelticEmblem size={110} animate showD /></div>
-        <div>
-          <span className="designly-eyebrow">THE NEW CREATIVE WORKFLOW</span>
-          <h2>One thought.<br /><em>Infinite possibilities.</em></h2>
-        </div>
-        <p>
-          Stop jumping between tools. DESIGNLY brings the creative process together
-          in one intelligent studio, from the first prompt to the finished asset.
-        </p>
+      <section className="designly-proof-grid" aria-label="DESIGNLY advantages">
+        {[
+          ['AI Powered','Professional results'],
+          ['Premium Templates','Print & digital formats'],
+          ['Brand Consistency','Your style, everywhere'],
+          ['Save Time','From idea to reality'],
+        ].map(([title, desc]) => (
+          <div key={title} className="designly-proof-card">
+            <span className="designly-proof-icon"><Sparkles className="w-4 h-4" /></span>
+            <div><strong>{title}</strong><small>{desc}</small></div>
+          </div>
+        ))}
       </section>
 
       <section id="features" className="designly-section designly-capabilities">
@@ -121,6 +122,17 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               <small>CREATE WITH AI</small>
             </button>
           ))}
+        </div>
+      </section>
+
+      <section className="signature-strip">
+        <div className="signature-strip-inner">
+          <div>
+            <span className="designly-eyebrow">DESIGNLY STUDIO</span>
+            <h2>TURN IDEAS <em>INTO REALITY</em></h2>
+          </div>
+          <p>Az ötlettől a kész arculatig, weboldalig, kampányig és saját zenéig — egy prémium AI kreatív stúdióban.</p>
+          <CelticEmblem size={90} animate showD={false} />
         </div>
       </section>
 
