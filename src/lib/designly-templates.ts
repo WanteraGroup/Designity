@@ -22,15 +22,14 @@ const CATEGORIES = [
 ];
 
 const TYPES = [
-  { type:'social', label:'Social Media' }, { type:'social_story', label:'Social Story' },
-  { type:'business_card', label:'Business Card' }, { type:'invitation', label:'Invitation' },
-  { type:'flyer', label:'Flyer' }, { type:'menu', label:'Menu' },
-  { type:'pricelist', label:'Price List' }, { type:'poster', label:'Poster' },
-  { type:'logo', label:'Logo' }, { type:'advertisement', label:'Advertisement' },
-  { type:'brochure', label:'Brochure' }, { type:'brand', label:'Brand Identity' },
-  { type:'presentation', label:'Presentation' }, { type:'landing', label:'Landing Page' },
-  { type:'campaign', label:'Campaign' }, { type:'custom', label:'Custom Design' },
-  { type:'website', label:'Website' },
+  { type:'social', label:'Social Media' }, { type:'business_card', label:'Business Card' },
+  { type:'invitation', label:'Invitation' }, { type:'flyer', label:'Flyer' },
+  { type:'menu', label:'Menu' }, { type:'pricelist', label:'Price List' },
+  { type:'poster', label:'Poster' }, { type:'logo', label:'Logo' },
+  { type:'advertisement', label:'Advertisement' }, { type:'brochure', label:'Brochure' },
+  { type:'brand', label:'Brand Identity' }, { type:'presentation', label:'Presentation' },
+  { type:'landing', label:'Landing Page' }, { type:'campaign', label:'Campaign' },
+  { type:'custom', label:'Custom Design' }, { type:'website', label:'Website' },
 ];
 
 export const DESIGNLY_TEMPLATE_STYLES = [
@@ -105,7 +104,7 @@ function templateAt(index: number): DesignlyTemplate {
     palette,
     layout,
     fontPair,
-    format: spec.type === 'social' ? '1080×1080' : spec.type === 'social_story' ? '1080×1920' : 'Premium',
+    format: spec.type === 'social' ? '1080×1080' : 'Premium',
     variant: index + 1,
   };
 }
