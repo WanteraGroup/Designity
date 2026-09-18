@@ -311,7 +311,7 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
     }
 
     // Custom credit purchases: custom_1 ... custom_10000
-    const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\\d+)$/) : null;
+    const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\d+)$/) : null;
     const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
     const customCreditPrice = (credits: number) => {
       if (credits <= 100) return Math.round(credits * 29.9);
