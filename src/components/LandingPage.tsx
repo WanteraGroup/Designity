@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Sparkles, Globe2, Palette, Layout, CreditCard, Layers, Zap } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { useI18n } from '@/lib/i18n';
+import { supabase } from '@/lib/supabase';
 
 interface LandingPageProps {
   onNavigate: (page: string) => void;
@@ -267,13 +268,34 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
 function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
   const { t } = useI18n();
-  const plans = [
-    { name: t('plan.free'), price: '0 Ft', credits: '10', features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
-    { name: t('plan.starter'), price: '2,990 Ft', credits: '50', features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
-    { name: t('plan.pro'), price: '7,990 Ft', credits: '200', features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
-    { name: t('plan.business'), price: '14,990 Ft', credits: '500', features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
-    { name: t('plan.agency'), price: '29,990 Ft', credits: '1,500', features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
+  const fallbackPlans = [
+    { id: 'free', name: t('plan.free'), price: 0, credits: 10, features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
+    { id: 'starter', name: t('plan.starter'), price: 2990, credits: 50, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
+    { id: 'pro', name: t('plan.pro'), price: 7990, credits: 200, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
+    { id: 'business', name: t('plan.business'), price: 14990, credits: 500, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
+    { id: 'agency', name: t('plan.agency'), price: 29990, credits: 1500, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
   ];
+  const [plans, setPlans] = useState(fallbackPlans);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.from('plans')
+      .select('id,name,price_monthly,credits_monthly,features,sort_order')
+      .eq('is_public', true)
+      .order('sort_order')
+      .then(({ data }) => {
+        if (!mounted || !data?.length) return;
+        setPlans(data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price_monthly,
+          credits: p.credits_monthly,
+          features: Array.isArray(p.features) ? p.features.slice(0, 3) : [],
+          highlight: p.id === 'pro',
+        })));
+      });
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -288,7 +310,7 @@ function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
             </div>
           )}
           <h3 className="text-lg font-display font-bold text-cream-50 mb-1">{plan.name}</h3>
-          <div className="text-2xl font-display font-bold gold-text mb-2">{plan.price}</div>
+          <div className="text-2xl font-display font-bold gold-text mb-2">{new Intl.NumberFormat("hu-HU").format(plan.price)} Ft</div>
           <div className="text-xs text-cream-300/50 mb-4">{t('plan.perMonth')}</div>
           <div className="text-sm text-gold-200 font-semibold mb-3">{plan.credits} {t('plan.creditsMo')}</div>
           <ul className="space-y-2 mb-6 flex-1">
