@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
+import { DESIGNLY_TEMPLATES } from '@/lib/designly-templates';
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
@@ -270,6 +271,35 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         <div className="animate-fade-in">
           <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">{t('cw.whatCreate')}</h2>
           <p className="text-sm text-cream-300/50 text-center mb-8">{t('cw.whatCreateDesc')}</p>
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs uppercase tracking-[.2em] text-gold-400/80">Sablonok</div>
+              <p className="text-sm text-cream-300/55 mt-1">Indulj kész prémium dizájnról, majd alakítsd teljesen egyedire.</p>
+            </div>
+            <button onClick={() => onNavigate('templates')} className="btn-ghost text-xs whitespace-nowrap">Összes sablon →</button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
+            {DESIGNLY_TEMPLATES.slice(0, 12).map((tpl) => (
+              <button key={tpl.id} onClick={() => {
+                setSelectedType(tpl.type as ProjectType);
+                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}.`);
+                setStep(2);
+              }} className="group rounded-xl border border-gold-600/15 bg-ink-950/70 p-3 text-left hover:border-gold-500/40 hover:bg-gold-600/5 transition-all">
+                <div className="aspect-[16/9] rounded-lg overflow-hidden border border-gold-600/10 mb-3" style={{ background: `linear-gradient(135deg, ${tpl.palette[0]}, ${tpl.palette[1]}66, ${tpl.palette[0]})` }}>
+                  <div className="h-full p-3 flex flex-col justify-between">
+                    <div className="w-7 h-7 rounded-full border border-gold-400/40 flex items-center justify-center text-gold-300 font-display text-xs">D</div>
+                    <div>
+                      <div className="text-[8px] uppercase tracking-widest text-gold-300/70">{tpl.category}</div>
+                      <div className="text-sm font-display text-cream-50 truncate">{tpl.name}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs font-medium text-cream-100 truncate">{tpl.name}</div>
+                <div className="text-[10px] text-gold-400/70 mt-1">{tpl.type}</div>
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {GENERATION_COSTS.map((item) => (
               <button
