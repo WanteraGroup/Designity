@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3 } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { supabase } from '@/lib/supabase';
@@ -31,7 +31,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
     setLibrary(data || []);
   };
 
-  useMemo(() => {
+  useEffect(() => {
     void loadLibrary();
   }, [user?.id]);
 
