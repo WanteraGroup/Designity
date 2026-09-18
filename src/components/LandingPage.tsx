@@ -65,9 +65,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* What You Can Create */}
-      <section id="features" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto">
+      <section id="features" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto viking-section">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
             {t('create.title')}
           </h2>
           <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('create.subtitle')}</p>
@@ -92,10 +92,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* AI Music Studio highlight */}
-      <section id="ai-music" className="py-20 lg:py-28 section-pad relative overflow-hidden">
+      <section id="ai-music" className="py-20 lg:py-28 section-pad relative overflow-hidden viking-section">
         <div className="absolute inset-0 bg-radial-gold opacity-30 pointer-events-none" />
         <div className="relative max-w-6xl mx-auto">
-          <div className="card-lux overflow-hidden border-gold-600/30 bg-ink-950/80">
+          <div className="card-lux overflow-hidden border-gold-600/30 bg-ink-950/80 viking-feature">
             <div className="grid lg:grid-cols-[0.85fr_1.15fr] items-center">
               <div className="relative min-h-[300px] flex items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-gold-600/[0.08] to-transparent">
                 <div className="absolute inset-0 flex items-center justify-center opacity-60 pointer-events-none">
@@ -132,11 +132,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* AI Creative Workflow */}
-      <section id="workflow" className="py-24 lg:py-32 relative overflow-hidden">
+      <section id="workflow" className="py-24 lg:py-32 relative overflow-hidden viking-section">
         <div className="absolute inset-0 bg-radial-gold opacity-50" />
         <div className="relative section-pad max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
               {t('workflow.title')}
             </h2>
             <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('workflow.subtitle')}</p>
@@ -157,17 +157,17 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Credit System */}
-      <section id="credits" className="py-24 lg:py-32 section-pad max-w-5xl mx-auto">
+      <section id="credits" className="py-24 lg:py-32 section-pad max-w-5xl mx-auto viking-section">
         <div className="card-lux p-8 lg:p-12 text-center">
           <CreditCard className="w-10 h-10 text-gold-400 mx-auto mb-6" />
-          <h2 className="text-3xl sm:text-4xl font-display font-bold gold-text mb-4">
+          <h2 className="text-3xl sm:text-4xl font-display font-bold gold-text mb-4 viking-section-title">
             {t('credits.title')}
           </h2>
           <p className="text-lg text-cream-300/70 max-w-2xl mx-auto mb-8">{t('credits.subtitle')}</p>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 viking-stats">
             {creditExamples.map((ex) => (
-              <div key={ex.label} className="p-4 rounded-lg bg-ink-800/50 border border-ink-600/40">
+              <div key={ex.label} className="p-4 rounded-lg bg-ink-800/50 border border-ink-600/40 viking-stat">
                 <div className="text-2xl font-display font-bold text-gold-300">{ex.credits}</div>
                 <div className="text-xs text-cream-300/50 mt-1">{ex.label}</div>
               </div>
@@ -177,9 +177,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Templates Preview */}
-      <section id="templates" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto">
+      <section id="templates" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto viking-section">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
             {t('templates.title')}
           </h2>
           <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('templates.subtitle')}</p>
@@ -200,11 +200,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24 lg:py-32 relative overflow-hidden">
+      <section id="pricing" className="py-24 lg:py-32 relative overflow-hidden viking-section">
         <div className="absolute inset-0 bg-radial-gold opacity-30" />
         <div className="relative section-pad max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
               {t('pricing.title')}
             </h2>
             <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('pricing.subtitle')}</p>
@@ -214,9 +214,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-24 lg:py-32 section-pad max-w-4xl mx-auto">
+      <section id="faq" className="py-24 lg:py-32 section-pad max-w-4xl mx-auto viking-section">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
             {t('faq.title')}
           </h2>
           <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('faq.subtitle')}</p>
@@ -225,11 +225,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 lg:py-32 section-pad max-w-4xl mx-auto text-center">
+      <section className="py-24 lg:py-32 section-pad max-w-4xl mx-auto text-center viking-section">
         <div className="flex justify-center mb-8">
           <CelticEmblem size={120} animate showD />
         </div>
-        <h2 className="text-3xl sm:text-5xl font-display font-bold text-cream-50 mb-6 text-balance">
+        <h2 className="text-3xl sm:text-5xl font-display font-bold text-cream-50 mb-6 text-balance viking-section-title">
           {t('hero.finalCtaTitle')}
         </h2>
         <p className="text-lg text-cream-300/70 mb-10 max-w-2xl mx-auto">
