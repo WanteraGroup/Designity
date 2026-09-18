@@ -86,7 +86,13 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
           className="flex items-center shrink-0 transition-opacity hover:opacity-90"
           aria-label="DESIGNLY STUDIO home"
         >
-          <Logo size={38} />
+          <div className="flex items-center gap-2.5">
+            <Logo size={42} />
+            <div className="hidden sm:flex flex-col leading-none text-left">
+              <span className="font-display text-[15px] tracking-[0.22em] text-cream-50">DESIGNLY</span>
+              <span className="text-[9px] tracking-[0.38em] text-gold-300/80 mt-1">STUDIO</span>
+            </div>
+          </div>
         </button>
 
         <div className="hidden lg:flex items-center gap-7">
