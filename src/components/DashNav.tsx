@@ -14,7 +14,7 @@ interface DashNavProps {
 
 export function DashNav({ currentPage, onNavigate }: DashNavProps) {
   const { t } = useI18n();
-  const { profile, isOwner, isAdmin, signOut } = useAuth();
+  const { profile, isOwner, isAdmin, isUnlimited, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
@@ -81,7 +81,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
             <div className="text-xs text-cream-400/50 truncate">{profile?.email}</div>
             <div className="flex items-center gap-2 mt-1">
               <span className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize">
-                {isOwner ? 'OWNER' : profile?.plan_id}
+                {isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}
               </span>
               {isOwner && (
                 <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300">
@@ -107,7 +107,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
         </button>
         <div className="flex items-center gap-3">
           <span className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize text-[10px]">
-            {isOwner ? 'OWNER ∞' : profile?.plan_id}
+            {isOwner ? 'OWNER ∞' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}
           </span>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-cream-200">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
