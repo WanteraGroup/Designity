@@ -32,7 +32,17 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   };
 
   useEffect(() => {
-    void loadLibrary();
+    if (!user) return;
+    let active = true;
+    supabase
+      .from('music_generations')
+      .select('id,title,duration_seconds,audio_url,created_at')
+      .order('created_at', { ascending: false })
+      .limit(12)
+      .then(({ data }) => {
+        if (active) setLibrary(data || []);
+      });
+    return () => { active = false; };
   }, [user?.id]);
 
   const generate = async () => {
