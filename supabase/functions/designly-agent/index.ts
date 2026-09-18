@@ -284,7 +284,21 @@ Return one coherent structured result.`;
           }, 502);
         }
 
-        previewImageUrl = supabaseAdmin.storage.from("designly-generations").getPublicUrl(path).data.publicUrl;
+        const { data: signedPreview, error: signedPreviewError } = await supabaseAdmin.storage
+          .from("designly-generations")
+          .createSignedUrl(path, 7 * 24 * 60 * 60);
+
+        if (signedPreviewError || !signedPreview?.signedUrl) {
+          console.error("Preview signed URL creation failed:", signedPreviewError);
+          return json({
+            error: "PREVIEW_STORAGE_FAILED",
+            message: "The preview was generated but its protected viewing URL could not be created. No DESIGNLY credits were charged.",
+          }, 502);
+        }
+
+        // The bucket is private. The browser receives only a time-limited signed URL.
+        // Direct public object URLs are intentionally never exposed.
+        previewImageUrl = signedPreview.signedUrl;
       }
 
       const { data: previewRow, error: previewInsertError } = await supabase
