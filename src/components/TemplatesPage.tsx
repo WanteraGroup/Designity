@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Crown, LayoutTemplate, Search, Sparkles, Type, Wand2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { TEMPLATE_CATEGORIES } from '@/lib/constants';
-import { DESIGNLY_TEMPLATES, TEMPLATE_TOTAL, DESIGNLY_TEMPLATE_STYLES, DESIGNLY_FONT_PAIRS, DESIGNLY_EFFECTS, DESIGNLY_PALETTES } from '@/lib/designly-templates';
+import { TEMPLATE_TOTAL, DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate, DESIGNLY_TEMPLATE_STYLES, DESIGNLY_FONT_PAIRS, DESIGNLY_EFFECTS, DESIGNLY_PALETTES, type DesignlyTemplate } from '@/lib/designly-templates';
 
 interface TemplatesPageProps { onNavigate: (page: string) => void; }
 
@@ -21,16 +21,21 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return DESIGNLY_TEMPLATES.filter((tpl) => {
+    const matches: DesignlyTemplate[] = [];
+    for (const index of DESIGNLY_TEMPLATE_INDEXES) {
+      const tpl = getDesignlyTemplate(index);
       const cat = category === 'All' || tpl.category === category;
       const st = style === 'All' || tpl.style === style.toLowerCase();
       const fx = effect === 'All' || tpl.effect === effect;
-      return cat && st && fx && (!q ||
+      if (cat && st && fx && (!q ||
         tpl.name.toLowerCase().includes(q) ||
         tpl.description.toLowerCase().includes(q) ||
         tpl.fontPair.toLowerCase().includes(q) ||
-        tpl.effect.toLowerCase().includes(q));
-    });
+        tpl.effect.toLowerCase().includes(q))) {
+        matches.push(tpl);
+      }
+    }
+    return matches;
   }, [category, search, style, effect]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -41,7 +46,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
   const handleStyle = (value: string) => { setStyle(value); setPage(1); };
   const handleEffect = (value: string) => { setEffect(value); setPage(1); };
 
-  const useTemplate = (tpl: typeof DESIGNLY_TEMPLATES[number]) => {
+  const useTemplate = (tpl: DesignlyTemplate) => {
     try {
       localStorage.setItem('designly_selected_template', JSON.stringify(tpl));
     } catch {}
