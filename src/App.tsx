@@ -36,7 +36,11 @@ const DASHBOARD_PAGES: Page[] = [
 
 function pageFromHash(): Page {
   if (typeof window === 'undefined') return 'landing';
-  const value = window.location.hash.slice(1) as Page;
+  const hash = window.location.hash.slice(1);
+  // Supabase password-recovery links arrive with auth tokens in the hash.
+  // Keep the recovery screen active so the user can set a new password.
+  if (hash.includes('type=recovery')) return 'reset';
+  const value = hash as Page;
   return [...PUBLIC_PAGES, ...DASHBOARD_PAGES].includes(value) ? value : 'landing';
 }
 
@@ -107,7 +111,7 @@ function AppInner() {
 
   useEffect(() => {
     if (!authKnown) return;
-    if (user && PUBLIC_PAGES.includes(page) && page !== 'landing') {
+    if (user && PUBLIC_PAGES.includes(page) && page !== 'landing' && page !== 'reset') {
       window.history.replaceState({}, '', '#dashboard');
       setPage('dashboard');
     } else if (!user && DASHBOARD_PAGES.includes(page)) {
