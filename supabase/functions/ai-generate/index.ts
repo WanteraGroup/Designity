@@ -188,36 +188,72 @@ Deno.serve(async (req: Request) => {
     try {
       switch (aiProvider) {
         case "openai": {
-          // Call OpenAI API
-          const prompt = buildPrompt(type, brief, style, format);
-          const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          // Final DESIGNLY output is a real image. The free Master Agent
+          // creates the design direction; this paid step renders it.
+          const imagePrompt = buildImagePrompt(type, brief, style, format);
+          const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-2";
+          const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${aiApiKey}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              model: Deno.env.get("AI_MODEL") || "gpt-4o",
-              messages: [
-                { role: "system", content: "You are a premium AI design assistant for DESIGNLY STUDIO. Generate professional design content based on the user's brief." },
-                { role: "user", content: prompt },
-              ],
-              max_tokens: 2000,
+              model: imageModel,
+              prompt: imagePrompt,
+              size: "1024x1024",
             }),
           });
 
-          if (!response.ok) {
-            throw new Error(`AI provider returned ${response.status}`);
+          if (!imageResponse.ok) {
+            const providerBody = await imageResponse.text();
+            throw new Error(`AI image provider returned ${imageResponse.status}: ${providerBody.slice(0, 500)}`);
           }
 
-          const aiData = await response.json();
-          const content = aiData.choices?.[0]?.message?.content || "";
+          const imageData = await imageResponse.json();
+          const b64 = imageData.data?.[0]?.b64_json;
+          const remoteUrl = imageData.data?.[0]?.url;
+
+          if (!b64 && !remoteUrl) {
+            throw new Error("AI image provider returned no image data.");
+          }
+
+          let imageUrl = remoteUrl as string | undefined;
+
+          // Persist base64 renders in Supabase Storage when the provider
+          // returns base64 JSON. If storage is unavailable, return a data
+          // URL so the current session can still display the result.
+          if (b64) {
+            const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
+            const filePath = `${user.id}/${projectId || job.id}.png`;
+            const { error: uploadError } = await supabase.storage
+              .from("designly-generations")
+              .upload(filePath, bytes, {
+                contentType: "image/png",
+                upsert: true,
+              });
+
+            if (uploadError) {
+              imageUrl = `data:image/png;base64,${b64}`;
+            } else {
+              const { data: publicData } = supabase.storage
+                .from("designly-generations")
+                .getPublicUrl(filePath);
+              imageUrl = publicData.publicUrl;
+            }
+          }
 
           generationResult = {
-            content,
-            model: aiData.model,
+            imageUrl,
+            imageModel,
             provider: "openai",
-            designDirection: parseDesignDirection(content, type, style),
+            type,
+            generatedAt: new Date().toISOString(),
+            designDirection: parseDesignDirection(
+              `Rendered final ${type} design from the approved DESIGNLY brief.`,
+              type,
+              style
+            ),
           };
           break;
         }
@@ -226,7 +262,7 @@ Deno.serve(async (req: Request) => {
       }
     } catch (err) {
       generationFailed = true;
-      generationResult = { error: err.message };
+      generationResult = { error: err instanceof Error ? err.message : String(err) };
     }
 
     // Update the job
@@ -291,16 +327,22 @@ Deno.serve(async (req: Request) => {
     });
   }
 });
-
-function buildPrompt(type: string, brief: string, style?: string, format?: string): string {
-  const parts = [`Design type: ${type}`, `Brief: ${brief}`];
-  if (style) parts.push(`Style: ${style}`);
-  if (format) parts.push(`Format: ${format}`);
-  parts.push("Generate: headline, subheadline, call-to-action, visual direction, color palette, typography recommendation, and layout structure.");
+\n
+function buildImagePrompt(type: string, brief: string, style?: string, format?: string): string {
+  const parts = [
+    "Create a polished, production-ready visual design for DESIGNLY STUDIO.",
+    `Design type: ${type}`,
+    `Client brief: ${brief}`,
+    style ? `Style: ${style}` : "",
+    format ? `Format: ${format}` : "",
+    "Use a premium art-directed composition, strong hierarchy, refined typography, balanced spacing, realistic materials where appropriate, and a professional commercial finish.",
+    "Prefer a dark luxury palette with graphite, off-white and warm metallic gold when compatible with the brief.",
+    "Avoid watermarks, mock browser frames, random UI chrome, distorted anatomy, and generic stock-photo composition.",
+    "Return the actual finished visual, not a description of the design.",
+  ].filter(Boolean);
   return parts.join("\n");
 }
-
-function parseDesignDirection(content: string, type: string, style?: string): Record<string, unknown> {
+\nfunction parseDesignDirection(content: string, type: string, style?: string): Record<string, unknown> {
   return {
     type,
     style: style || "premium",
