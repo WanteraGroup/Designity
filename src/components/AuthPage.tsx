@@ -13,10 +13,12 @@ interface AuthPageProps {
 
 export function AuthPage({ mode, onNavigate }: AuthPageProps) {
   const { t } = useI18n();
-  const { signIn, signUp, resetPassword } = useAuth();
+  const { user, signIn, signUp, resetPassword, updatePassword } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -27,9 +29,34 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
     setError(null);
     setSuccess(null);
 
-    if (mode === 'reset') {
+    if (mode === 'reset' && user) {
+      if (newPassword.length < 6) {
+        setError(t('auth.passwordTooShort'));
+        return;
+      }
+      if (newPassword !== newPasswordConfirm) {
+        setError(t('auth.passwordMismatch'));
+        return;
+      }
       setLoading(true);
-      const { error } = await resetPassword(email);
+      const { error } = await updatePassword(newPassword);
+      setLoading(false);
+      if (error) setError(error);
+      else {
+        setSuccess(t('auth.passwordUpdated'));
+        setNewPassword('');
+        setNewPasswordConfirm('');
+      }
+      return;
+    }
+
+    if (mode === 'reset') {
+      if (!email.trim()) {
+        setError(t('auth.emailRequired'));
+        return;
+      }
+      setLoading(true);
+      const { error } = await resetPassword(email.trim());
       setLoading(false);
       if (error) setError(error);
       else setSuccess(t('auth.resetSent'));
@@ -103,7 +130,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
           <h1 className="text-2xl font-display font-bold text-cream-50 text-center mb-2">
             {mode === 'login' && t('auth.login')}
             {mode === 'signup' && t('auth.signup')}
-            {mode === 'reset' && t('auth.forgotPassword')}
+            {mode === 'reset' && (user ? t('auth.setNewPassword') : t('auth.forgotPassword'))}
           </h1>
 
           <div className="h-px w-12 bg-gold-gradient mx-auto mb-8" />
@@ -154,7 +181,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
               </div>
             </div>
 
-            {mode !== 'reset' && (
+            {mode !== 'reset' && !user && (
               <div>
                 <label className="label-lux">{t('auth.password')}</label>
                 <div className="relative">
@@ -169,6 +196,41 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
                   />
                 </div>
               </div>
+            )}
+
+            {mode === 'reset' && user && (
+              <>
+                <div>
+                  <label className="label-lux">{t('auth.newPassword')}</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream-400/40" />
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="input-lux pl-10"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="label-lux">{t('auth.confirmPassword')}</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream-400/40" />
+                    <input
+                      type="password"
+                      required
+                      minLength={6}
+                      value={newPasswordConfirm}
+                      onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                      className="input-lux pl-10"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+              </>
             )}
 
             {mode === 'signup' && (
@@ -208,7 +270,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
               {loading ? t('common.loading') : (
                 mode === 'login' ? t('auth.loginCta') :
                 mode === 'signup' ? t('auth.signupCta') :
-                t('auth.resetPassword')
+                (user ? t('auth.updatePassword') : t('auth.resetPassword'))
               )}
             </button>
           </form>
@@ -230,7 +292,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
                 </button>
               </>
             )}
-            {mode === 'reset' && (
+            {mode === 'reset' && !user && (
               <button onClick={() => onNavigate('login')} className="text-gold-400 hover:text-gold-200 transition-colors font-medium">
                 {t('auth.backToLogin')}
               </button>
