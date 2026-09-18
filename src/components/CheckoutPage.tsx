@@ -13,7 +13,7 @@ interface CheckoutPageProps {
 type CheckoutState = 'idle' | 'processing' | 'initiated' | 'success' | 'failed' | 'cancelled' | 'not_configured';
 
 export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { isOwner, isUnlimited } = useAuth();
   const [status, setStatus] = useState<CheckoutState>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -231,7 +231,7 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-cream-300/60">{t('checkout.total')}</span>
-          <span className="text-xl font-display font-bold gold-text">{formatPrice(price)}</span>
+          <span className="text-xl font-display font-bold gold-text">{formatPrice(price, lang)}</span>
         </div>
       </div>
 
