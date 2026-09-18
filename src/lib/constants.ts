@@ -84,22 +84,22 @@ export function getCustomCreditPrice(credits: number): number {
 }
 
 export const GENERATION_COSTS: GenerationCost[] = [
-  { type: 'social', label: 'Social Media Post', credits: 2 },
-  { type: 'business_card', label: 'Business Card', credits: 2 },
-  { type: 'invitation', label: 'Invitation', credits: 2 },
-  { type: 'flyer', label: 'Flyer', credits: 2 },
-  { type: 'menu', label: 'Menu', credits: 2 },
-  { type: 'pricelist', label: 'Price List', credits: 2 },
-  { type: 'logo', label: 'Logo', credits: 3 },
-  { type: 'poster', label: 'Poster', credits: 3 },
-  { type: 'advertisement', label: 'Advertisement', credits: 3 },
-  { type: 'brand', label: 'Brand Identity', credits: 5 },
-  { type: 'landing', label: 'Landing Page', credits: 5 },
-  { type: 'brochure', label: 'Brochure', credits: 5 },
-  { type: 'presentation', label: 'Presentation', credits: 5 },
-  { type: 'website', label: 'Full Website', credits: 10 },
-  { type: 'campaign', label: 'Campaign Bundle', credits: 10 },
-  { type: 'custom', label: 'Custom Design', credits: 10 },
+  { type: 'social', label: 'Social Media Post', credits: 3 },
+  { type: 'business_card', label: 'Business Card', credits: 4 },
+  { type: 'invitation', label: 'Invitation', credits: 4 },
+  { type: 'flyer', label: 'Flyer', credits: 4 },
+  { type: 'menu', label: 'Menu', credits: 4 },
+  { type: 'pricelist', label: 'Price List', credits: 4 },
+  { type: 'logo', label: 'Logo', credits: 10 },
+  { type: 'poster', label: 'Poster', credits: 6 },
+  { type: 'advertisement', label: 'Advertisement', credits: 8 },
+  { type: 'brand', label: 'Brand Identity', credits: 25 },
+  { type: 'landing', label: 'Landing Page', credits: 30 },
+  { type: 'brochure', label: 'Brochure', credits: 15 },
+  { type: 'presentation', label: 'Presentation', credits: 20 },
+  { type: 'website', label: 'Full Website', credits: 60 },
+  { type: 'campaign', label: 'Campaign Bundle', credits: 40 },
+  { type: 'custom', label: 'Custom Design', credits: 50 },
 ];
 
 export const AD_FORMATS: AdFormat[] = [
