@@ -181,7 +181,17 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-200">{cost} kredit / {duration} mp</div>
     </div>
     <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
-      <section className="card-premium p-5 lg:p-7"><label className="text-sm text-cream-200">Dalszöveg</label><textarea value={lyrics} onChange={e => setLyrics(e.target.value)} placeholder={'[verse]\nIde írd a verzét...\n\n[chorus]\nIde a refrént...\n\n[bridge]\n...'} className="mt-2 w-full min-h-[330px] rounded-xl border border-gold-600/15 bg-ink-950/70 text-cream-100 p-4 outline-none focus:border-gold-500/40 resize-y" /><p className="text-xs text-cream-500/60 mt-2">Használhatsz [intro], [verse], [chorus], [bridge], [outro] jelöléseket.</p></section>
+      <section className="card-premium p-5 lg:p-7">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <label className="text-sm font-medium text-cream-200">Dalszöveg</label>
+          <span className="inline-flex items-center gap-1.5 text-xs text-gold-300 border border-gold-600/20 bg-gold-600/10 rounded-full px-3 py-1">
+            <Wand2 className="w-3.5 h-3.5" /> A kész dalszöveg szerkeszthető
+          </span>
+        </div>
+        <p className="text-xs text-cream-400/60 mt-2">A generálás után a teljes szöveget szabadon átírhatod, javíthatod vagy kiegészítheted, mielőtt zenét készítesz belőle.</p>
+        <textarea value={lyrics} onChange={e => setLyrics(e.target.value)} placeholder={'[verse]\nIde írd a verzét...\n\n[chorus]\nIde a refrént...\n\n[bridge]\n...'} className="mt-3 w-full min-h-[330px] rounded-xl border border-gold-600/15 bg-ink-950/70 text-cream-100 p-4 outline-none focus:border-gold-500/40 resize-y" />
+        <p className="text-xs text-cream-500/60 mt-2">Használhatsz [intro], [verse], [chorus], [bridge], [outro] jelöléseket.</p>
+      </section>
       <section className="card-premium p-5 lg:p-7 space-y-5">
         <div><label className="text-sm text-cream-200">Dal címe</label><input value={title} onChange={e => setTitle(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Műfaj</label><input value={genre} onChange={e => setGenre(e.target.value)} className="input-premium mt-2 w-full" /></div>
