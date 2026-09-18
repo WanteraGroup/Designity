@@ -131,9 +131,14 @@ Deno.serve(async (req: Request) => {
     }
     if (!supabaseUrl || !serviceRoleKey) return json({ error: "SERVER_CONFIG_ERROR" }, 500);
 
+    // Keep the user-scoped client for auth and RLS-protected database access.
+    // Use a separate service-role client for Storage operations because the
+    // user Authorization header would otherwise override the service-role
+    // identity and trigger Storage RLS policies during server-side uploads.
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       global: { headers: { Authorization: authHeader } },
     });
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) return json({ error: "NO_SESSION" }, 401);
@@ -267,7 +272,7 @@ Return one coherent structured result.`;
       if (b64) {
         const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
         const path = `${user.id}/preview-${crypto.randomUUID()}.png`;
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabaseAdmin.storage
           .from("designly-generations")
           .upload(path, bytes, { contentType: "image/png", upsert: false });
 
@@ -279,7 +284,7 @@ Return one coherent structured result.`;
           }, 502);
         }
 
-        previewImageUrl = supabase.storage.from("designly-generations").getPublicUrl(path).data.publicUrl;
+        previewImageUrl = supabaseAdmin.storage.from("designly-generations").getPublicUrl(path).data.publicUrl;
       }
 
       const { data: previewRow, error: previewInsertError } = await supabase
