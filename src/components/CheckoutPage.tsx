@@ -54,7 +54,7 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     return () => clearInterval(interval);
   }, [status, paymentId, checkPaymentStatus]);
 
-  const customCreditMatch = item?.type === 'credit_package' ? item.itemId.match(/^custom_(\\d+)$/) : null;
+  const customCreditMatch = item?.type === 'credit_package' ? item.itemId.match(/^custom_(\d+)$/) : null;
   const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
   const selectedItem = item
     ? item.type === 'subscription'
