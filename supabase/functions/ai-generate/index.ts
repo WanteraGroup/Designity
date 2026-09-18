@@ -44,7 +44,18 @@ Deno.serve(async (req: Request) => {
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS");
+    let supabaseKey: string | undefined;
+    try {
+      supabaseKey = secretKeysRaw ? JSON.parse(secretKeysRaw)["default"] : undefined;
+    } catch {
+      supabaseKey = undefined;
+    }
+    if (!supabaseUrl || !supabaseKey) {
+      return new Response(JSON.stringify({ error: "Server configuration error" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } },
     });
