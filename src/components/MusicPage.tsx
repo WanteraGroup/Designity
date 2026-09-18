@@ -98,5 +98,34 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       </section>
     </div>
     {audioUrl && <section className="card-premium p-5 lg:p-7"><div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.2em] text-gold-300">Elkészült mű</div><h2 className="font-display text-2xl text-cream-100 mt-1">{title}</h2></div><div className="flex flex-wrap gap-2"><button onClick={togglePlay} className="btn-gold flex items-center gap-2">{playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />} Lejátszás</button><a href={audioUrl} download target="_blank" rel="noreferrer" className="btn-ghost flex items-center gap-2"><Download className="w-4 h-4" /> WAV letöltése</a><button onClick={sendEmail} className="btn-ghost flex items-center gap-2"><Mail className="w-4 h-4" /> Küldés e-mailben</button></div></div><div className="mt-5 rounded-xl border border-gold-600/10 bg-ink-950/70 p-4"><audio id="designly-audio" src={audioUrl} controls className="w-full music-audio" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} /></div><div className="mt-3 flex items-center gap-2 text-xs text-cream-500/60"><Clock3 className="w-3.5 h-3.5" /> A dal a DESIGNLY kredit-egyenlegből készült.</div></section>}
+    {library.length > 0 && <section className="card-premium p-5 lg:p-7">
+      <div className="flex items-center gap-2 mb-5">
+        <History className="w-4 h-4 text-gold-400" />
+        <div>
+          <div className="text-xs uppercase tracking-[0.2em] text-gold-300">ZENEI KÖNYVTÁR</div>
+          <h2 className="font-display text-2xl text-cream-100 mt-1">Korábbi műveid</h2>
+        </div>
+      </div>
+      <div className="grid gap-3">
+        {library.map(song => (
+          <div key={song.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-gold-600/10 bg-ink-950/60 p-4">
+            <div>
+              <div className="text-sm text-cream-100">{song.title}</div>
+              <div className="text-xs text-cream-500/60 mt-1">
+                {Math.round(song.duration_seconds / 60 * 10) / 10} perc · {new Date(song.created_at).toLocaleDateString('hu-HU')}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <a href={song.audio_url} download target="_blank" rel="noreferrer" className="btn-ghost text-xs px-4 py-2 flex items-center gap-2">
+                <Download className="w-3.5 h-3.5" /> WAV
+              </a>
+              <button onClick={() => sendEmail(song.audio_url, song.title)} className="btn-ghost text-xs px-4 py-2 flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5" /> E-mail
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>}
   </div>;
 }
