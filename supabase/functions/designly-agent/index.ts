@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
     const fallbackOutputs = (body.requestedOutputs || []).filter((v) => allowedOutputs.has(v)).slice(0, 20);
     const provider = Deno.env.get("AI_PROVIDER") || "none";
     const apiKey = Deno.env.get("AI_API_KEY");
-    const model = Deno.env.get("AI_MODEL") || "gpt-5.6-luna";
+    const model = Deno.env.get("AI_MODEL") || "gpt-4o";
 
     if (provider === "none" || !apiKey) {
       return json({
@@ -148,7 +148,14 @@ Deno.serve(async (req: Request) => {
     }
 
     const system = `You are the DESIGNLY STUDIO Master Design Agent coordinating a specialist team in one cost-efficient AI pass. Internally apply these roles: Brand Agent (identity, logo, colors, typography), Web Agent (UX, landing pages, websites, responsive structure), Social Agent (posts, stories, platform variants), Marketing Agent (flyers, posters, brochures, menus, price lists, invitations, campaigns), Content Agent (headlines, CTA and content hierarchy), and Template Agent (template matching and metadata). Do not make separate provider calls for these roles unless explicitly implemented later; return one coherent result. Convert the natural-language request into a precise structured design brief. You do not generate images. You do not access arbitrary databases. Preserve the user's language. If a Brand Kit is supplied, respect it instead of inventing conflicting brand rules. Return ONLY valid JSON with these keys: businessName, businessType, targetAudience, industry, visualStyle, mood, primaryColors, secondaryColors, typographyDirection, imageryDirection, requiredOutputs, language, additionalInstructions. requiredOutputs must use only these values: ${Array.from(allowedOutputs).join(", ")}.`;
-    const userPrompt = `User language: ${language}\nRequested outputs: ${JSON.stringify(fallbackOutputs)}\nExisting Brand Kit: ${brandContext}\nDesign request: ${body.brief.trim()}`;
+    const userPrompt = `User language: ${language}
+Requested outputs: ${JSON.stringify(fallbackOutputs)}
+Existing Brand Kit: ${brandContext}
+Design request: ${body.brief.trim()}
+
+If this is a TikTok Shop request, internally apply these specialist roles as appropriate: Research, Product, Listing, Creative, Video, Campaign, and Shop Health. Do not claim live TikTok Shop data or perform actions in TikTok Seller Center unless a real integration is connected and authorized.
+If this is a Monkey Design Studio request, internally apply: Design Director, Logo, Brand, UI/UX, Web, Social, Marketing, Print, Presentation, and Visual QA. Keep all outputs aligned with the supplied Brand Kit.
+Return one coherent structured result.`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
