@@ -313,7 +313,12 @@
   animation:gold-glow 24s ease-in-out infinite;
 }
 
-@media (max-width:640px){
+@media (max-width:640px){  .designly-proof-grid { grid-template-columns:1fr 1fr; width:calc(100% - 34px); }
+  .designly-proof-card:nth-child(2) { border-right:0; }
+  .designly-proof-card { min-height:78px; padding:14px; }
+  .signature-strip-inner { width:calc(100% - 34px); grid-template-columns:1fr; gap:18px; padding:55px 0; }
+  .signature-strip-inner > div:last-child { display:none; }
+
   .hero-cinematic{min-height:820px}
   .hero-content{padding-top:22rem}
   .hero-reference-art{background-position:50% 12%;opacity:.82}
@@ -423,6 +428,28 @@
   border-bottom:1px solid rgba(196,154,46,.16);
 }
 
+.signature-strip-inner {
+  width:min(1240px,calc(100% - 48px));
+  margin:0 auto;
+  min-height:180px;
+  display:grid;
+  grid-template-columns:1fr 1.2fr 100px;
+  align-items:center;
+  gap:40px;
+  position:relative;
+  z-index:2;
+}
+.signature-strip-inner h2 {
+  margin:8px 0 0;
+  font:500 clamp(2rem,4vw,3.4rem)/.95 "Cormorant Garamond",serif;
+  letter-spacing:.02em;
+}
+.signature-strip-inner h2 em { color:#d4ab3d;font-style:normal; }
+.signature-strip-inner p {
+  color:rgba(228,217,192,.56);
+  font:400 12px/1.8 "Inter",sans-serif;
+  max-width:480px;
+}
 .signature-strip-line {
   position:absolute;left:8%;right:8%;top:50%;height:1px;
   background:linear-gradient(90deg,transparent,rgba(196,154,46,.35),transparent);
@@ -615,7 +642,7 @@
 
 .designly-hero-copy h1 {
   margin:20px 0 16px;
-  font:500 clamp(4.2rem,10vw,8.6rem)/.78 "Cormorant Garamond",serif;
+  font:500 clamp(3.1rem,5.5vw,5.6rem)/.9 "Cormorant Garamond",serif;
   letter-spacing:-.055em;
   color:#f7f2e7;
   text-shadow:0 12px 50px rgba(0,0,0,.75);
@@ -655,7 +682,7 @@
 }
 .designly-outline-cta:hover { border-color:rgba(229,201,107,.65);background:rgba(196,154,46,.08);transform:translateY(-1px); }
 
-.designly-proof {
+ .designly-proof {
   display:flex;justify-content:center;gap:24px;margin-top:25px;
   color:rgba(228,217,192,.46);font:500 9px "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;
 }
@@ -669,6 +696,34 @@
 }
 .designly-scroll i { display:block;width:55px;height:1px;background:linear-gradient(90deg,#d4ab3d,transparent); }
 
+.designly-proof-grid {
+  width:min(1240px,calc(100% - 48px));
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(229,201,107,.12);
+  border-bottom:1px solid rgba(229,201,107,.12);
+}
+.designly-proof-card {
+  min-height:92px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:18px 24px;
+  border-right:1px solid rgba(229,201,107,.10);
+}
+.designly-proof-card:last-child { border-right:0; }
+.designly-proof-icon {
+  width:34px;height:34px;display:grid;place-items:center;flex:none;
+  color:#d4ab3d;border:1px solid rgba(229,201,107,.28);border-radius:50%;
+  box-shadow:0 0 18px rgba(196,154,46,.08);
+}
+.designly-proof-card strong {
+  display:block;color:#f5ebcc;font:600 12px "Inter",sans-serif;
+}
+.designly-proof-card small {
+  display:block;margin-top:4px;color:rgba(228,217,192,.45);font:400 9px "Inter",sans-serif;
+}
 .designly-manifesto {
   position:relative;
   display:grid;
