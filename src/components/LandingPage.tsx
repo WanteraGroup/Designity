@@ -46,13 +46,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       <section className="relative hero-plan overflow-hidden" aria-label="DESIGNLY STUDIO">
         <img src="/alap.jpg" alt="" className="hero-plan-image" aria-hidden="true" />
 
-        {/* Only the outer metallic Celtic frame rotates. The supplied logo remains static. */}
-        <div className="hero-plan-emblem" aria-hidden="true">
-          <CelticEmblem size={640} animate showD={false} className="hero-plan-emblem-ring" />
+        {/* alap.jpg is the complete visual composition. Do not replace or redraw its ravens, mountains, ships, smoke or runes. */}
+        <div className="hero-plan-frame" aria-hidden="true">
+          <CelticEmblem size={720} animate showD={false} className="hero-plan-emblem-ring" />
         </div>
-        <img src="/logo.png" alt="DESIGNLY STUDIO" className="hero-plan-logo" aria-hidden="true" />
 
-        {/* Runes are already part of alap.jpg and stay at the top. */}
+        {/* The runes stay at the very top; the supplied artwork remains the visual source of truth. */}
 
         {/* Functional transparent hotspots over the artwork. */}
         <div className="hero-plan-actions">
