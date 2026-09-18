@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3 } from 'lucide-react';
+import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3, Wand2, RefreshCw } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
@@ -9,6 +9,8 @@ const DURATIONS = [60, 120, 180, 240, 300];
 export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }) {
   const { user, profile, isOwner } = useAuth();
   const [lyrics, setLyrics] = useState('');
+  const [lyricsTheme, setLyricsTheme] = useState('');
+  const [lyricsTitle, setLyricsTitle] = useState('');
   const [genre, setGenre] = useState('modern pop');
   const [mood, setMood] = useState('emotional, cinematic, uplifting');
   const [vocal, setVocal] = useState('warm male lead vocal');
@@ -20,6 +22,62 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [playing, setPlaying] = useState(false);
   const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string; created_at: string }>>([]);
   const cost = useMemo(() => Math.ceil(duration / 60) * 100, [duration]);
+
+  const generateLyricsLocally = () => {
+    const theme = lyricsTheme.trim() || 'álmok és új kezdetek';
+    const titleText = lyricsTitle.trim() || 'Új kezdet';
+    const chorus = [
+      `[chorus]`,
+      `Veled indul el minden új nap,`,
+      `a csendből is egy dallam fakad,`,
+      `ha messze visz az út, én akkor is megyek,`,
+      `mert bennünk élnek még a holnapok és a jelek.`,
+    ];
+    const verse1 = [
+      `[verse]`,
+      `Az éj fölöttünk lassan továbbhalad,`,
+      `a város fénye őrzi a pillanatot,`,
+      `a szívem azt súgja: ne nézz vissza már,`,
+      `minden lépés egy új történetre vár.`,
+    ];
+    const verse2 = [
+      `[verse]`,
+      `A szél elviszi, amit tegnap féltem,`,
+      `ma már bátran állok a saját reményem mellett,`,
+      `ha el is rejtőzik néha a fény,`,
+      `a hangod visszahív, és újra enyém a remény.`,
+    ];
+    const bridge = [
+      `[bridge]`,
+      `És ha egyszer minden út elcsendesül,`,
+      `a dalunk akkor is velünk együtt lélegzik,`,
+      `nem kell más, csak egy újabb pillanat,`,
+      `hogy megtaláljuk egymásban a holnapot.`,
+    ];
+    const outro = [
+      `[outro]`,
+      `Új kezdet, új fény, új történet,`,
+      `a szívünk viszi tovább az éneket.`,
+    ];
+    setTitle(titleText);
+    setLyrics([
+      `[intro]`,
+      `Ez a dal ${theme} történetéről szól.`,
+      '',
+      ...verse1,
+      '',
+      ...chorus,
+      '',
+      ...verse2,
+      '',
+      ...bridge,
+      '',
+      ...chorus,
+      '',
+      ...outro,
+    ].join('\n'));
+    setError('');
+  };
 
   const loadLibrary = async () => {
     if (!user) return;
@@ -90,6 +148,33 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
         <h1 className="font-display text-3xl lg:text-5xl text-cream-50 mt-3">AI Music Studio</h1>
         <p className="text-cream-300/60 mt-3 max-w-2xl leading-relaxed">Dalszöveg → zene → valódi énekes előadás. A kész mű WAV formátumban lejátszható, letölthető és megosztható e-mailben.</p>
       </div>
+    </section>
+    <section className="card-premium p-5 lg:p-7 border-gold-600/20 bg-gold-600/[0.03]">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+        <div>
+          <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]">
+            <Wand2 className="w-4 h-4" /> DALSZÖVEG-GENERÁTOR
+          </div>
+          <h2 className="font-display text-2xl lg:text-3xl text-cream-100 mt-2">Készíts dalszöveget egyetlen lépéssel</h2>
+          <p className="text-cream-400/60 mt-2 max-w-2xl">Írd meg a témát és a címet, a DESIGNLY pedig felépít egy azonnal szerkeszthető dalszöveg-vázlatot. Ez a generátor külön API-kulcs nélkül működik.</p>
+        </div>
+        <button onClick={generateLyricsLocally} className="btn-gold shrink-0 flex items-center justify-center gap-2">
+          <Wand2 className="w-4 h-4" /> DALSZÖVEG GENERÁLÁSA
+        </button>
+      </div>
+      <div className="grid md:grid-cols-2 gap-4 mt-5">
+        <div>
+          <label className="text-sm text-cream-200">Téma / történet</label>
+          <input value={lyricsTheme} onChange={e => setLyricsTheme(e.target.value)} placeholder="pl. szerelem, szakítás, nyár, motiváció" className="input-premium mt-2 w-full" />
+        </div>
+        <div>
+          <label className="text-sm text-cream-200">Dal címe</label>
+          <input value={lyricsTitle} onChange={e => setLyricsTitle(e.target.value)} placeholder="pl. Új kezdet" className="input-premium mt-2 w-full" />
+        </div>
+      </div>
+      <button type="button" onClick={() => { setLyrics(''); setLyricsTitle(''); setLyricsTheme(''); }} className="mt-3 text-xs text-cream-500/60 hover:text-gold-300 flex items-center gap-1">
+        <RefreshCw className="w-3 h-3" /> Mezők törlése
+      </button>
     </section>
     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
       <div><div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]"><Music2 className="w-4 h-4" /> SONG BUILDER</div><h2 className="font-display text-2xl lg:text-3xl text-cream-100 mt-2">Építsd fel a saját dalodat</h2><p className="text-cream-400/60 mt-2 max-w-2xl">A dalszöveg és a zenei irány alapján a rendszer komplett dalt készít énekkel.</p></div>
