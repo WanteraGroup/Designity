@@ -154,7 +154,34 @@
 .hero-cinematic {
   isolation: isolate;
   background: #050505;
-  min-height: 900px;
+  min-height: 980px;
+}
+.hero-frame {
+  border-bottom: 1px solid rgba(196,154,46,0.18);
+}
+.hero-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0.75rem;
+  z-index: 5;
+  pointer-events: none;
+  border: 1px solid rgba(229,201,107,0.10);
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.42);
+}
+.hero-copy-panel {
+  margin-top: 25rem;
+}
+.hero-copy-panel::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3rem;
+  width: min(780px, 88vw);
+  height: 260px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.35) 48%, transparent 75%);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .hero-reference-art {
@@ -436,12 +463,12 @@
 .hero-emblem {
   position: absolute;
   left: 50%;
-  top: 5.8rem;
+  top: 4.8rem;
   transform: translateX(-50%);
   z-index: 4;
   pointer-events: none;
-  opacity: 0.94;
-  filter: drop-shadow(0 0 30px rgba(196,154,46,0.22)) drop-shadow(0 18px 45px rgba(0,0,0,0.5));
+  opacity: 0.98;
+  filter: drop-shadow(0 0 34px rgba(196,154,46,0.22)) drop-shadow(0 18px 45px rgba(0,0,0,0.5));
 }
 .hero-emblem::after {
   content: '';
@@ -474,3 +501,31 @@
 }
 @keyframes fog-breathe { 0%,100% { transform: translate3d(-1%,0,0) scale(1); opacity:.55; } 50% { transform: translate3d(1.5%,-1%,0) scale(1.05); opacity:.9; } }
 @media (prefers-reduced-motion: reduce) { .hero-cinematic::after { animation:none; } }
+
+
+.signature-strip {
+  background:
+    linear-gradient(180deg, rgba(8,8,9,0.98), rgba(13,12,10,0.98)),
+    radial-gradient(circle at 50% 0%, rgba(196,154,46,0.08), transparent 55%);
+  border-top: 1px solid rgba(196,154,46,0.10);
+  border-bottom: 1px solid rgba(196,154,46,0.16);
+}
+.signature-strip-line {
+  position:absolute; left:8%; right:8%; top:50%; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,154,46,.35),transparent);
+  opacity:.45;
+}
+.signature-strip::before,
+.signature-strip::after {
+  content:'◆'; position:absolute; top:50%; transform:translateY(-50%);
+  color:rgba(229,201,107,.55); font-size:9px;
+}
+.signature-strip::before { left:7%; }
+.signature-strip::after { right:7%; }
+
+@media (max-width: 640px) {
+  .hero-cinematic { min-height: 900px; }
+  .hero-copy-panel { margin-top: 18rem; }
+  .hero-frame::before { inset: .4rem; }
+  .hero-emblem { top: 4.2rem; transform: translateX(-50%) scale(0.70); }
+}
