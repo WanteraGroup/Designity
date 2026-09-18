@@ -59,6 +59,9 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } },
     });
+    // Separate service client for Storage uploads; the user-scoped client
+    // intentionally keeps the caller's JWT for RLS-protected database work.
+    const storageClient = createClient(supabaseUrl, supabaseKey);
 
     // Get the authenticated user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -226,7 +229,7 @@ Deno.serve(async (req: Request) => {
           if (b64) {
             const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
             const filePath = `${user.id}/${projectId || job.id}.png`;
-            const { error: uploadError } = await supabase.storage
+            const { error: uploadError } = await storageClient.storage
               .from("designly-generations")
               .upload(filePath, bytes, {
                 contentType: "image/png",
@@ -236,7 +239,7 @@ Deno.serve(async (req: Request) => {
             if (uploadError) {
               imageUrl = `data:image/png;base64,${b64}`;
             } else {
-              const { data: publicData } = supabase.storage
+              const { data: publicData } = storageClient.storage
                 .from("designly-generations")
                 .getPublicUrl(filePath);
               imageUrl = publicData.publicUrl;
