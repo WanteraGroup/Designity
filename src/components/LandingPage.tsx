@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Globe2, Palette, Layout, CreditCard, Layers, Zap, Music2 } from 'lucide-react';
+import {
+  ArrowRight, Check, ChevronDown, CreditCard, Globe2, Layers, Layout,
+  Menu, Music2, Palette, Play, Sparkles, Wand2, Zap
+} from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -11,247 +14,221 @@ interface LandingPageProps {
 export function LandingPage({ onNavigate }: LandingPageProps) {
   const { t } = useI18n();
 
-  const createItems = [
-    { icon: Globe2, title: t('create.websites'), desc: t('create.websitesDesc') },
-    { icon: Palette, title: t('create.brands'), desc: t('create.brandsDesc') },
-    { icon: Layout, title: t('create.landing'), desc: t('create.landingDesc') },
-    { icon: Layers, title: t('create.cards'), desc: t('create.cardsDesc') },
-    { icon: Sparkles, title: t('create.invitations'), desc: t('create.invitationsDesc') },
-    { icon: Zap, title: t('create.social'), desc: t('create.socialDesc') },
-    { icon: Music2, title: t('create.music'), desc: t('create.musicDesc') },
+  const capabilities = [
+    { icon: Globe2, eyebrow: '01 / WEB', title: t('create.websites'), desc: t('create.websitesDesc') },
+    { icon: Palette, eyebrow: '02 / BRAND', title: t('create.brands'), desc: t('create.brandsDesc') },
+    { icon: Layout, eyebrow: '03 / LANDING', title: t('create.landing'), desc: t('create.landingDesc') },
+    { icon: Layers, eyebrow: '04 / SOCIAL', title: t('create.cards'), desc: t('create.cardsDesc') },
+    { icon: Sparkles, eyebrow: '05 / EVENTS', title: t('create.invitations'), desc: t('create.invitationsDesc') },
+    { icon: Zap, eyebrow: '06 / CAMPAIGN', title: t('create.social'), desc: t('create.socialDesc') },
   ];
 
-  const workflowSteps = [
-    { title: t('workflow.step1Title'), desc: t('workflow.step1Desc') },
-    { title: t('workflow.step2Title'), desc: t('workflow.step2Desc') },
-    { title: t('workflow.step3Title'), desc: t('workflow.step3Desc') },
-    { title: t('workflow.step4Title'), desc: t('workflow.step4Desc') },
+  const workflow = [
+    ['01', t('workflow.step1Title'), t('workflow.step1Desc')],
+    ['02', t('workflow.step2Title'), t('workflow.step2Desc')],
+    ['03', t('workflow.step3Title'), t('workflow.step3Desc')],
+    ['04', t('workflow.step4Title'), t('workflow.step4Desc')],
   ];
 
-  const creditExamples = [
-    { label: t('create.social'), credits: 100 },
-    { label: t('create.logo'), credits: 300 },
-    { label: t('create.brandIdentity'), credits: 600 },
-    { label: t('create.fullWebsite'), credits: 3000 },
-  ];
-
-  const templateCats = [
-    t('tpl.business'), t('tpl.restaurant'), t('tpl.realEstate'), t('tpl.beauty'), t('tpl.fitness'), t('tpl.technology'),
-    t('tpl.events'), t('tpl.wedding'), t('tpl.personal'), t('tpl.ecommerce'), t('tpl.marketing'), t('tpl.corporate'),
+  const categories = [
+    t('tpl.business'), t('tpl.restaurant'), t('tpl.realEstate'), t('tpl.beauty'),
+    t('tpl.fitness'), t('tpl.technology'), t('tpl.events'), t('tpl.wedding'),
+    t('tpl.personal'), t('tpl.ecommerce'), t('tpl.marketing'), t('tpl.corporate'),
   ];
 
   return (
-    <div className="relative">
-      {/* Exact supplied DESIGNLY visual plan */}
-      <section className="relative hero-plan overflow-hidden" aria-label="DESIGNLY STUDIO">
-        <img src="/alap.jpg" alt="" className="hero-plan-image" aria-hidden="true" />
+    <div className="designly-site">
+      <section className="designly-hero" aria-label="DESIGNLY STUDIO">
+        <img src="/alap.jpg" alt="" className="designly-hero-image" aria-hidden="true" />
+        <div className="designly-hero-vignette" />
+        <div className="designly-hero-grain" />
 
-        {/* alap.jpg is the complete visual composition. Do not replace or redraw its ravens, mountains, ships, smoke or runes. */}
-        <div className="hero-plan-frame" aria-hidden="true">
-          <CelticEmblem size={720} animate showD={false} className="hero-plan-emblem-ring" />
+        <div className="designly-hero-runes" aria-hidden="true">
+          <span>ᛉ</span><span>ᚨ</span><span>ᛟ</span><span>ᚱ</span><span>ᚦ</span><span>ᚷ</span><span>ᛏ</span>
         </div>
 
-        {/* The runes stay at the very top; the supplied artwork remains the visual source of truth. */}
+        <div className="designly-hero-emblem">
+          <CelticEmblem size={430} animate showD={false} />
+        </div>
 
-        {/* Functional transparent hotspots over the artwork. */}
-        <div className="hero-plan-actions">
-          <button type="button" aria-label={t('hero.ctaPrimary')} onClick={() => onNavigate('signup')} className="hero-plan-hotspot hero-plan-hotspot-primary">
-            <span className="sr-only">{t('hero.ctaPrimary')}</span>
-          </button>
-          <button type="button" aria-label={t('hero.ctaSecondary')} onClick={() => onNavigate('features')} className="hero-plan-hotspot hero-plan-hotspot-secondary">
-            <span className="sr-only">{t('hero.ctaSecondary')}</span>
-          </button>
+        <div className="designly-hero-copy">
+          <div className="designly-kicker">
+            <span />
+            AI CREATIVE INTELLIGENCE
+            <span />
+          </div>
+          <h1>
+            CREATE
+            <strong>WITHOUT</strong>
+            LIMITS.
+          </h1>
+          <p>
+            DESIGNLY STUDIO turns one idea into a complete visual world —
+            websites, brands, campaigns, content and music.
+          </p>
+          <div className="designly-hero-actions">
+            <button className="btn-gold designly-primary-cta" onClick={() => onNavigate('signup')}>
+              Start creating <ArrowRight className="w-4 h-4" />
+            </button>
+            <button className="designly-outline-cta" onClick={() => onNavigate('features')}>
+              <Play className="w-4 h-4" /> Explore the studio
+            </button>
+          </div>
+          <div className="designly-proof">
+            <span><i /> AI-powered</span>
+            <span><i /> One creative workspace</span>
+            <span><i /> Built for speed</span>
+          </div>
+        </div>
+
+        <div className="designly-scroll" aria-hidden="true">
+          <span>SCROLL</span><i />
         </div>
       </section>
 
-      {/* What You Can Create */}
-      <section id="features" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto viking-section">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
-            {t('create.title')}
-          </h2>
-          <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('create.subtitle')}</p>
+      <section className="designly-manifesto">
+        <div className="designly-manifesto-mark"><CelticEmblem size={110} animate showD /></div>
+        <div>
+          <span className="designly-eyebrow">THE NEW CREATIVE WORKFLOW</span>
+          <h2>One thought.<br /><em>Infinite possibilities.</em></h2>
+        </div>
+        <p>
+          Stop jumping between tools. DESIGNLY brings the creative process together
+          in one intelligent studio, from the first prompt to the finished asset.
+        </p>
+      </section>
+
+      <section id="features" className="designly-section designly-capabilities">
+        <div className="designly-section-head">
+          <div>
+            <span className="designly-eyebrow">THE STUDIO</span>
+            <h2>Everything you need<br /><em>to make an impact.</em></h2>
+          </div>
+          <p>From a blank canvas to a complete campaign — create, refine and ship from one place.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {createItems.map((item, i) => (
-            <div
-              key={item.title}
-              className="card-lux p-6 group cursor-pointer animate-fade-up"
-              style={{ animationDelay: `${i * 0.05}s` }}
-              onClick={() => onNavigate('signup')}
-            >
-              <div className="w-12 h-12 rounded-lg bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mb-4 group-hover:bg-gold-600/20 transition-all duration-300">
-                <item.icon className="w-6 h-6 text-gold-400" />
+        <div className="designly-capability-grid">
+          {capabilities.map((item, index) => (
+            <button key={item.title} className="designly-capability" onClick={() => onNavigate('signup')}>
+              <div className="designly-capability-top">
+                <span>{item.eyebrow}</span>
+                <ArrowRight className="w-4 h-4" />
               </div>
-              <h3 className="text-lg font-display font-semibold text-cream-50 mb-2">{item.title}</h3>
-              <p className="text-sm text-cream-300/60 leading-relaxed">{item.desc}</p>
+              <div className="designly-capability-icon"><item.icon /></div>
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+              <div className="designly-capability-line" />
+              <small>CREATE WITH AI</small>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section id="ai-music" className="designly-music">
+        <div className="designly-music-orbit"><CelticEmblem size={500} animate showD={false} /></div>
+        <div className="designly-music-content">
+          <span className="designly-eyebrow">07 / AI MUSIC STUDIO</span>
+          <h2>Give your idea<br /><em>a voice.</em></h2>
+          <p>
+            Write or generate lyrics, shape the song, then turn it into a complete
+            track with vocals. A creative studio for the sound behind your story.
+          </p>
+          <div className="designly-tags">
+            <span>Lyrics</span><span>Vocals</span><span>Music</span><span>WAV</span>
+          </div>
+          <button className="btn-gold" onClick={() => onNavigate('signup')}>
+            Create your first track <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="designly-wave" aria-hidden="true">
+          {Array.from({ length: 34 }).map((_, i) => <i key={i} style={{ ['--wave-i' as any]: i }} />)}
+        </div>
+      </section>
+
+      <section id="workflow" className="designly-section designly-workflow">
+        <div className="designly-section-head centered">
+          <span className="designly-eyebrow">THE METHOD</span>
+          <h2>From thought<br /><em>to finished work.</em></h2>
+          <p>Simple on the surface. Powerful underneath.</p>
+        </div>
+        <div className="designly-workflow-grid">
+          {workflow.map(([number, title, desc]) => (
+            <div className="designly-step" key={number}>
+              <span className="designly-step-number">{number}</span>
+              <div className="designly-step-mark"><Wand2 className="w-4 h-4" /></div>
+              <h3>{title}</h3>
+              <p>{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* AI Music Studio highlight */}
-      <section id="ai-music" className="py-20 lg:py-28 section-pad relative overflow-hidden viking-section">
-        <div className="absolute inset-0 bg-radial-gold opacity-30 pointer-events-none" />
-        <div className="relative max-w-6xl mx-auto">
-          <div className="card-lux overflow-hidden border-gold-600/30 bg-ink-950/80 viking-feature">
-            <div className="grid lg:grid-cols-[0.85fr_1.15fr] items-center">
-              <div className="relative min-h-[300px] flex items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-gold-600/[0.08] to-transparent">
-                <div className="absolute inset-0 flex items-center justify-center opacity-60 pointer-events-none">
-                  <CelticEmblem size={280} animate showD />
-                </div>
-                <div className="relative z-10 w-20 h-20 rounded-full border border-gold-500/40 bg-ink-950/80 flex items-center justify-center shadow-2xl">
-                  <Music2 className="w-9 h-9 text-gold-300" />
-                </div>
-              </div>
-              <div className="p-8 lg:p-12">
-                <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em] mb-4">
-                  <Music2 className="w-4 h-4" /> AI Music Studio
-                </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-cream-50 text-balance mb-5">
-                  Készíts saját dalt, lepd meg vele szeretteid és barátaid
-                </h2>
-                <p className="text-base lg:text-lg text-cream-300/70 leading-relaxed max-w-2xl mb-6">
-                  Írj dalszöveget vagy generáltass egyet, szerkeszd szabadon, majd készíts belőle komplett zenét énekhanggal. Hallgasd meg, töltsd le WAV-ban, és oszd meg e-mailben.
-                </p>
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Dalszöveg-generátor</span>
-                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Szerkeszthető dalszöveg</span>
-                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Zene + ének</span>
-                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">WAV letöltés</span>
-                </div>
-                <button onClick={() => onNavigate('signup')} className="btn-gold text-base">
-                  <Music2 className="w-5 h-5" />
-                  Saját dal készítése
-                </button>
-              </div>
-            </div>
+      <section id="templates" className="designly-section designly-templates">
+        <div className="designly-section-head">
+          <div>
+            <span className="designly-eyebrow">THE LIBRARY</span>
+            <h2>Start with a direction.<br /><em>Make it yours.</em></h2>
           </div>
+          <button className="designly-text-link" onClick={() => onNavigate('signup')}>View all templates <ArrowRight className="w-4 h-4" /></button>
         </div>
-      </section>
-
-      {/* AI Creative Workflow */}
-      <section id="workflow" className="py-24 lg:py-32 relative overflow-hidden viking-section">
-        <div className="absolute inset-0 bg-radial-gold opacity-50" />
-        <div className="relative section-pad max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
-              {t('workflow.title')}
-            </h2>
-            <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('workflow.subtitle')}</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {workflowSteps.map((step, i) => (
-              <div key={step.title} className="card-lux p-6 animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="text-5xl font-display font-bold gold-text mb-3 opacity-50">
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <h3 className="text-base font-semibold text-cream-50 mb-2">{step.title}</h3>
-                <p className="text-sm text-cream-300/60 leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Credit System */}
-      <section id="credits" className="py-24 lg:py-32 section-pad max-w-5xl mx-auto viking-section">
-        <div className="card-lux p-8 lg:p-12 text-center">
-          <CreditCard className="w-10 h-10 text-gold-400 mx-auto mb-6" />
-          <h2 className="text-3xl sm:text-4xl font-display font-bold gold-text mb-4 viking-section-title">
-            {t('credits.title')}
-          </h2>
-          <p className="text-lg text-cream-300/70 max-w-2xl mx-auto mb-8">{t('credits.subtitle')}</p>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 viking-stats">
-            {creditExamples.map((ex) => (
-              <div key={ex.label} className="p-4 rounded-lg bg-ink-800/50 border border-ink-600/40 viking-stat">
-                <div className="text-2xl font-display font-bold text-gold-300">{ex.credits}</div>
-                <div className="text-xs text-cream-300/50 mt-1">{ex.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Templates Preview */}
-      <section id="templates" className="py-24 lg:py-32 section-pad max-w-7xl mx-auto viking-section">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
-            {t('templates.title')}
-          </h2>
-          <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('templates.subtitle')}</p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {templateCats.map((cat, i) => (
-            <div
-              key={cat}
-              className="aspect-[3/4] card-lux flex items-center justify-center p-4 cursor-pointer hover:scale-105 transition-transform duration-500 animate-fade-up"
-              style={{ animationDelay: `${i * 0.04}s` }}
-              onClick={() => onNavigate('signup')}
-            >
-              <span className="text-sm font-display font-medium text-cream-200 text-center">{cat}</span>
-            </div>
+        <div className="designly-template-grid">
+          {categories.map((cat, i) => (
+            <button key={cat} className={`designly-template designly-template-${(i % 6) + 1}`} onClick={() => onNavigate('signup')}>
+              <span className="designly-template-number">{String(i + 1).padStart(2, '0')}</span>
+              <span>{cat}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           ))}
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-24 lg:py-32 relative overflow-hidden viking-section">
-        <div className="absolute inset-0 bg-radial-gold opacity-30" />
-        <div className="relative section-pad max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
-              {t('pricing.title')}
-            </h2>
-            <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('pricing.subtitle')}</p>
+      <section id="credits" className="designly-credits">
+        <div className="designly-credit-orbit"><CelticEmblem size={360} animate showD={false} /></div>
+        <div className="designly-credit-content">
+          <span className="designly-eyebrow">ONE SYSTEM / PAY FOR CREATION</span>
+          <h2>Credits that<br /><em>move with you.</em></h2>
+          <p>Use your credits across the studio. Websites, identities, social content, campaigns and more — one flexible creative balance.</p>
+          <div className="designly-credit-stats">
+            <div><strong>100</strong><span>Social</span></div>
+            <div><strong>300</strong><span>Logo</span></div>
+            <div><strong>600</strong><span>Brand identity</span></div>
+            <div><strong>3000</strong><span>Full website</span></div>
           </div>
-          <PricingPreview onNavigate={onNavigate} />
+          <button className="designly-text-link" onClick={() => onNavigate('pricing')}>See plans <ArrowRight className="w-4 h-4" /></button>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="py-24 lg:py-32 section-pad max-w-4xl mx-auto viking-section">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold gold-text mb-4 viking-section-title">
-            {t('faq.title')}
-          </h2>
-          <p className="text-lg text-cream-300/70 max-w-2xl mx-auto">{t('faq.subtitle')}</p>
+      <section id="pricing" className="designly-section designly-pricing">
+        <div className="designly-section-head centered">
+          <span className="designly-eyebrow">CHOOSE YOUR SCALE</span>
+          <h2>Build more.<br /><em>Waste less.</em></h2>
+          <p>Start free, then scale when your ideas demand more.</p>
+        </div>
+        <PricingPreview onNavigate={onNavigate} />
+      </section>
+
+      <section id="faq" className="designly-section designly-faq">
+        <div className="designly-section-head centered">
+          <span className="designly-eyebrow">QUESTIONS</span>
+          <h2>Clear answers.<br /><em>No fog.</em></h2>
         </div>
         <FAQList />
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 lg:py-32 section-pad max-w-4xl mx-auto text-center viking-section">
-        <div className="flex justify-center mb-8">
-          <CelticEmblem size={120} animate showD />
-        </div>
-        <h2 className="text-3xl sm:text-5xl font-display font-bold text-cream-50 mb-6 text-balance viking-section-title">
-          {t('hero.finalCtaTitle')}
-        </h2>
-        <p className="text-lg text-cream-300/70 mb-10 max-w-2xl mx-auto">
-          {t('hero.finalCtaDesc')}
-        </p>
-        <button onClick={() => onNavigate('signup')} className="btn-gold text-lg px-10 py-4">
-          <Sparkles className="w-5 h-5" />
-          {t('nav.startCreating')}
+      <section className="designly-final">
+        <div className="designly-final-runes">ᛉ ᚨ ᛟ &nbsp; ᚱ ᚦ ᚷ &nbsp; ᛏ ᚹ ᛒ</div>
+        <CelticEmblem size={150} animate showD />
+        <span className="designly-eyebrow">YOUR NEXT IDEA STARTS HERE</span>
+        <h2>Make something<br /><em>worth remembering.</em></h2>
+        <button className="btn-gold designly-final-button" onClick={() => onNavigate('signup')}>
+          Enter DESIGNLY <ArrowRight className="w-4 h-4" />
         </button>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gold-600/10 py-10 section-pad">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-display text-sm text-cream-300/60">DESIGNLY</span>
-            <span className="text-[10px] tracking-[0.3em] text-gold-400/60">STUDIO</span>
-          </div>
-          <p className="text-xs text-cream-400/40">
-            © {new Date().getFullYear()} DESIGNLY STUDIO. {t('footer.rights')}
-          </p>
-        </div>
+      <footer className="designly-footer">
+        <div className="designly-footer-brand"><CelticEmblem size={42} animate showD /><span>DESIGNLY<small>STUDIO</small></span></div>
+        <p>© {new Date().getFullYear()} DESIGNLY STUDIO. {t('footer.rights')}</p>
+        <button onClick={() => onNavigate('landing')}>Back to top ↑</button>
       </footer>
     </div>
   );
@@ -289,36 +266,17 @@ function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="designly-pricing-grid">
       {plans.map((plan) => (
-        <div
-          key={plan.name}
-          className={`card-lux p-6 flex flex-col ${plan.highlight ? 'border-gold-600/50 shadow-lg shadow-gold-600/10' : ''}`}
-        >
-          {plan.highlight && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gold-gradient text-xs font-semibold text-ink-950 whitespace-nowrap">
-              {t('plan.recommended')}
-            </div>
-          )}
-          <h3 className="text-lg font-display font-bold text-cream-50 mb-1">{plan.name}</h3>
-          <div className="text-2xl font-display font-bold gold-text mb-2">{new Intl.NumberFormat("hu-HU").format(plan.price)} Ft</div>
-          <div className="text-xs text-cream-300/50 mb-4">{t('plan.perMonth')}</div>
-          <div className="text-sm text-gold-200 font-semibold mb-3">{plan.credits} {t('plan.creditsMo')}</div>
-          <ul className="space-y-2 mb-6 flex-1">
-            {plan.features.map((f) => (
-              <li key={f} className="text-xs text-cream-300/60 flex items-center gap-2">
-                <span className="w-1 h-1 rounded-full bg-gold-400" />
-                {f}
-              </li>
-            ))}
-          </ul>
-          <button
-            onClick={() => onNavigate('signup')}
-            className={`w-full text-sm py-2.5 rounded-lg transition-all duration-300 ${
-              plan.highlight ? 'btn-gold' : 'btn-ghost'
-            }`}
-          >
-            {t('plan.getStarted')}
+        <div key={plan.id} className={`designly-price-card ${plan.highlight ? 'featured' : ''}`}>
+          {plan.highlight && <span className="designly-price-badge">MOST POPULAR</span>}
+          <span className="designly-price-name">{plan.name}</span>
+          <strong>{new Intl.NumberFormat('hu-HU').format(plan.price)} <small>Ft</small></strong>
+          <span className="designly-price-period">{t('plan.perMonth')}</span>
+          <div className="designly-price-credits"><CreditCard className="w-4 h-4" /> {plan.credits} {t('plan.creditsMo')}</div>
+          <ul>{plan.features.map((f) => <li key={f}><Check className="w-3.5 h-3.5" />{f}</li>)}</ul>
+          <button className={plan.highlight ? 'btn-gold' : 'designly-price-button'} onClick={() => onNavigate('signup')}>
+            {t('plan.getStarted')} <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       ))}
@@ -329,7 +287,6 @@ function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
 function FAQList() {
   const { t } = useI18n();
   const [openIdx, setOpenIdx] = useState<number | null>(0);
-
   const faqs = [
     { q: t('faq.q1'), a: t('faq.a1') },
     { q: t('faq.q2'), a: t('faq.a2') },
@@ -340,23 +297,13 @@ function FAQList() {
   ];
 
   return (
-    <div className="space-y-3">
+    <div className="designly-faq-list">
       {faqs.map((faq, i) => (
-        <div key={i} className="card-lux overflow-hidden">
-          <button
-            onClick={() => setOpenIdx(openIdx === i ? null : i)}
-            className="w-full px-6 py-4 flex items-center justify-between text-left"
-          >
-            <span className="text-sm font-medium text-cream-100">{faq.q}</span>
-            <span className={`text-gold-400 transition-transform duration-300 ${openIdx === i ? 'rotate-45' : ''}`}>
-              +
-            </span>
+        <div key={i} className={`designly-faq-item ${openIdx === i ? 'open' : ''}`}>
+          <button onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+            <span>{String(i + 1).padStart(2, '0')}</span><strong>{faq.q}</strong><ChevronDown className="w-4 h-4" />
           </button>
-          {openIdx === i && (
-            <div className="px-6 pb-4 text-sm text-cream-300/60 leading-relaxed animate-fade-in">
-              {faq.a}
-            </div>
-          )}
+          {openIdx === i && <div className="designly-faq-answer">{faq.a}</div>}
         </div>
       ))}
     </div>
