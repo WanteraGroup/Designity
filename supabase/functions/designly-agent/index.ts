@@ -70,6 +70,26 @@ function extractJson(text: string): Record<string, unknown> {
   return JSON.parse(candidate);
 }
 
+function buildImagePrompt(brief: DesignBrief, originalBrief: string): string {
+  return [
+    "Create a polished visual preview for DESIGNLY STUDIO based on the approved design direction below.",
+    "This is a preview of the actual final design, not a text description.",
+    `Original request: ${originalBrief}`,
+    `Business: ${brief.businessName || "not specified"}`,
+    `Industry: ${brief.industry || brief.businessType || "not specified"}`,
+    `Visual style: ${brief.visualStyle || "premium"}`,
+    `Mood: ${brief.mood || "refined"}`,
+    `Primary colors: ${brief.primaryColors.join(", ")}`,
+    `Secondary colors: ${brief.secondaryColors.join(", ")}`,
+    `Typography: ${brief.typographyDirection || "premium modern"}`,
+    `Imagery: ${brief.imageryDirection || "brand-consistent"}`,
+    `Output: ${brief.requiredOutputs.join(", ")}`,
+    "Use strong art direction, hierarchy, spacing, premium typography and realistic production quality.",
+    "Prefer graphite/black, off-white and warm metallic gold when compatible with the brief.",
+    "Do not add watermarks. Do not create a generic stock image. Show the actual design composition."
+  ].join("\n");
+}
+
 function normalizeBrief(raw: Record<string, unknown>, language: string, fallbackOutputs: DesignOutput[]): DesignBrief {
   const arr = (value: unknown): string[] => Array.isArray(value) ? value.filter((v): v is string => typeof v === "string").slice(0, 8) : [];
   const outputs = Array.isArray(raw.requiredOutputs)
@@ -201,6 +221,89 @@ Return one coherent structured result.`;
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
     const text = body.brief.toLowerCase();
+
+    // Preview is intentionally free of DESIGNLY credits, but it still renders
+    // a real image so the user can inspect the actual result before approving.
+    let previewImageUrl: string | null = null;
+    let previewId: string | null = null;
+
+    if (body.mode === "preview") {
+      const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-2";
+      const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: imageModel,
+          prompt: buildImagePrompt(structured, body.brief.trim()),
+          size: "1024x1024",
+        }),
+      });
+
+      if (!imageResponse.ok) {
+        const providerBody = await imageResponse.text().catch(() => "");
+        console.error("OpenAI image preview error:", imageResponse.status, providerBody);
+        return json({
+          error: "PREVIEW_GENERATION_FAILED",
+          message: "The visual preview could not be generated. No DESIGNLY credits were charged.",
+        }, 502);
+      }
+
+      const imageData = await imageResponse.json();
+      const b64 = imageData.data?.[0]?.b64_json;
+      const remoteUrl = imageData.data?.[0]?.url as string | undefined;
+
+      if (!b64 && !remoteUrl) {
+        return json({
+          error: "PREVIEW_GENERATION_FAILED",
+          message: "The AI provider returned no preview image. No DESIGNLY credits were charged.",
+        }, 502);
+      }
+
+      previewImageUrl = remoteUrl || null;
+
+      if (b64) {
+        const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
+        const path = `${user.id}/preview-${crypto.randomUUID()}.png`;
+        const { error: uploadError } = await supabase.storage
+          .from("designly-generations")
+          .upload(path, bytes, { contentType: "image/png", upsert: false });
+
+        if (uploadError) {
+          console.error("Preview storage upload failed:", uploadError);
+          return json({
+            error: "PREVIEW_STORAGE_FAILED",
+            message: "The preview was generated but could not be stored. No DESIGNLY credits were charged.",
+          }, 502);
+        }
+
+        previewImageUrl = supabase.storage.from("designly-generations").getPublicUrl(path).data.publicUrl;
+      }
+
+      const { data: previewRow, error: previewInsertError } = await supabase
+        .from("design_previews")
+        .insert({
+          user_id: user.id,
+          type: fallbackOutputs[0] || "custom",
+          brief: body.brief.trim(),
+          image_url: previewImageUrl,
+        })
+        .select("id")
+        .single();
+
+      if (previewInsertError || !previewRow) {
+        console.error("Preview record creation failed:", previewInsertError);
+        return json({
+          error: "PREVIEW_RECORD_FAILED",
+          message: "The preview was generated but could not be registered. No DESIGNLY credits were charged.",
+        }, 500);
+      }
+
+      previewId = previewRow.id;
+    }
+
     const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
     const isMonkeyDesign = /(monkey design|logo|arculat|brand|ui|ux|weboldal|landing|social|plakát|flyer|brosúra|prezentáció|névjegy)/i.test(text);
 
@@ -215,6 +318,8 @@ Return one coherent structured result.`;
       mode: body.mode || "brief",
       preview: true,
       creditsUsed: 0,
+      previewId,
+      previewImageUrl,
       designBrief: structured,
       activeAgents,
       specialistPlan: {
