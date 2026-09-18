@@ -106,6 +106,10 @@ Deno.serve(async (req: Request) => {
     const giftType = body.giftType || "full_unlock";
     if (giftType === "plan" && !body.planId) return json({ error: "PLAN_REQUIRED" }, 400);
 
+    if (existingProfile?.role === "owner") {
+      return json({ error: "OWNER_PROTECTED", message: "The OWNER account is protected and cannot be changed by gifting." }, 400);
+    }
+
     if (giftType === "plan") {
       const { data: plan } = await admin
         .from("plans")
