@@ -310,16 +310,13 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
       }
     }
 
-    // Custom credit purchases: custom_1 ... custom_10000
+    // Custom credit purchases: 1-10000 credits.
     const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\d+)$/) : null;
     const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
     const customCreditPrice = (credits: number) => {
-      if (credits <= 100) return Math.round(credits * 19.9);
-      if (credits <= 500) return Math.round(1990 + (credits - 100) * 13.75);
-      if (credits <= 1000) return Math.round(7490 + (credits - 500) * 9);
-      if (credits <= 2500) return Math.round(11990 + (credits - 1000) * 10);
-      if (credits <= 5000) return Math.round(24990 + (credits - 2500) * 8);
-      return Math.round(44990 + (credits - 5000) * 10);
+      const tier = Math.floor(credits / 100);
+      const unitPrice = Math.max(10, 21 - tier);
+      return credits * unitPrice;
     };
 
     // Record a pending payment
