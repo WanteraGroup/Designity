@@ -3,7 +3,7 @@ import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
-import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice } from '@/lib/constants';
+import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
@@ -34,6 +34,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [approved, setApproved] = useState(false);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [customCredits, setCustomCredits] = useState(100);
 
   useEffect(() => {
     try {
@@ -528,6 +529,38 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                     </button>
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-gold-600/20 bg-ink-900/60 p-5">
+                <div className="text-sm font-semibold text-cream-100">Egyedi kreditmennyiség</div>
+                <p className="text-xs text-cream-300/50 mt-1">Válassz 1–10 000 kredit között pontosan annyit, amennyire szükséged van.</p>
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                  <input
+                    type="number"
+                    min={1}
+                    max={10000}
+                    step={1}
+                    value={customCredits}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      setCustomCredits(Number.isFinite(value) ? Math.max(1, Math.min(10000, Math.floor(value))) : 1);
+                    }}
+                    className="input-lux flex-1"
+                    aria-label="Egyedi kreditek"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreditModal(false);
+                      onNavigate('checkout', { type: 'credit_package', itemId: `custom_${customCredits}` });
+                    }}
+                    className="btn-gold sm:min-w-[190px]"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Vásárlás · {formatPrice(getCustomCreditPrice(customCredits), lang)}
+                  </button>
+                </div>
+                <div className="text-[11px] text-cream-300/40 mt-2">Minimum 1 · maximum 10 000 kredit</div>
               </div>
 
               <button
