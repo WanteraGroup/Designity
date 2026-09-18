@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Sparkles, Globe2, Palette, Layout, CreditCard, Layers, Zap } from 'lucide-react';
+import { Sparkles, Globe2, Palette, Layout, CreditCard, Layers, Zap, Music2 } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -18,6 +18,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     { icon: Layers, title: t('create.cards'), desc: t('create.cardsDesc') },
     { icon: Sparkles, title: t('create.invitations'), desc: t('create.invitationsDesc') },
     { icon: Zap, title: t('create.social'), desc: t('create.socialDesc') },
+    { icon: Music2, title: 'AI Music Studio', desc: 'Dalszöveg, zene és ének egyetlen kreatív folyamatban. Készíts letölthető WAV műveket és oszd meg őket e-mailben.' },
   ];
 
   const workflowSteps = [
