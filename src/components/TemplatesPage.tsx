@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Crown, LayoutTemplate, Search, Sparkles } from 'lucide-react';
+import { Crown, LayoutTemplate, Search, Sparkles, Type } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { TEMPLATE_CATEGORIES } from '@/lib/constants';
-import { DESIGNLY_TEMPLATES } from '@/lib/designly-templates';
+import { DESIGNLY_TEMPLATES, TEMPLATE_TOTAL } from '@/lib/designly-templates';
 
 interface TemplatesPageProps { onNavigate: (page: string) => void; }
 
@@ -14,12 +14,19 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
   const { t } = useI18n();
   const [category, setCategory] = useState('All');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 60;
 
   const filtered = useMemo(() => DESIGNLY_TEMPLATES.filter((tpl) => {
     const cat = category === 'All' || tpl.category === category;
     const q = search.trim().toLowerCase();
     return cat && (!q || tpl.name.toLowerCase().includes(q) || tpl.description.toLowerCase().includes(q));
   }), [category, search]);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const handleCategory = (value: string) => { setCategory(value); setPage(1); };
+  const handleSearch = (value: string) => { setSearch(value); setPage(1); };
 
   const useTemplate = (tpl: typeof DESIGNLY_TEMPLATES[number]) => {
     try { localStorage.setItem('designly_selected_template', JSON.stringify(tpl)); } catch {}
@@ -33,6 +40,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
         <div className="relative">
           <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[.25em]"><Sparkles className="w-4 h-4" /> DESIGNLY STUDIO</div>
           <h1 className="text-2xl lg:text-3xl font-display font-bold text-cream-50 mt-2">{t('templates.title')}</h1>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-cream-300/65"><span className="chip border-gold-600/25 text-gold-200"><LayoutTemplate className="w-3.5 h-3.5" /> {TEMPLATE_TOTAL.toLocaleString('hu-HU')} sablon</span><span className="chip border-gold-600/15"><Type className="w-3.5 h-3.5" /> 20 prémium betűpár</span></div>
           <p className="text-sm text-cream-300/55 mt-2 max-w-2xl">{t('templates.subtitle')}</p>
         </div>
       </div>
@@ -40,19 +48,19 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream-400/40" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} className="input-lux pl-10" placeholder={t('tpl.searchPlaceholder')} />
+          <input value={search} onChange={(e) => handleSearch(e.target.value)} className="input-lux pl-10" placeholder={t('tpl.searchPlaceholder')} />
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button onClick={() => setCategory('All')} className={`chip transition-all ${category === 'All' ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{t('tpl.all')}</button>
+        <button onClick={() => handleCategory('All')} className={`chip transition-all ${category === 'All' ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{t('tpl.all')}</button>
         {TEMPLATE_CATEGORIES.map((cat) => (
-          <button key={cat} onClick={() => setCategory(cat)} className={`chip transition-all ${category === cat ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{cat}</button>
+          <button key={cat} onClick={() => handleCategory(cat)} className={`chip transition-all ${category === cat ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{cat}</button>
         ))}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-        {filtered.map((tpl) => (
+        {visible.map((tpl) => (
           <article key={tpl.id} className="group card-lux overflow-hidden border-gold-600/10 hover:border-gold-500/35 transition-all">
             <button onClick={() => useTemplate(tpl)} className="w-full text-left">
               <div className="relative aspect-[16/10] overflow-hidden bg-ink-950">
