@@ -119,7 +119,7 @@ Deno.serve(async (req: Request) => {
     const fallbackOutputs = (body.requestedOutputs || []).filter((v) => allowedOutputs.has(v)).slice(0, 20);
     const provider = Deno.env.get("AI_PROVIDER") || "none";
     const apiKey = Deno.env.get("AI_API_KEY");
-    const model = Deno.env.get("AI_MODEL") || "gpt-4o";
+    const model = Deno.env.get("AI_MODEL") || "gpt-5.6-luna";
 
     if (provider === "none" || !apiKey) {
       return json({
@@ -177,12 +177,23 @@ Return one coherent structured result.`;
     const content = aiData.choices?.[0]?.message?.content || "";
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
+    const text = body.brief.toLowerCase();
+    const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
+    const isMonkeyDesign = /(monkey design|logo|arculat|brand|ui|ux|weboldal|landing|social|plakát|flyer|brosúra|prezentáció|névjegy)/i.test(text);
+
+    const activeAgents = [
+      "master",
+      ...(isTikTokShop ? ["tiktok_shop_research", "tiktok_shop_product", "tiktok_shop_listing", "tiktok_shop_creative", "tiktok_shop_video", "tiktok_shop_campaign", "tiktok_shop_health"] : []),
+      ...(isMonkeyDesign ? ["monkey_design_director", "monkey_logo", "monkey_brand", "monkey_uiux", "monkey_web", "monkey_social", "monkey_marketing", "monkey_print", "monkey_presentation", "monkey_qa"] : []),
+    ];
+
     return json({
       success: true,
       mode: body.mode || "brief",
       preview: true,
       creditsUsed: 0,
       designBrief: structured,
+      activeAgents,
       specialistPlan: {
         brand: structured.requiredOutputs.some((x) => ["logo", "brand_identity"].includes(x)),
         web: structured.requiredOutputs.some((x) => ["landing_page", "website"].includes(x)),
