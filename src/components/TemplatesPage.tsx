@@ -115,7 +115,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         {visible.map((tpl) => (
-          <article key={tpl.id} className="group card-lux overflow-hidden border-gold-600/10 hover:border-gold-500/35 transition-all">
+          <article key={tpl.id} className={`group card-lux overflow-hidden border-gold-600/10 hover:border-gold-500/35 transition-all designly-glow-hover ${tpl.effect === 'Metallic sheen' || tpl.effect === 'Chrome reflection' || tpl.effect === 'Brushed metal' ? 'designly-metallic' : tpl.effect === 'Frosted glass' || tpl.effect === 'Glass edge' ? 'designly-glass' : tpl.effect === 'Soft grain' || tpl.effect === 'Paper texture' ? 'designly-grain' : ''}`}>
             <button onClick={() => useTemplate(tpl)} className="w-full text-left">
               <div className="relative aspect-[16/10] overflow-hidden bg-ink-950">
                 <div className="absolute inset-0 opacity-90 bg-[radial-gradient(circle_at_50%_45%,rgba(202,165,92,.18),transparent_42%)]" />
