@@ -291,19 +291,35 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
       amount = plan.price_monthly;
       description = `Subscription: ${plan.name}`;
     } else if (itemType === "credit_package") {
-      const { data: pkg } = await supabase
-        .from("credit_packages")
-        .select("label, price, credits")
-        .eq("id", itemId)
-        .maybeSingle();
-      if (!pkg) {
-        return new Response(JSON.stringify({ error: "Credit package not found" }), {
-          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      if (customCreditCount !== null) {
+        amount = customCreditPrice(customCreditCount);
+        description = `Custom credit package: ${customCreditCount} credits`;
+      } else {
+        const { data: pkg } = await supabase
+          .from("credit_packages")
+          .select("label, price, credits")
+          .eq("id", itemId)
+          .maybeSingle();
+        if (!pkg) {
+          return new Response(JSON.stringify({ error: "Credit package not found" }), {
+            status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        amount = pkg.price;
+        description = `Credit package: ${pkg.label}`;
       }
-      amount = pkg.price;
-      description = `Credit package: ${pkg.label}`;
     }
+
+    // Custom credit purchases: custom_1 ... custom_10000
+    const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\\d+)$/) : null;
+    const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
+    const customCreditPrice = (credits: number) => {
+      if (credits <= 100) return Math.round(credits * 29.9);
+      if (credits <= 500) return Math.round(2990 + (credits - 100) * 17.5);
+      if (credits <= 1000) return Math.round(9990 + (credits - 500) * 14);
+      if (credits <= 2500) return Math.round(16990 + (credits - 1000) * 12);
+      return Math.round(34990 + (credits - 2500) * 14);
+    };
 
     // Record a pending payment
     const { data: payment, error: paymentError } = await supabase
