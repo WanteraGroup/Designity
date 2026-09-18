@@ -13,7 +13,7 @@ interface PublicNavProps {
 type NavItem = { id: string; label: string; page: string };
 
 export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
@@ -114,7 +114,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
               aria-expanded={resourcesOpen}
               aria-haspopup="true"
             >
-              Resources
+              {lang === 'hu' ? 'Erőforrások' : 'Resources'}
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-300 ${resourcesOpen ? 'rotate-180' : ''}`}
               />
