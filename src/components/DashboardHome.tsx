@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Plus, FolderOpen, Coins, Sparkles, TrendingUp, Infinity as InfinityIcon,
-  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe,
+  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe, Music2,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -112,6 +112,25 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
           ))}
         </div>
       </div>
+
+      {/* AI Music Studio */}
+      <section className="relative overflow-hidden card-lux p-6 border-gold-600/20">
+        <div className="absolute -right-8 -top-12 opacity-20 pointer-events-none"><CelticEmblem size={180} animate showD /></div>
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div>
+            <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.2em]">
+              <Music2 className="w-4 h-4" /> AI Music Studio
+            </div>
+            <h2 className="text-2xl font-display font-semibold text-cream-50 mt-2">Dalszöveg → zene → ének</h2>
+            <p className="text-sm text-cream-300/55 mt-2 max-w-2xl">
+              Készíts komplett AI-dalokat énekkel, hallgasd meg, töltsd le WAV-ban, vagy oszd meg e-mailben.
+            </p>
+          </div>
+          <button onClick={() => onNavigate('music')} className="btn-gold text-sm shrink-0">
+            <Music2 className="w-4 h-4" /> Zene készítése
+          </button>
+        </div>
+      </section>
 
       {/* Recent projects */}
       <div>
