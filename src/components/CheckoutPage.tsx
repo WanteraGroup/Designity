@@ -14,7 +14,7 @@ type CheckoutState = 'idle' | 'processing' | 'initiated' | 'success' | 'failed' 
 
 export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
   const { t } = useI18n();
-  const { isOwner } = useAuth();
+  const { isOwner, isUnlimited } = useAuth();
   const [status, setStatus] = useState<CheckoutState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [item, setItem] = useState(checkoutItem || null);
@@ -91,7 +91,7 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     }
   };
 
-  if (isOwner) {
+  if (isOwner || isUnlimited) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
         <div className="w-20 h-20 rounded-full bg-gold-600/15 border border-gold-600/30 flex items-center justify-center mx-auto mb-6">
