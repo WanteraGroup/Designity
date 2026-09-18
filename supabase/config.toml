@@ -9,3 +9,7 @@ entrypoint = "./functions/payment-checkout/index.ts"
 [functions.designly-agent]
 verify_jwt = true
 entrypoint = "./functions/designly-agent/index.ts"
+
+[functions.admin-gift]
+verify_jwt = true
+entrypoint = "./functions/admin-gift/index.ts"
