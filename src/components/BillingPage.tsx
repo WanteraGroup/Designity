@@ -10,7 +10,7 @@ interface BillingPageProps {
 }
 
 export function BillingPage({ onNavigate }: BillingPageProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { profile, isOwner, isUnlimited } = useAuth();
   const [tab, setTab] = useState<'plans' | 'credits' | 'history'>('plans');
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -122,7 +122,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
                   </div>
                 )}
                 <h3 className="text-lg font-display font-bold text-cream-50 mb-1">{plan.name}</h3>
-                <div className="text-2xl font-display font-bold gold-text mb-1">{formatPrice(plan.priceMonthly)}</div>
+                <div className="text-2xl font-display font-bold gold-text mb-1">{formatPrice(plan.priceMonthly, lang)}</div>
                 <div className="text-xs text-cream-300/40 mb-4">{t('plan.perMonth')}</div>
                 <div className="text-sm text-gold-200 font-semibold mb-3">{plan.creditsMonthly} {t('plan.creditsMo')}</div>
                 <ul className="space-y-2 mb-6 flex-1">
@@ -155,7 +155,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
             <div key={pkg.id} className={`card-lux p-6 text-center flex flex-col ${selectedPackage === pkg.id ? 'border-gold-600/50' : ''}`}>
               <div className="text-3xl font-display font-bold gold-text mb-1">{pkg.credits.toLocaleString()}</div>
               <div className="text-xs text-cream-300/50 mb-4">{t('misc.credits')}</div>
-              <div className="text-lg font-medium text-cream-100 mb-4">{formatPrice(pkg.price)}</div>
+              <div className="text-lg font-medium text-cream-100 mb-4">{formatPrice(pkg.price, lang)}</div>
               <button
                 onClick={() => { setSelectedPackage(pkg.id); handleBuyCredits(); }}
                 className="btn-gold text-sm mt-auto"
