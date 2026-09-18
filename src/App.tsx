@@ -19,19 +19,20 @@ import { SettingsPage } from '@/components/SettingsPage';
 import { AdvertisingStudio } from '@/components/AdvertisingStudio';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
+import { MusicPage } from '@/components/MusicPage';
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor';
+  | 'settings' | 'admin' | 'editor' | 'music';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor',
+  'settings', 'admin', 'editor', 'music',
 ];
 
 function pageFromHash(): Page {
@@ -145,6 +146,7 @@ function AppInner() {
       case 'settings': return <SettingsPage onNavigate={navigate} />;
       case 'admin': return <AdminPage onNavigate={navigate} />;
       case 'editor': return <EditorPage onNavigate={navigate} />;
+      case 'music': return <MusicPage onNavigate={navigate} />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
