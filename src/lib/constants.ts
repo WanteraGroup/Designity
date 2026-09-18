@@ -66,22 +66,21 @@ export const PUBLIC_PLANS: Plan[] = [
 ];
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
-  { id: 'pkg_100', credits: 100, price: 1990, label: '100 credits' },
-  { id: 'pkg_500', credits: 500, price: 7490, label: '500 credits' },
-  { id: 'pkg_1000', credits: 1000, price: 11990, label: '1,000 credits' },
-  { id: 'pkg_2500', credits: 2500, price: 24990, label: '2,500 credits' },
-  { id: 'pkg_5000', credits: 5000, price: 44990, label: '5,000 credits' },
-  { id: 'pkg_10000', credits: 10000, price: 99990, label: '10,000 credits' },
+  { id: 'pkg_100', credits: 100, price: 2000, label: '100 credits' },
+  { id: 'pkg_500', credits: 500, price: 9500, label: '500 credits' },
+  { id: 'pkg_1000', credits: 1000, price: 11000, label: '1,000 credits' },
+  { id: 'pkg_2500', credits: 2500, price: 25000, label: '2,500 credits' },
+  { id: 'pkg_5000', credits: 5000, price: 50000, label: '5,000 credits' },
+  { id: 'pkg_10000', credits: 10000, price: 100000, label: '10,000 credits' },
 ];
 
 export function getCustomCreditPrice(credits: number): number {
   const c = Math.max(1, Math.min(10000, Math.floor(credits)));
-  if (c <= 100) return Math.round(c * 19.9);
-  if (c <= 500) return Math.round(1990 + (c - 100) * 13.75);
-  if (c <= 1000) return Math.round(7490 + (c - 500) * 9);
-  if (c <= 2500) return Math.round(11990 + (c - 1000) * 10);
-  if (c <= 5000) return Math.round(24990 + (c - 2500) * 8);
-  return Math.round(44990 + (c - 5000) * 10);
+  // Price tiers: every additional 100 credits reduces the unit price by 1 Ft,
+  // starting at 20 Ft/credit for 100 credits, with a floor of 10 Ft/credit.
+  const tier = Math.floor(c / 100);
+  const unitPrice = Math.max(10, 21 - tier);
+  return c * unitPrice;
 }
 
 export const GENERATION_COSTS: GenerationCost[] = [
