@@ -72,6 +72,15 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
   { id: 'pkg_2500', credits: 2500, price: 34990, label: '2,500 credits' },
 ];
 
+export function getCustomCreditPrice(credits: number): number {
+  const c = Math.max(1, Math.min(10000, Math.floor(credits)));
+  if (c <= 100) return Math.round(c * 29.9);
+  if (c <= 500) return Math.round(2990 + (c - 100) * 17.5);
+  if (c <= 1000) return Math.round(9990 + (c - 500) * 14);
+  if (c <= 2500) return Math.round(16990 + (c - 1000) * 12);
+  return Math.round(34990 + (c - 2500) * 14);
+}
+
 export const GENERATION_COSTS: GenerationCost[] = [
   { type: 'social', label: 'Social Media Post', credits: 2 },
   { type: 'business_card', label: 'Business Card', credits: 2 },
