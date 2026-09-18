@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { CreditCard, Check, AlertCircle, Infinity as InfinityIcon } from 'lucide-react';
+import { CreditCard, Check, AlertCircle, Infinity as InfinityIcon, Calculator } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
-import { PUBLIC_PLANS, CREDIT_PACKAGES, formatPrice } from '@/lib/constants';
+import { PUBLIC_PLANS, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 
 interface BillingPageProps {
@@ -18,6 +18,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [plans, setPlans] = useState(PUBLIC_PLANS);
   const [packages, setPackages] = useState(CREDIT_PACKAGES);
+  const [customCredits, setCustomCredits] = useState(100);
 
   useEffect(() => {
     async function loadHistory() {
@@ -58,10 +59,16 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
     onNavigate('checkout', { type: 'subscription', itemId: planId });
   };
 
-  const handleBuyCredits = async () => {
+  const handleBuyCredits = async (packageId = selectedPackage) => {
     setCheckoutError(null);
-    if (!selectedPackage) return;
-    onNavigate('checkout', { type: 'credit_package', itemId: selectedPackage });
+    if (!packageId) return;
+    onNavigate('checkout', { type: 'credit_package', itemId: packageId });
+  };
+
+  const handleCustomCredits = () => {
+    const amount = Math.max(1, Math.min(10000, Math.floor(customCredits || 1)));
+    setCustomCredits(amount);
+    onNavigate('checkout', { type: 'credit_package', itemId: `custom_${amount}` });
   };
 
   if (isOwner || isUnlimited) {
@@ -151,13 +158,13 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
       {/* Credits tab */}
       {tab === 'credits' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {CREDIT_PACKAGES.map((pkg) => (
+          {packages.map((pkg) => (
             <div key={pkg.id} className={`card-lux p-6 text-center flex flex-col ${selectedPackage === pkg.id ? 'border-gold-600/50' : ''}`}>
               <div className="text-3xl font-display font-bold gold-text mb-1">{pkg.credits.toLocaleString()}</div>
               <div className="text-xs text-cream-300/50 mb-4">{t('misc.credits')}</div>
               <div className="text-lg font-medium text-cream-100 mb-4">{formatPrice(pkg.price, lang)}</div>
               <button
-                onClick={() => { setSelectedPackage(pkg.id); handleBuyCredits(); }}
+                onClick={() => { setSelectedPackage(pkg.id); handleBuyCredits(pkg.id); }}
                 className="btn-gold text-sm mt-auto"
               >
                 <CreditCard className="w-4 h-4" />
@@ -165,6 +172,43 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
               </button>
             </div>
           ))}
+        </div>
+
+        <div className="card-lux p-6 sm:p-7 lg:col-span-2 border-gold-600/25 bg-gradient-to-br from-gold-600/5 to-transparent">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-gold-600/10 border border-gold-600/20 flex items-center justify-center">
+              <Calculator className="w-5 h-5 text-gold-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-display font-semibold text-cream-50">Egyedi kreditcsomag</h3>
+              <p className="text-xs text-cream-300/50">Válassz pontosan annyi kreditet, amennyire szükséged van.</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-[1fr_auto] gap-4 items-end">
+            <label className="block">
+              <span className="block text-xs text-cream-300/60 mb-2">Kreditek száma</span>
+              <input
+                type="number"
+                min={1}
+                max={10000}
+                step={1}
+                value={customCredits}
+                onChange={(e) => setCustomCredits(Math.max(1, Math.min(10000, Number(e.target.value) || 1)))}
+                className="input-premium w-full"
+              />
+              <span className="block text-[11px] text-cream-400/45 mt-2">1–10 000 kredit · 100-as lépcsőnként csökken az egységár, minimum 10 Ft/kredit.</span>
+            </label>
+            <div className="sm:text-right">
+              <div className="text-xs text-cream-300/50">Fizetendő</div>
+              <div className="text-2xl font-display font-bold gold-text">{formatPrice(getCustomCreditPrice(customCredits), lang)}</div>
+              <div className="text-[11px] text-cream-400/45 mb-3">
+                {getCustomCreditPrice(customCredits) === 0 ? '' : `${Math.round(getCustomCreditPrice(customCredits) / Math.max(1, customCredits))} Ft / kredit`}
+              </div>
+              <button onClick={handleCustomCredits} className="btn-gold text-sm whitespace-nowrap">
+                <CreditCard className="w-4 h-4" /> Egyedi csomag vásárlása
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
