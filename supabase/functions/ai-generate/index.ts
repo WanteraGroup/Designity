@@ -15,6 +15,7 @@ interface GenerationRequest {
   format?: string;
   projectId?: string;
   campaignId?: string;
+  previewId?: string;
 }
 
 /**
@@ -184,84 +185,60 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Call the AI provider
+    // The preview is generated before approval and costs 0 DESIGNLY credits.
+    // After the user explicitly approves it, this endpoint only charges and
+    // promotes that exact preview to a final project. It does not regenerate
+    // a different image after the user has approved the visible result.
     let generationResult: Record<string, unknown> = {};
     let generationFailed = false;
 
     try {
-      switch (aiProvider) {
-        case "openai": {
-          // Final DESIGNLY output is a real image. The free Master Agent
-          // creates the design direction; this paid step renders it.
-          const imagePrompt = buildImagePrompt(type, brief, style, format);
-          const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-2";
-          const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${aiApiKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: imageModel,
-              prompt: imagePrompt,
-              size: "1024x1024",
-            }),
-          });
+      if (previewId) {
+        const { data: previewRow, error: previewError } = await supabase
+          .from("design_previews")
+          .select("id, user_id, type, brief, image_url, status, expires_at")
+          .eq("id", previewId)
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-          if (!imageResponse.ok) {
-            const providerBody = await imageResponse.text();
-            throw new Error(`AI image provider returned ${imageResponse.status}: ${providerBody.slice(0, 500)}`);
-          }
-
-          const imageData = await imageResponse.json();
-          const b64 = imageData.data?.[0]?.b64_json;
-          const remoteUrl = imageData.data?.[0]?.url;
-
-          if (!b64 && !remoteUrl) {
-            throw new Error("AI image provider returned no image data.");
-          }
-
-          let imageUrl = remoteUrl as string | undefined;
-
-          // Persist base64 renders in Supabase Storage when the provider
-          // returns base64 JSON. If storage is unavailable, return a data
-          // URL so the current session can still display the result.
-          if (b64) {
-            const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
-            const filePath = `${user.id}/${projectId || job.id}.png`;
-            const { error: uploadError } = await storageClient.storage
-              .from("designly-generations")
-              .upload(filePath, bytes, {
-                contentType: "image/png",
-                upsert: true,
-              });
-
-            if (uploadError) {
-              imageUrl = `data:image/png;base64,${b64}`;
-            } else {
-              const { data: publicData } = storageClient.storage
-                .from("designly-generations")
-                .getPublicUrl(filePath);
-              imageUrl = publicData.publicUrl;
-            }
-          }
-
-          generationResult = {
-            imageUrl,
-            imageModel,
-            provider: "openai",
-            type,
-            generatedAt: new Date().toISOString(),
-            designDirection: parseDesignDirection(
-              `Rendered final ${type} design from the approved DESIGNLY brief.`,
-              type,
-              style
-            ),
-          };
-          break;
+        if (previewError || !previewRow) {
+          throw new Error("Approved preview was not found.");
         }
-        default:
-          throw new Error(`Unknown AI provider: ${aiProvider}`);
+        if (previewRow.status !== "generated") {
+          throw new Error("This preview has already been approved or consumed.");
+        }
+        if (new Date(previewRow.expires_at).getTime() < Date.now()) {
+          await supabase.from("design_previews").update({ status: "expired" }).eq("id", previewId);
+          throw new Error("This preview has expired. Please create a new preview.");
+        }
+
+        const { data: claimedPreview, error: claimError } = await supabase
+          .from("design_previews")
+          .update({ status: "approved", approved_at: new Date().toISOString() })
+          .eq("id", previewId)
+          .eq("user_id", user.id)
+          .eq("status", "generated")
+          .select("id, image_url, brief, type")
+          .maybeSingle();
+
+        if (claimError || !claimedPreview) {
+          throw new Error("This preview could not be approved. Please try again.");
+        }
+
+        generationResult = {
+          imageUrl: claimedPreview.image_url,
+          previewId: claimedPreview.id,
+          provider: aiProvider,
+          type: claimedPreview.type || type,
+          generatedAt: new Date().toISOString(),
+          designDirection: parseDesignDirection(
+            "Finalized from the exact approved DESIGNLY visual preview.",
+            type,
+            style
+          ),
+        };
+      } else {
+        throw new Error("An approved visual preview is required before final generation.");
       }
     } catch (err) {
       generationFailed = true;
@@ -297,6 +274,15 @@ Deno.serve(async (req: Request) => {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (!generationFailed && previewId) {
+      await supabase
+        .from("design_previews")
+        .update({ status: "consumed", consumed_at: new Date().toISOString() })
+        .eq("id", previewId)
+        .eq("user_id", user.id)
+        .eq("status", "approved");
     }
 
     // Update project status if projectId was provided
