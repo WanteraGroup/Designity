@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Crown, LayoutTemplate, Search, Sparkles, Type } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { TEMPLATE_CATEGORIES } from '@/lib/constants';
-import { DESIGNLY_TEMPLATES, TEMPLATE_TOTAL } from '@/lib/designly-templates';
+import { DESIGNLY_TEMPLATES, TEMPLATE_TOTAL, DESIGNLY_TEMPLATE_STYLES, DESIGNLY_FONT_PAIRS, DESIGNLY_EFFECTS, DESIGNLY_PALETTES } from '@/lib/designly-templates';
 
 interface TemplatesPageProps { onNavigate: (page: string) => void; }
 
@@ -15,18 +15,21 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
   const [category, setCategory] = useState('All');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [style, setStyle] = useState('All');
   const PAGE_SIZE = 60;
 
   const filtered = useMemo(() => DESIGNLY_TEMPLATES.filter((tpl) => {
     const cat = category === 'All' || tpl.category === category;
+    const st = style === 'All' || tpl.style === style.toLowerCase();
     const q = search.trim().toLowerCase();
-    return cat && (!q || tpl.name.toLowerCase().includes(q) || tpl.description.toLowerCase().includes(q));
-  }), [category, search]);
+    return cat && st && (!q || tpl.name.toLowerCase().includes(q) || tpl.description.toLowerCase().includes(q) || tpl.fontPair.toLowerCase().includes(q));
+  }), [category, search, style]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleCategory = (value: string) => { setCategory(value); setPage(1); };
   const handleSearch = (value: string) => { setSearch(value); setPage(1); };
+  const handleStyle = (value: string) => { setStyle(value); setPage(1); };
 
   const useTemplate = (tpl: typeof DESIGNLY_TEMPLATES[number]) => {
     try { localStorage.setItem('designly_selected_template', JSON.stringify(tpl)); } catch {}
@@ -52,10 +55,29 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
         </div>
       </div>
 
+      <div className="card-lux p-4 sm:p-5 overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[.22em] text-gold-300/70">DESIGN SYSTEM</div>
+            <div className="text-sm text-cream-100 mt-1">Színek · betűpárok · effektek</div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {DESIGNLY_PALETTES.slice(0, 8).map((palette, i) => <div key={i} className="flex -space-x-1.5" title={palette.join(' / ')}>{palette.map((color) => <span key={color} className="w-5 h-5 rounded-full border border-ink-950" style={{ background: color }} />)}</div>)}
+          </div>
+          <div className="text-[10px] text-cream-300/45">{DESIGNLY_FONT_PAIRS.length} betűpár · {DESIGNLY_EFFECTS.length} vizuális effekt</div>
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-2">
         <button onClick={() => handleCategory('All')} className={`chip transition-all ${category === 'All' ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{t('tpl.all')}</button>
         {TEMPLATE_CATEGORIES.map((cat) => (
           <button key={cat} onClick={() => handleCategory(cat)} className={`chip transition-all ${category === cat ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60'}`}>{cat}</button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {['All', ...DESIGNLY_TEMPLATE_STYLES].map((item) => (
+          <button key={item} onClick={() => handleStyle(item)} className={'chip transition-all ' + (style === item ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60')}>{item}</button>
         ))}
       </div>
 
