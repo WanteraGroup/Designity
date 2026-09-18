@@ -24,7 +24,7 @@ interface GiftRow {
   target_user_id: string | null;
 }
 
-const publicPlanIds = ['free', 'starter', 'pro', 'business', 'agency'];
+const publicPlanIds = ['free', 'starter', 'pro', 'business', 'agency', 'ultimate'];
 
 export function AdminPage({ onNavigate }: AdminPageProps) {
   const { t, lang } = useI18n();
