@@ -5,3 +5,7 @@ entrypoint = "./functions/ai-generate/index.ts"
 [functions.payment-checkout]
 verify_jwt = true
 entrypoint = "./functions/payment-checkout/index.ts"
+
+[functions.designly-agent]
+verify_jwt = true
+entrypoint = "./functions/designly-agent/index.ts"
