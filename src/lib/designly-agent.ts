@@ -26,6 +26,8 @@ export interface MasterAgentResult {
   mode?: 'brief' | 'preview' | 'final';
   preview?: boolean;
   creditsUsed?: number;
+  previewId?: string | null;
+  previewImageUrl?: string | null;
   activeAgents?: string[];
   designBrief?: DesignBrief;
   specialistPlan?: {
