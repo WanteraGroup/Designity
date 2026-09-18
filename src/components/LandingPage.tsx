@@ -18,7 +18,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     { icon: Layers, title: t('create.cards'), desc: t('create.cardsDesc') },
     { icon: Sparkles, title: t('create.invitations'), desc: t('create.invitationsDesc') },
     { icon: Zap, title: t('create.social'), desc: t('create.socialDesc') },
-    { icon: Music2, title: 'AI Music Studio', desc: 'Dalszöveg, zene és ének egyetlen kreatív folyamatban. Készíts letölthető WAV műveket és oszd meg őket e-mailben.' },
+    { icon: Music2, title: t('create.music'), desc: t('create.musicDesc') },
   ];
 
   const workflowSteps = [
