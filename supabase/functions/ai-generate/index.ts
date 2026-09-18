@@ -73,7 +73,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const body: GenerationRequest = await req.json();
-    const { type, brief, brandKitId, style, format, projectId, campaignId } = body;
+    const { type, brief, brandKitId, style, format, projectId, campaignId, previewId } = body;
 
     // Paid generation endpoint is intentionally final-only.
     // Free previews are handled by designly-agent and never deduct credits here.
