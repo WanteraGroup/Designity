@@ -173,8 +173,7 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
             </div>
           ))}
         </div>
-
-        <div className="card-lux p-6 sm:p-7 lg:col-span-2 border-gold-600/25 bg-gradient-to-br from-gold-600/5 to-transparent">
+                <div className="card-lux p-6 sm:p-7 lg:col-span-2 border-gold-600/25 bg-gradient-to-br from-gold-600/5 to-transparent">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-gold-600/10 border border-gold-600/20 flex items-center justify-center">
               <Calculator className="w-5 h-5 text-gold-400" />
@@ -211,7 +210,6 @@ export function BillingPage({ onNavigate }: BillingPageProps) {
           </div>
         </div>
       )}
-
       {/* History tab */}
       {tab === 'history' && (
         <div className="card-lux overflow-hidden">
