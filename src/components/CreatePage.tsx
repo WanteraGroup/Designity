@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
-import { DESIGNLY_TEMPLATES } from '@/lib/designly-templates';
+import { DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate } from '@/lib/designly-templates';
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
@@ -279,7 +279,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             <button onClick={() => onNavigate('templates')} className="btn-ghost text-xs whitespace-nowrap">Összes sablon →</button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-            {DESIGNLY_TEMPLATES.slice(0, 12).map((tpl) => (
+            {DESIGNLY_TEMPLATE_INDEXES.slice(0, 12).map((index) => { const tpl = getDesignlyTemplate(index); return (
               <button key={tpl.id} onClick={() => {
                 setSelectedType(tpl.type as ProjectType);
                 setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}. Effect: ${tpl.effect}. Typography: ${tpl.fontPair}. Palette: ${tpl.palette.join(', ')}.`);
@@ -297,7 +297,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                 <div className="text-xs font-medium text-cream-100 truncate">{tpl.name}</div>
                 <div className="text-[10px] text-gold-400/70 mt-1">{tpl.type}</div>
               </button>
-            ))}
+            ); })}
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
