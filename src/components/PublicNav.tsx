@@ -25,6 +25,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     { id: 'home', label: 'Home', page: 'landing' },
     { id: 'create', label: t('nav.create'), page: 'create' },
     { id: 'studio', label: 'Studio', page: 'advertising' },
+    { id: 'music', label: 'AI Music', page: 'music' },
     { id: 'templates', label: t('nav.templates'), page: 'templates' },
     { id: 'projects', label: 'Projects', page: 'projects' },
     { id: 'pricing', label: t('nav.pricing'), page: 'pricing' },
@@ -43,6 +44,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     advertising: 'studio',
     templates: 'templates',
     projects: 'projects',
+    music: 'music',
   };
   const activeId = activePages[currentPage] ?? '';
 
