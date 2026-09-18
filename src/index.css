@@ -154,6 +154,7 @@
 .hero-cinematic {
   isolation: isolate;
   background: #050505;
+  min-height: 900px;
 }
 
 .hero-reference-art {
@@ -164,7 +165,7 @@
   background-image: url('/designly-viking-hero.webp');
   background-size: cover;
   background-position: center top;
-  opacity: 0.9;
+  opacity: 1;
   filter: saturate(0.95) contrast(1.05);
   transform: translateZ(0);
   will-change: opacity;
@@ -183,6 +184,11 @@
 .hero-copy {
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
 }
+
+.hero-content {
+  padding-top: 34rem;
+}
+
 
 .celtic-header {
   position: relative;
@@ -312,6 +318,14 @@
 }
 
 @media (max-width: 640px) {
+  .hero-cinematic {
+    min-height: 820px;
+  }
+
+  .hero-content {
+    padding-top: 25rem;
+  }
+
   .hero-reference-art {
     background-position: 50% 12%;
     opacity: 0.8;
