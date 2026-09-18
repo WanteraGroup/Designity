@@ -28,10 +28,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   ];
 
   const creditExamples = [
-    { label: t('create.social'), credits: 2 },
-    { label: t('create.logo'), credits: 3 },
-    { label: t('create.brandIdentity'), credits: 5 },
-    { label: t('create.fullWebsite'), credits: 10 },
+    { label: t('create.social'), credits: 100 },
+    { label: t('create.logo'), credits: 300 },
+    { label: t('create.brandIdentity'), credits: 600 },
+    { label: t('create.fullWebsite'), credits: 3000 },
   ];
 
   const templateCats = [
@@ -54,7 +54,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="mist-layer mist-2" />
         {/* Subtle gold light */}
         <div className="gold-light" style={{ width: 400, height: 400, top: 30, left: 'calc(50% - 200px)' }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink-950/20 via-ink-950/55 to-ink-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink-950/15 via-ink-950/50 to-ink-950" />
+        <div className="hero-emblem" aria-hidden="true">
+          <CelticEmblem size={390} animate showD />
+        </div>
         <div className="rune-field" aria-hidden="true">
           {['ᚱ','ᚨ','ᚾ','ᛏ','ᚲ','ᛉ','ᛟ','ᚠ','ᚷ','ᛞ'].map((rune, i) => (
             <span key={i} className="floating-rune" style={{ ['--rune-i' as string]: i } as React.CSSProperties}>{rune}</span>
@@ -270,10 +273,10 @@ function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
   const { t } = useI18n();
   const fallbackPlans = [
     { id: 'free', name: t('plan.free'), price: 0, credits: 10, features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
-    { id: 'starter', name: t('plan.starter'), price: 2990, credits: 50, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
-    { id: 'pro', name: t('plan.pro'), price: 7990, credits: 200, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
-    { id: 'business', name: t('plan.business'), price: 14990, credits: 500, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
-    { id: 'agency', name: t('plan.agency'), price: 29990, credits: 1500, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
+    { id: 'starter', name: t('plan.starter'), price: 2490, credits: 50, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
+    { id: 'pro', name: t('plan.pro'), price: 6990, credits: 200, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
+    { id: 'business', name: t('plan.business'), price: 12990, credits: 500, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
+    { id: 'agency', name: t('plan.agency'), price: 24990, credits: 1500, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
   ];
   const [plans, setPlans] = useState(fallbackPlans);
 
