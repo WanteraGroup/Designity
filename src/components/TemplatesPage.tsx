@@ -73,7 +73,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
                   <div>
                     <div className="text-[9px] uppercase tracking-[.25em] text-gold-300/70">{tpl.category}</div>
                     <div className="text-xl font-display text-cream-50 mt-1">{tpl.name}</div>
-                    <div className="flex gap-1.5 mt-3">{swatches(tpl.palette)}</div>
+                    <div className="flex items-center justify-between gap-2 mt-3"><div className="flex gap-1.5">{swatches(tpl.palette)}</div><span className="text-[9px] text-cream-200/45 truncate max-w-[55%]">{tpl.fontPair}</span></div>
                   </div>
                 </div>
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gold-500/20" />
