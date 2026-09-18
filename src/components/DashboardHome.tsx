@@ -16,7 +16,7 @@ interface DashboardHomeProps {
 
 export function DashboardHome({ onNavigate }: DashboardHomeProps) {
   const { t } = useI18n();
-  const { profile, isOwner } = useAuth();
+  const { profile, isOwner, isUnlimited } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +46,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
             {t('dash.welcome')}, {profile?.full_name || profile?.email?.split('@')[0]}
           </h1>
           <p className="text-sm text-cream-300/50 mt-1">
-            {isOwner ? t('dash.ownerBadge') : t('dash.readyCreate')}
+            {isUnlimited ? (isOwner ? t('dash.ownerBadge') : 'FULL UNLOCK — Unlimited access') : t('dash.readyCreate')}
           </p>
         </div>
         <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0">
@@ -60,25 +60,25 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         <StatCard
           icon={Coins}
           label={t('dash.remainingCredits')}
-          value={isOwner ? '∞' : String(profile?.credits ?? 0)}
-          accent={isOwner}
+          value={isUnlimited ? '∞' : String(profile?.credits ?? 0)}
+          accent={isUnlimited}
         />
         <StatCard
           icon={TrendingUp}
           label={t('dash.currentPlan')}
-          value={isOwner ? 'OWNER' : (profile?.plan_id || 'free').toUpperCase()}
-          accent={isOwner}
+          value={isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK' : (profile?.plan_id || 'free').toUpperCase()}
+          accent={isUnlimited}
         />
         <StatCard
           icon={FolderOpen}
           label={t('dash.recentProjects')}
-          value={isOwner ? '∞' : String(projects.length)}
+          value={isUnlimited ? '∞' : String(projects.length)}
           accent={false}
         />
       </div>
 
       {/* Owner banner */}
-      {isOwner && (
+      {isUnlimited && (
         <div className="card-lux p-6 flex items-center gap-6 border-gold-600/30">
           <CelticEmblem size={64} animate showD={false} />
           <div className="flex-1">
@@ -106,7 +106,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
               <TypeIcon type={item.type} />
               <div className="text-xs font-medium text-cream-200 mt-2">{item.label}</div>
               <div className="text-[10px] text-gold-400 mt-1">
-                {isOwner ? '∞' : `${item.credits} credits`}
+                {isUnlimited ? '∞' : `${item.credits} credits`}
               </div>
             </button>
           ))}
