@@ -248,12 +248,12 @@
 .hero-content { padding-top:28rem; }
 
 .celtic-header {
-  position:relative;
+  position:fixed;
   transition:background-color .4s ease,box-shadow .4s ease,border-color .4s ease;
 }
 
 .celtic-header--top {
-  background-color:rgba(3,4,5,.28);
+  background-color:rgba(3,4,5,.12);
   border-bottom-color:rgba(196,154,46,.08);
 }
 
@@ -518,9 +518,9 @@
 
 .designly-hero {
   position:relative;
-  min-height:100svh;
-  height:960px;
-  max-height:1100px;
+  min-height:980px;
+  height:1080px;
+  max-height:1200px;
   overflow:hidden;
   isolation:isolate;
   display:flex;
@@ -535,8 +535,7 @@
   object-fit:cover;
   object-position:center top;
   z-index:0;
-  transform:scale(1.015);
-  animation:ds-hero-breathe 18s ease-in-out infinite alternate;
+  transform:scale(1.01);
 }
 
 .designly-hero-vignette {
@@ -544,7 +543,7 @@
   inset:0;
   z-index:1;
   background:
-    linear-gradient(180deg,rgba(2,3,4,.12) 0%,rgba(2,3,4,.02) 28%,rgba(2,3,4,.12) 48%,rgba(2,3,4,.90) 100%),
+    linear-gradient(180deg,rgba(2,3,4,.05) 0%,rgba(2,3,4,.01) 32%,rgba(2,3,4,.16) 58%,rgba(2,3,4,.86) 100%),
     linear-gradient(90deg,rgba(2,3,4,.50),transparent 25%,transparent 75%,rgba(2,3,4,.42));
 }
 
@@ -560,7 +559,7 @@
 
 .designly-hero-runes {
   position:absolute;
-  top:94px;
+  top:82px;
   left:50%;
   transform:translateX(-50%);
   width:min(1100px,88vw);
@@ -579,10 +578,10 @@
 .designly-hero-emblem {
   position:absolute;
   left:50%;
-  top:76px;
+  top:82px;
   transform:translateX(-50%);
   z-index:2;
-  opacity:.34;
+  opacity:.48;
   filter:drop-shadow(0 0 35px rgba(196,154,46,.22));
   pointer-events:none;
 }
@@ -592,7 +591,7 @@
   z-index:6;
   width:min(760px,92vw);
   margin:0 auto;
-  padding:0 0 82px;
+  padding:0 0 72px;
   text-align:center;
 }
 
@@ -820,7 +819,7 @@
 @keyframes ds-wave { from{opacity:.35}to{opacity:.85} }
 
 @media (max-width:1000px){
-  .designly-hero{height:900px}
+  .designly-hero{height:980px}
   .designly-manifesto{grid-template-columns:90px 1fr;gap:30px}
   .designly-manifesto p{grid-column:2}
   .designly-capability-grid{grid-template-columns:repeat(2,1fr)}
@@ -832,7 +831,7 @@
 }
 
 @media (max-width:640px){
-  .designly-hero{height:850px;min-height:850px;align-items:flex-end}
+   .designly-hero{height:820px;min-height:820px;align-items:flex-end}
   .designly-hero-image{object-position:50% top}
   .designly-hero-runes{top:82px;width:82vw;font-size:11px}
   .designly-hero-emblem{top:72px;opacity:.22;transform:translateX(-50%) scale(.72)}
