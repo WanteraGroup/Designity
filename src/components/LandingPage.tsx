@@ -41,7 +41,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 hero-cinematic">
+      <section className="relative min-h-[900px] lg:min-h-[1000px] flex items-center justify-center overflow-hidden pt-20 hero-cinematic">
         <div className="hero-reference-art" aria-hidden="true" />
         <div className="absolute inset-0 bg-grid opacity-30" />
         {/* Atmospheric smoke layers — translucent gray, non-blocking */}
@@ -56,16 +56,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-ink-950/20 via-ink-950/55 to-ink-950" />
         <div className="hero-art-vignette" aria-hidden="true" />
 
-        <div className="relative section-pad max-w-6xl mx-auto text-center z-10">
+        <div className="relative section-pad max-w-6xl mx-auto text-center z-10 hero-content">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full border border-gold-600/20 bg-gold-600/5 animate-fade-in">
             <Sparkles className="w-4 h-4 text-gold-400" />
             <span className="text-xs font-medium tracking-widest text-gold-200 uppercase">
               {t('hero.badge')}
             </span>
-          </div>
-
-          <div className="flex justify-center mb-12 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <CelticEmblem size={280} animate showD />
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-7xl xl:text-8xl font-display font-bold text-cream-50 text-balance mb-6 hero-copy animate-fade-up" style={{ animationDelay: '0.2s' }}>
