@@ -26,6 +26,7 @@ export interface MasterAgentResult {
   mode?: 'brief' | 'preview' | 'final';
   preview?: boolean;
   creditsUsed?: number;
+  activeAgents?: string[];
   designBrief?: DesignBrief;
   specialistPlan?: {
     brand: boolean;
