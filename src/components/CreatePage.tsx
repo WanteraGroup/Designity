@@ -273,11 +273,32 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
           <textarea
             value={brief}
-            onChange={(e) => setBrief(e.target.value)}
+            onChange={(e) => {
+              setBrief(e.target.value);
+              if (previewError) setPreviewError(null);
+            }}
             rows={6}
             className="input-lux resize-none"
             placeholder={t('cw.briefPlaceholder')}
           />
+
+          {previewError && (
+            <div
+              role="alert"
+              className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
+            >
+              <div className="font-medium mb-1">AI előnézet hiba</div>
+              <div className="text-red-200/80 break-words">{previewError}</div>
+              <button
+                type="button"
+                onClick={handlePreview}
+                disabled={brief.trim().length < 5 || previewLoading}
+                className="mt-3 underline text-gold-200 disabled:opacity-40"
+              >
+                Újrapróbálom
+              </button>
+            </div>
+          )}
 
           <div className="flex justify-between items-center mt-6">
             <button onClick={() => setStep(1)} className="btn-ghost text-sm">
