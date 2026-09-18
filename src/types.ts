@@ -127,6 +127,7 @@ export interface UserProfile {
   role: AppRole;
   plan_id: PlanId;
   credits: number;
+  unlimited_access: boolean;
   full_name: string | null;
   avatar_url: string | null;
   created_at: string;
