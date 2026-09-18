@@ -72,12 +72,6 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               <Play className="w-4 h-4" /> Watch Demo
             </button>
           </div>
-          <div className="designly-proof">
-            <span><i /> AI Powered</span>
-            <span><i /> Premium Templates</span>
-            <span><i /> Brand Consistency</span>
-            <span><i /> Save Time</span>
-          </div>
         </div>
 
         <div className="designly-scroll" aria-hidden="true">
