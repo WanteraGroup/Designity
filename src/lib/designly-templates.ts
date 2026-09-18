@@ -24,21 +24,25 @@ const TYPES = [
   { type:'landing', label:'Landing Page' }, { type:'campaign', label:'Campaign' },
   { type:'custom', label:'Custom Design' }, { type:'website', label:'Website' },
 ];
-const STYLES = ['Luxury','Editorial','Minimal','Bold','Corporate','Cinematic','Modern','Heritage','Premium','Elegant'];
+export const DESIGNLY_TEMPLATE_STYLES = ['Luxury','Editorial','Minimal','Bold','Corporate','Cinematic','Modern','Heritage','Premium','Elegant','Nordic','Celtic','Art Deco','Monochrome','Glass'];
+const STYLES = DESIGNLY_TEMPLATE_STYLES;
 const LAYOUTS: DesignlyTemplate['layout'][] = ['luxury','editorial','minimal','bold','corporate'];
-const PALETTES = [
+export const DESIGNLY_PALETTES = [
   ['#090909','#c9a45c','#f4eee2'], ['#111111','#d4af63','#ffffff'], ['#0c0c0c','#b99045','#d9c7a0'],
   ['#171717','#c6a15b','#eee7d8'], ['#f3efe7','#8f7042','#24211d'], ['#0a0f12','#c7a15a','#e8e8e8'],
   ['#121212','#b79557','#f0ece3'], ['#0b0b0b','#d0a45b','#f2eee6'], ['#101010','#b89960','#ffffff'],
   ['#0d0d0d','#c6a15e','#eee7da'],
-];
-const FONT_PAIRS = [
+ ];
+const PALETTES = DESIGNLY_PALETTES;
+export const DESIGNLY_FONT_PAIRS = [
   'Cinzel + Inter','Playfair Display + Manrope','Cormorant Garamond + Montserrat','DM Serif Display + DM Sans',
   'Libre Baskerville + Source Sans 3','Bodoni Moda + Inter','Cormorant + Outfit','EB Garamond + Manrope',
   'Fraunces + Inter','Prata + Lato','Unbounded + Inter','Space Grotesk + DM Sans','Plus Jakarta Sans + Playfair Display',
   'Sora + Inter','Raleway + Merriweather','Oswald + Lato','Bebas Neue + Inter','Archivo + Cormorant Garamond',
   'Montserrat + Lora','Poppins + Libre Baskerville',
-];
+ ];
+const FONT_PAIRS = DESIGNLY_FONT_PAIRS;
+export const DESIGNLY_EFFECTS = ['Metallic sheen','Soft grain','Cinematic glow','Glass edge','Celtic linework','Parallax mist','Gold light sweep','Paper texture','Editorial shadow','Neon-free aura'];
 
 const NAMES = ['Aurelia','Nordic','Celtic','Imperial','Velvet','Obsidian','Monarch','Atlas','Eclipse','Heritage','Noble','Vantage','Sovereign','Aurora','Legacy','Element','Prestige','Summit','Noir','Elysian'];
 
