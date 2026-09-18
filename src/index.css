@@ -183,12 +183,12 @@
   position: absolute;
   left: calc(7% + (var(--rune-i) * 9%));
   top: calc(18% + ((var(--rune-i) % 5) * 13%));
-  color: rgba(229, 201, 107, 0.68);
+  color: rgba(241, 225, 176, 0.9);
   font-family: serif;
   font-size: clamp(1.25rem, 2.4vw, 2.2rem);
-  text-shadow: 0 0 8px rgba(229, 201, 107, 0.55), 0 0 22px rgba(196, 154, 46, 0.25);
-  opacity: 0.18;
-  animation: rune-pulse 5.5s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(229, 201, 107, 0.7), 0 0 22px rgba(196, 154, 46, 0.35);
+  opacity: 0.22;
+  animation: rune-pulse 4.2s ease-in-out infinite;
   animation-delay: calc(var(--rune-i) * -0.55s);
   will-change: opacity, transform, filter;
 }
@@ -200,9 +200,10 @@
 
 @keyframes rune-pulse {
   0%, 100% { opacity: 0.10; transform: translateY(4px) scale(0.96); filter: blur(0.3px); }
-  42% { opacity: 0.78; transform: translateY(-2px) scale(1.04); filter: blur(0); }
-  52% { opacity: 0.42; transform: translateY(-3px) scale(1.01); }
-  60% { opacity: 0.72; transform: translateY(0) scale(1.03); }
+  35% { opacity: 0.88; transform: translateY(-2px) scale(1.05); filter: blur(0); }
+  46% { opacity: 0.34; transform: translateY(-3px) scale(0.99); }
+  55% { opacity: 0.92; transform: translateY(0) scale(1.07); }
+  68% { opacity: 0.48; transform: translateY(1px) scale(1.01); }
 }
 
 .hero-art-vignette {
@@ -435,12 +436,12 @@
 .hero-emblem {
   position: absolute;
   left: 50%;
-  top: 8.5rem;
+  top: 5.8rem;
   transform: translateX(-50%);
   z-index: 4;
   pointer-events: none;
-  opacity: 0.82;
-  filter: drop-shadow(0 0 28px rgba(196,154,46,0.16));
+  opacity: 0.94;
+  filter: drop-shadow(0 0 30px rgba(196,154,46,0.22)) drop-shadow(0 18px 45px rgba(0,0,0,0.5));
 }
 .hero-emblem::after {
   content: '';
@@ -464,3 +465,12 @@
     transform: translateX(-50%) scale(0.72);
   }
 }
+
+
+.hero-cinematic::after {
+  content: ''; position: absolute; inset: 18% -10% 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at 18% 72%, rgba(210,210,205,0.11) 0%, transparent 34%), radial-gradient(ellipse at 82% 68%, rgba(205,205,200,0.10) 0%, transparent 32%), radial-gradient(ellipse at 50% 82%, rgba(225,225,218,0.08) 0%, transparent 38%);
+  filter: blur(30px); opacity: .8; animation: fog-breathe 14s ease-in-out infinite;
+}
+@keyframes fog-breathe { 0%,100% { transform: translate3d(-1%,0,0) scale(1); opacity:.55; } 50% { transform: translate3d(1.5%,-1%,0) scale(1.05); opacity:.9; } }
+@media (prefers-reduced-motion: reduce) { .hero-cinematic::after { animation:none; } }
