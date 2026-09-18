@@ -43,7 +43,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="relative">
       {/* Hero */}
-      <section className="relative min-h-[900px] lg:min-h-[1000px] flex items-center justify-center overflow-hidden pt-20 hero-cinematic">
+      <section className="relative min-h-[980px] lg:min-h-[1080px] flex items-center justify-center overflow-hidden pt-20 hero-cinematic hero-frame">
         <div className="hero-reference-art" aria-hidden="true" />
         <div className="absolute inset-0 bg-grid opacity-30" />
         {/* Atmospheric smoke layers — translucent gray, non-blocking */}
@@ -57,7 +57,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="gold-light" style={{ width: 400, height: 400, top: 30, left: 'calc(50% - 200px)' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ink-950/15 via-ink-950/50 to-ink-950" />
         <div className="hero-emblem" aria-hidden="true">
-          <CelticEmblem size={390} animate showD />
+          <CelticEmblem size={540} animate showD />
         </div>
         <div className="rune-field" aria-hidden="true">
           {['ᚱ','ᚨ','ᚾ','ᛏ','ᚲ','ᛉ','ᛟ','ᚠ','ᚷ','ᛞ'].map((rune, i) => (
@@ -66,16 +66,16 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
                 <div className="hero-art-vignette" aria-hidden="true" />
 
-        <div className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
+        <div className="absolute left-7 lg:left-14 top-[48%] -translate-y-1/2 z-10 hidden md:flex flex-col gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
           {['AI', 'DESIGN', 'BRAND', 'WEB', 'BUSINESS'].map((item) => <span key={item}>{item}</span>)}
           <span className="mt-2 h-px w-10 bg-gold-500/50" />
         </div>
-        <div className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col items-end gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
+        <div className="absolute right-7 lg:right-14 top-[48%] -translate-y-1/2 z-10 hidden md:flex flex-col items-end gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
           {['VISION', 'STRATEGY', 'CREATIVITY', 'TECHNOLOGY', 'RESULTS'].map((item) => <span key={item}>{item}</span>)}
           <span className="mt-2 h-px w-10 bg-gold-500/50" />
         </div>
 
-        <div className="relative section-pad max-w-6xl mx-auto text-center z-10 hero-content">
+        <div className="relative section-pad max-w-6xl mx-auto text-center z-10 hero-content hero-copy-panel">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full border border-gold-600/20 bg-gold-600/5 animate-fade-in">
             <Sparkles className="w-4 h-4 text-gold-400" />
             <span className="text-xs font-medium tracking-widest text-gold-200 uppercase">
@@ -114,6 +114,21 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '0.8s' }}>
           <div className="w-px h-12 bg-gradient-to-b from-gold-600/40 to-transparent" />
+        </div>
+      </section>
+
+      {/* Signature transition */}
+      <section className="signature-strip relative overflow-hidden">
+        <div className="signature-strip-line" />
+        <div className="relative max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <div className="text-[10px] tracking-[0.45em] text-gold-300/70 uppercase mb-2">DESIGNLY STUDIO</div>
+            <div className="font-display text-2xl sm:text-3xl text-cream-50">TURN IDEAS INTO <span className="gold-text">REALITY</span></div>
+          </div>
+          <div className="hidden md:block h-px flex-1 max-w-xs bg-gradient-to-r from-gold-600/40 to-transparent" />
+          <p className="max-w-md text-sm leading-relaxed text-cream-300/60 text-center md:text-right">
+            Az ötlettől a kész arculatig, weboldalig, marketinganyagig és saját zenéig — egy prémium AI kreatív stúdióban.
+          </p>
         </div>
       </section>
 
