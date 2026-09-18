@@ -7,7 +7,7 @@ interface CelticEmblemProps {
 
 /**
  * DESIGNLY STUDIO signature Celtic ornamental frame.
- * A circular metallic-gold Celtic knotwork emblem with concentric rings,
+ * A circular silver-edged, gold-highlighted Celtic knotwork frame with concentric rings,
  * interwoven knot patterns, and a stylized D at the center.
  *
  * Only the outer ornamental ring rotates — the center D stays static
@@ -59,8 +59,8 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
         </defs>
 
         {/* Outermost ring */}
-        <circle cx="200" cy="200" r="195" fill="none" stroke={`url(#${gid}-gold)`} strokeWidth="1.5" opacity="0.7" />
-        <circle cx="200" cy="200" r="188" fill="none" stroke={`url(#${gid}-goldDim)`} strokeWidth="0.8" opacity="0.4" />
+        <circle cx="200" cy="200" r="195" fill="none" stroke={`url(#${gid}-gold)`} strokeWidth="2" opacity="0.9" />
+        <circle cx="200" cy="200" r="188" fill="none" stroke={`url(#${gid}-goldDim)`} strokeWidth="1" opacity="0.55" />
 
         {/* Celtic knot pattern — 8 symmetrical segments */}
         {Array.from({ length: 8 }).map((_, i) => {
