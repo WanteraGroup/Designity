@@ -157,24 +157,41 @@ If this is a TikTok Shop request, internally apply these specialist roles as app
 If this is a Monkey Design Studio request, internally apply: Design Director, Logo, Brand, UI/UX, Web, Social, Marketing, Print, Presentation, and Visual QA. Keep all outputs aligned with the supplied Brand Kit.
 Return one coherent structured result.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // GPT-5.6 models are called through the Responses API.
+    // Keep this request server-side so the OpenAI key never reaches the browser.
+    const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: userPrompt },
+        input: [
+          { role: "system", content: [{ type: "input_text", text: system }] },
+          { role: "user", content: [{ type: "input_text", text: userPrompt }] },
         ],
-        temperature: 0.4,
-        max_tokens: 1400,
+        max_output_tokens: 1400,
       }),
     });
 
-    if (!response.ok) return json({ error: "GENERATION_FAILED", message: `AI provider returned ${response.status}.` }, 502);
+    if (!response.ok) {
+      const providerBody = await response.text().catch(() => "");
+      console.error("OpenAI Responses API error:", response.status, providerBody);
+      return json({
+        error: "GENERATION_FAILED",
+        message: `AI provider returned ${response.status}. Check the DESIGNLY AI model/API configuration.`,
+      }, 502);
+    }
 
     const aiData = await response.json();
-    const content = aiData.choices?.[0]?.message?.content || "";
+    const content =
+      aiData.output_text ||
+      aiData.output
+        ?.flatMap((item: any) => item.content || [])
+        ?.map((item: any) => item.text || "")
+        ?.join("") ||
+      "";
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
     const text = body.brief.toLowerCase();
