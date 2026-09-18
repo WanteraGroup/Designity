@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
 import { PublicNav } from '@/components/PublicNav';
@@ -13,13 +13,13 @@ import { CreditsPage } from '@/components/CreditsPage';
 import { BillingPage } from '@/components/BillingPage';
 import { AdminPage } from '@/components/AdminPage';
 import { EditorPage } from '@/components/EditorPage';
-import { TemplatesPage } from '@/components/TemplatesPage';
+const TemplatesPage = lazy(() => import('@/components/TemplatesPage').then((m) => ({ default: m.TemplatesPage })));
 import { AssetsPage } from '@/components/AssetsPage';
 import { SettingsPage } from '@/components/SettingsPage';
 import { AdvertisingStudio } from '@/components/AdvertisingStudio';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
-import { MusicPage } from '@/components/MusicPage';
+const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
@@ -174,7 +174,7 @@ function AppInner() {
 
       <div className={contentWrapperClass}>
         {isPublic && (
-          <main className="pt-16 lg:pt-20">
+          <main className={page === 'landing' ? '' : 'pt-16 lg:pt-20'}>
             {authPending ? (
               <div className="relative">
                 <LandingPage onNavigate={navigate} />
@@ -196,7 +196,9 @@ function AppInner() {
 
         {isDashboard && !isEditor && (
           <main className="section-pad py-8 lg:py-10 max-w-7xl mx-auto">
-            {renderDashboardPage()}
+            <Suspense fallback={<div className="min-h-[60vh] grid place-items-center"><div className="w-8 h-8 border-2 border-gold-600/30 border-t-gold-400 rounded-full animate-spin" /></div>}>
+              {renderDashboardPage()}
+            </Suspense>
           </main>
         )}
       </div>
