@@ -504,3 +504,377 @@
   .viking-stat{border-left:0;border-top:1px solid rgba(196,154,46,.14)}
   .viking-stat:first-child{border-top:0}
 }
+
+
+/* DESIGNLY STUDIO — cinematic art direction */
+.designly-site {
+  --ds-gold: #d4ab3d;
+  --ds-gold-bright: #f5ebcc;
+  --ds-line: rgba(229,201,107,.18);
+  --ds-muted: rgba(228,217,192,.62);
+  background:#030405;
+  color:#f9f5ec;
+}
+
+.designly-hero {
+  position:relative;
+  min-height:100svh;
+  height:960px;
+  max-height:1100px;
+  overflow:hidden;
+  isolation:isolate;
+  display:flex;
+  align-items:flex-end;
+}
+
+.designly-hero-image {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center top;
+  z-index:0;
+  transform:scale(1.015);
+  animation:ds-hero-breathe 18s ease-in-out infinite alternate;
+}
+
+.designly-hero-vignette {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(180deg,rgba(2,3,4,.12) 0%,rgba(2,3,4,.02) 28%,rgba(2,3,4,.12) 48%,rgba(2,3,4,.90) 100%),
+    linear-gradient(90deg,rgba(2,3,4,.50),transparent 25%,transparent 75%,rgba(2,3,4,.42));
+}
+
+.designly-hero-grain {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+  mix-blend-mode:soft-light;
+}
+
+.designly-hero-runes {
+  position:absolute;
+  top:94px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(1100px,88vw);
+  z-index:4;
+  display:flex;
+  justify-content:space-between;
+  color:rgba(245,235,204,.72);
+  font:500 15px/1 serif;
+  letter-spacing:.35em;
+  text-shadow:0 0 14px rgba(229,201,107,.5);
+}
+
+.designly-hero-runes span:nth-child(2n){opacity:.42;transform:translateY(12px)}
+.designly-hero-runes span:nth-child(3n){opacity:.82;transform:translateY(-4px)}
+
+.designly-hero-emblem {
+  position:absolute;
+  left:50%;
+  top:76px;
+  transform:translateX(-50%);
+  z-index:2;
+  opacity:.34;
+  filter:drop-shadow(0 0 35px rgba(196,154,46,.22));
+  pointer-events:none;
+}
+
+.designly-hero-copy {
+  position:relative;
+  z-index:6;
+  width:min(760px,92vw);
+  margin:0 auto;
+  padding:0 0 82px;
+  text-align:center;
+}
+
+.designly-kicker,.designly-eyebrow {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  color:rgba(229,201,107,.78);
+  font:600 10px/1 "Inter",sans-serif;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+}
+
+.designly-kicker span {
+  width:34px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#d4ab3d);
+}
+
+.designly-kicker span:last-child { background:linear-gradient(90deg,#d4ab3d,transparent); }
+
+.designly-hero-copy h1 {
+  margin:20px 0 16px;
+  font:500 clamp(4.2rem,10vw,8.6rem)/.78 "Cormorant Garamond",serif;
+  letter-spacing:-.055em;
+  color:#f7f2e7;
+  text-shadow:0 12px 50px rgba(0,0,0,.75);
+}
+
+.designly-hero-copy h1 strong {
+  display:block;
+  font-weight:700;
+  font-style:italic;
+  color:transparent;
+  background:linear-gradient(120deg,#a87f24,#f5ebcc 38%,#d4ab3d 58%,#8c681d);
+  -webkit-background-clip:text;
+  background-clip:text;
+}
+
+.designly-hero-copy p {
+  max-width:590px;
+  margin:0 auto;
+  color:rgba(249,245,236,.72);
+  font:400 15px/1.75 "Inter",sans-serif;
+}
+
+.designly-hero-actions {
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:28px;
+}
+
+.designly-primary-cta { padding:13px 22px; font-size:12px; text-transform:uppercase; letter-spacing:.13em; }
+.designly-outline-cta {
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:13px 20px;border:1px solid rgba(245,235,204,.28);border-radius:6px;
+  color:#f0e9d8;background:rgba(3,4,5,.42);backdrop-filter:blur(10px);
+  font:600 12px "Inter",sans-serif;letter-spacing:.10em;text-transform:uppercase;
+  transition:.3s;
+}
+.designly-outline-cta:hover { border-color:rgba(229,201,107,.65);background:rgba(196,154,46,.08);transform:translateY(-1px); }
+
+.designly-proof {
+  display:flex;justify-content:center;gap:24px;margin-top:25px;
+  color:rgba(228,217,192,.46);font:500 9px "Inter",sans-serif;letter-spacing:.16em;text-transform:uppercase;
+}
+.designly-proof span { display:flex;align-items:center;gap:7px; }
+.designly-proof i { width:4px;height:4px;border-radius:50%;background:#d4ab3d;box-shadow:0 0 9px rgba(212,171,61,.8); }
+
+.designly-scroll {
+  position:absolute;z-index:6;bottom:30px;left:34px;
+  display:flex;align-items:center;gap:12px;transform:rotate(-90deg);transform-origin:left center;
+  color:rgba(245,235,204,.45);font:600 8px "Inter",sans-serif;letter-spacing:.35em;
+}
+.designly-scroll i { display:block;width:55px;height:1px;background:linear-gradient(90deg,#d4ab3d,transparent); }
+
+.designly-manifesto {
+  position:relative;
+  display:grid;
+  grid-template-columns:140px 1.25fr 1fr;
+  align-items:center;
+  gap:55px;
+  width:min(1240px,calc(100% - 48px));
+  margin:0 auto;
+  padding:92px 0;
+  border-bottom:1px solid var(--ds-line);
+}
+.designly-manifesto::before {
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(229,201,107,.30),transparent);
+}
+.designly-manifesto-mark { opacity:.75; }
+.designly-manifesto h2,.designly-section-head h2,.designly-music h2,.designly-credit-content h2,.designly-final h2 {
+  margin:11px 0 0;
+  font:500 clamp(2.7rem,5vw,5.3rem)/.92 "Cormorant Garamond",serif;
+  letter-spacing:-.035em;
+}
+.designly-manifesto h2 em,.designly-section-head h2 em,.designly-music h2 em,.designly-credit-content h2 em,.designly-final h2 em {
+  color:#d4ab3d;font-style:italic;
+}
+.designly-manifesto p,.designly-section-head>p {
+  color:var(--ds-muted);font:400 14px/1.9 "Inter",sans-serif;
+  max-width:470px;
+}
+
+.designly-section { width:min(1240px,calc(100% - 48px)); margin:0 auto; padding:120px 0; }
+.designly-section-head { display:flex;justify-content:space-between;align-items:flex-end;gap:50px;margin-bottom:55px; }
+.designly-section-head>p { margin:0 0 4px; }
+.designly-section-head.centered { display:block;text-align:center; }
+.designly-section-head.centered>p { margin:20px auto 0; }
+.designly-section-head.centered .designly-eyebrow { justify-content:center; }
+
+.designly-capability-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(229,201,107,.14);border:1px solid rgba(229,201,107,.14); }
+.designly-capability {
+  position:relative;min-height:300px;padding:28px;text-align:left;
+  color:#f9f5ec;background:linear-gradient(145deg,#111315,#060708);
+  transition:.45s;overflow:hidden;
+}
+.designly-capability::before {
+  content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,rgba(196,154,46,.11),transparent 48%);opacity:0;transition:.45s;
+}
+.designly-capability:hover { background:#0d0f10;transform:translateY(-3px);z-index:2;box-shadow:0 22px 50px rgba(0,0,0,.45); }
+.designly-capability:hover::before { opacity:1; }
+.designly-capability-top { position:relative;display:flex;justify-content:space-between;color:rgba(229,201,107,.55);font:600 8px "Inter",sans-serif;letter-spacing:.22em; }
+.designly-capability-icon {
+  position:relative;margin:54px 0 22px;width:42px;height:42px;display:grid;place-items:center;
+  border:1px solid rgba(229,201,107,.25);border-radius:50%;color:#d4ab3d;
+}
+.designly-capability-icon svg { width:18px; }
+.designly-capability h3 { position:relative;margin:0 0 9px;font:600 25px "Cormorant Garamond",serif; }
+.designly-capability p { position:relative;margin:0;color:rgba(228,217,192,.52);font:400 12px/1.7 "Inter",sans-serif;max-width:330px; }
+.designly-capability-line { position:absolute;left:28px;right:28px;bottom:34px;height:1px;background:rgba(229,201,107,.10); }
+.designly-capability small { position:absolute;bottom:22px;right:28px;color:rgba(229,201,107,.32);font:600 7px "Inter",sans-serif;letter-spacing:.18em; }
+
+.designly-music {
+  position:relative;min-height:620px;overflow:hidden;display:flex;align-items:center;
+  padding:100px max(24px,calc((100vw - 1240px)/2));border-top:1px solid var(--ds-line);border-bottom:1px solid var(--ds-line);
+  background:radial-gradient(circle at 70% 50%,rgba(196,154,46,.10),transparent 34%),linear-gradient(110deg,#050607,#0b0d0e 48%,#050607);
+}
+.designly-music::before {
+  content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,4,5,.92) 0%,rgba(3,4,5,.50) 52%,rgba(3,4,5,.08) 100%);z-index:1;
+}
+.designly-music-content { position:relative;z-index:4;width:540px; }
+.designly-music-content p,.designly-credit-content p { color:var(--ds-muted);font:400 14px/1.85 "Inter",sans-serif;max-width:520px;margin:24px 0; }
+.designly-music-orbit { position:absolute;z-index:2;right:4%;top:50%;transform:translateY(-50%);opacity:.55; }
+.designly-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px; }
+.designly-tags span { padding:7px 12px;border:1px solid rgba(229,201,107,.18);color:rgba(229,201,107,.72);font:600 8px "Inter",sans-serif;letter-spacing:.15em;text-transform:uppercase; }
+.designly-wave { position:absolute;z-index:3;right:0;bottom:78px;width:52%;height:80px;display:flex;align-items:center;gap:3px;opacity:.55; }
+.designly-wave i { width:2px;height:calc(8px + ((var(--wave-i) * 17) % 48) * 1px);background:linear-gradient(#f5ebcc,#8c681d);transform:scaleY(calc(.55 + ((var(--wave-i) % 5) * .12)));animation:ds-wave 2.8s ease-in-out infinite alternate;animation-delay:calc(var(--wave-i) * -.06s); }
+
+.designly-workflow { padding-top:130px; }
+.designly-workflow-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(229,201,107,.13);border:1px solid rgba(229,201,107,.13); }
+.designly-step { min-height:270px;padding:30px;background:#080a0b;position:relative; }
+.designly-step-number { color:rgba(229,201,107,.28);font:500 48px "Cormorant Garamond",serif; }
+.designly-step-mark { width:34px;height:34px;margin:44px 0 17px;border:1px solid rgba(229,201,107,.25);display:grid;place-items:center;color:#d4ab3d; }
+.designly-step h3 { margin:0 0 8px;font:600 23px "Cormorant Garamond",serif; }
+.designly-step p { margin:0;color:rgba(228,217,192,.48);font:400 11px/1.7 "Inter",sans-serif; }
+
+.designly-template-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:8px; }
+.designly-template {
+  position:relative;min-height:180px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;
+  color:#f9f5ec;border:1px solid rgba(229,201,107,.13);background:linear-gradient(145deg,#121415,#070809);transition:.35s;
+}
+.designly-template:hover { transform:translateY(-4px);border-color:rgba(229,201,107,.42); }
+.designly-template::before { content:"";position:absolute;inset:0;background:radial-gradient(circle at 70% 20%,rgba(196,154,46,.10),transparent 45%); }
+.designly-template-2::before,.designly-template-5::before { background:radial-gradient(circle at 30% 80%,rgba(130,140,145,.10),transparent 50%); }
+.designly-template-3::before,.designly-template-6::before { background:linear-gradient(135deg,rgba(196,154,46,.08),transparent 60%); }
+.designly-template-number { position:relative;color:rgba(229,201,107,.35);font:600 9px "Inter",sans-serif;letter-spacing:.2em; }
+.designly-template span:nth-child(2) { position:relative;font:500 24px "Cormorant Garamond",serif; }
+.designly-template svg { position:relative;color:rgba(229,201,107,.55);align-self:flex-end; }
+
+.designly-credits { position:relative;overflow:hidden;min-height:600px;display:flex;align-items:center;padding:100px max(24px,calc((100vw - 1240px)/2));border-top:1px solid var(--ds-line);border-bottom:1px solid var(--ds-line);background:#080a0b; }
+.designly-credit-orbit { position:absolute;left:-90px;top:50%;transform:translateY(-50%);opacity:.40; }
+.designly-credit-content { position:relative;z-index:2;margin-left:360px;max-width:650px; }
+.designly-credit-stats { display:grid;grid-template-columns:repeat(4,1fr);margin:38px 0 28px;border-top:1px solid rgba(229,201,107,.15);border-bottom:1px solid rgba(229,201,107,.15); }
+.designly-credit-stats div { padding:18px 12px;border-right:1px solid rgba(229,201,107,.10); }
+.designly-credit-stats div:last-child { border-right:0; }
+.designly-credit-stats strong { display:block;color:#f5ebcc;font:600 24px "Cormorant Garamond",serif; }
+.designly-credit-stats span { color:rgba(228,217,192,.42);font:600 7px "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase; }
+
+.designly-pricing-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:10px; }
+.designly-price-card { position:relative;min-height:390px;padding:28px 22px;border:1px solid rgba(229,201,107,.13);background:linear-gradient(155deg,#111314,#070809);display:flex;flex-direction:column; }
+.designly-price-card.featured { border-color:rgba(229,201,107,.48);background:linear-gradient(155deg,rgba(54,44,24,.62),#08090a);box-shadow:0 20px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(245,235,204,.08); }
+.designly-price-badge { position:absolute;top:-9px;left:18px;padding:4px 8px;background:#d4ab3d;color:#08090a;font:700 7px "Inter",sans-serif;letter-spacing:.14em; }
+.designly-price-name { color:rgba(229,201,107,.72);font:600 9px "Inter",sans-serif;letter-spacing:.20em;text-transform:uppercase; }
+.designly-price-card>strong { margin-top:24px;font:600 29px "Cormorant Garamond",serif; }
+.designly-price-card>strong small { font-size:12px;color:rgba(228,217,192,.48); }
+.designly-price-period { color:rgba(228,217,192,.35);font:500 8px "Inter",sans-serif;margin-top:2px; }
+.designly-price-credits { display:flex;align-items:center;gap:6px;margin:22px 0;padding:10px;border:1px solid rgba(229,201,107,.12);color:#d4ab3d;font:600 9px "Inter",sans-serif; }
+.designly-price-card ul { list-style:none;padding:0;margin:0 0 20px;display:flex;flex-direction:column;gap:9px;flex:1; }
+.designly-price-card li { display:flex;gap:7px;color:rgba(228,217,192,.50);font:400 10px/1.4 "Inter",sans-serif; }
+.designly-price-card li svg { color:#d4ab3d;flex:none;margin-top:1px; }
+.designly-price-card .btn-gold,.designly-price-button { width:100%;padding:10px;border-radius:5px;font:600 9px "Inter",sans-serif;letter-spacing:.10em;text-transform:uppercase; }
+.designly-price-button { display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(229,201,107,.20);color:#f0e9d8;background:transparent; }
+
+.designly-faq { max-width:920px; }
+.designly-faq-list { border-top:1px solid rgba(229,201,107,.16); }
+.designly-faq-item { border-bottom:1px solid rgba(229,201,107,.16); }
+.designly-faq-item button { width:100%;display:grid;grid-template-columns:45px 1fr 20px;align-items:center;gap:12px;padding:24px 4px;text-align:left;color:#f9f5ec;background:none; }
+.designly-faq-item button>span { color:rgba(229,201,107,.38);font:600 8px "Inter",sans-serif;letter-spacing:.18em; }
+.designly-faq-item button strong { font:500 19px "Cormorant Garamond",serif; }
+.designly-faq-item button svg { color:rgba(229,201,107,.52);transition:.3s; }
+.designly-faq-item.open button svg { transform:rotate(180deg); }
+.designly-faq-answer { margin:-3px 45px 23px 45px;color:rgba(228,217,192,.52);font:400 12px/1.8 "Inter",sans-serif;max-width:720px; }
+
+.designly-final { position:relative;text-align:center;overflow:hidden;padding:150px 24px 120px;background:radial-gradient(circle at 50% 48%,rgba(196,154,46,.10),transparent 35%),#030405; }
+.designly-final::before,.designly-final::after { content:"";position:absolute;top:50%;width:30%;height:1px;background:linear-gradient(90deg,transparent,rgba(229,201,107,.20)); }
+.designly-final::before { left:0; }.designly-final::after { right:0;transform:rotate(180deg); }
+.designly-final .designly-eyebrow { display:flex;justify-content:center;margin-top:34px; }
+.designly-final h2 { margin:15px auto 30px; }
+.designly-final-button { padding:14px 28px;text-transform:uppercase;letter-spacing:.14em;font-size:10px; }
+
+.designly-final-runes { position:absolute;top:40px;left:50%;transform:translateX(-50%);width:90%;color:rgba(229,201,107,.15);font:14px serif;letter-spacing:.55em;white-space:nowrap; }
+
+.designly-footer { display:flex;align-items:center;justify-content:space-between;gap:25px;padding:24px max(24px,calc((100vw - 1240px)/2));border-top:1px solid rgba(229,201,107,.12);background:#050607; }
+.designly-footer-brand { display:flex;align-items:center;gap:10px; }
+.designly-footer-brand>span { display:flex;flex-direction:column;font:600 12px "Cormorant Garamond",serif;letter-spacing:.20em; }
+.designly-footer-brand small { margin-top:3px;color:#d4ab3d;font:600 6px "Inter",sans-serif;letter-spacing:.30em; }
+.designly-footer p,.designly-footer button { color:rgba(228,217,192,.34);font:500 8px "Inter",sans-serif;letter-spacing:.12em;text-transform:uppercase; }
+.designly-footer button:hover { color:#d4ab3d; }
+
+@keyframes ds-hero-breathe { from{transform:scale(1.015)}to{transform:scale(1.045)} }
+@keyframes ds-wave { from{opacity:.35}to{opacity:.85} }
+
+@media (max-width:1000px){
+  .designly-hero{height:900px}
+  .designly-manifesto{grid-template-columns:90px 1fr;gap:30px}
+  .designly-manifesto p{grid-column:2}
+  .designly-capability-grid{grid-template-columns:repeat(2,1fr)}
+  .designly-template-grid{grid-template-columns:repeat(3,1fr)}
+  .designly-pricing-grid{grid-template-columns:repeat(3,1fr)}
+  .designly-price-card:nth-child(4),.designly-price-card:nth-child(5){margin-top:0}
+  .designly-workflow-grid{grid-template-columns:repeat(2,1fr)}
+  .designly-credit-content{margin-left:280px}
+}
+
+@media (max-width:640px){
+  .designly-hero{height:850px;min-height:850px;align-items:flex-end}
+  .designly-hero-image{object-position:50% top}
+  .designly-hero-runes{top:82px;width:82vw;font-size:11px}
+  .designly-hero-emblem{top:72px;opacity:.22;transform:translateX(-50%) scale(.72)}
+  .designly-hero-copy{padding-bottom:58px}
+  .designly-hero-copy h1{font-size:4.35rem}
+  .designly-hero-copy p{font-size:12px;padding:0 12px}
+  .designly-hero-actions{flex-direction:column;align-items:stretch;padding:0 24px}
+  .designly-proof{gap:10px;flex-wrap:wrap;font-size:7px}
+  .designly-scroll{display:none}
+  .designly-manifesto{width:calc(100% - 34px);grid-template-columns:1fr;padding:65px 0;gap:22px}
+  .designly-manifesto-mark{display:none}
+  .designly-manifesto p{grid-column:auto}
+  .designly-section{width:calc(100% - 34px);padding:82px 0}
+  .designly-section-head{display:block;margin-bottom:34px}
+  .designly-section-head>p{margin-top:18px}
+  .designly-capability-grid{grid-template-columns:1fr}
+  .designly-capability{min-height:250px}
+  .designly-capability-icon{margin-top:42px}
+  .designly-music{min-height:680px;padding:90px 24px;align-items:flex-end}
+  .designly-music-orbit{right:-150px;top:80px;transform:none;opacity:.35}
+  .designly-music-content{width:100%}
+  .designly-wave{width:100%;bottom:55px;opacity:.25}
+  .designly-workflow-grid{grid-template-columns:1fr}
+  .designly-step{min-height:220px}
+  .designly-template-grid{grid-template-columns:repeat(2,1fr)}
+  .designly-template{min-height:145px;padding:16px}
+  .designly-template span:nth-child(2){font-size:19px}
+  .designly-credits{min-height:650px;padding:90px 24px;align-items:flex-end}
+  .designly-credit-orbit{left:50%;top:-100px;transform:translateX(-50%);opacity:.25}
+  .designly-credit-content{margin:0;width:100%}
+  .designly-credit-stats{grid-template-columns:repeat(2,1fr)}
+  .designly-credit-stats div:nth-child(2){border-right:0}
+  .designly-pricing-grid{grid-template-columns:1fr}
+  .designly-price-card{min-height:0}
+  .designly-faq-item button{grid-template-columns:30px 1fr 18px}
+  .designly-faq-item button strong{font-size:17px}
+  .designly-faq-answer{margin-left:30px}
+  .designly-final{padding:115px 20px 90px}
+  .designly-final::before,.designly-final::after{display:none}
+  .designly-footer{flex-direction:column;text-align:center;padding:28px 20px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .designly-hero-image,.designly-wave i{animation:none!important}
+}
