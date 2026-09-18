@@ -10,6 +10,7 @@ export interface GenerationParams {
   format?: string;
   projectId?: string;
   campaignId?: string;
+  previewId?: string;
 }
 
 export interface GenerationResult {
