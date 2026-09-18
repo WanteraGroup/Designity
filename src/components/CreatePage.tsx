@@ -29,6 +29,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [preview, setPreview] = useState<AgentDesignBrief | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const [approved, setApproved] = useState(false);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
 
@@ -93,6 +95,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!selectedType || brief.trim().length < 5) return;
     setPreviewError(null);
     setPreview(null);
+    setPreviewImageUrl(null);
+    setPreviewId(null);
     setActiveAgents([]);
     setApproved(false);
     setPreviewLoading(true);
@@ -113,6 +117,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     }
 
     setPreview(result.designBrief);
+    setPreviewImageUrl(result.previewImageUrl || null);
+    setPreviewId(result.previewId || null);
     setActiveAgents(result.activeAgents || ['master']);
     setStep(3);
   };
@@ -173,6 +179,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       brief,
       brandKitId: selectedBrand,
       projectId: projectData.id,
+      previewId,
     });
 
     if (!genResult.success) {
@@ -344,6 +351,20 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             </div>
           )}
 
+          {previewImageUrl && (
+            <div className="card-lux overflow-hidden border-gold-600/25 bg-ink-950">
+              <div className="px-5 py-3 border-b border-gold-600/15 flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-gold-400">AI eredmény – előnézet</span>
+                <span className="text-xs text-cream-300/50">0 kredit</span>
+              </div>
+              <img
+                src={previewImageUrl}
+                alt="DESIGNLY AI preview"
+                className="block w-full h-auto"
+              />
+            </div>
+          )}
+
           {preview && (
             <div className="grid gap-4 md:grid-cols-2">
               <div className="card-lux p-5 space-y-4">
@@ -416,7 +437,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                 <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
                 <button
                   onClick={() => setApproved(true)}
-                  disabled={!preview || !hasEnoughCredits}
+                  disabled={!preview || !previewImageUrl || !previewId || !hasEnoughCredits}
                   className="btn-gold text-sm disabled:opacity-40"
                 >
                   {t('designer.select')}
