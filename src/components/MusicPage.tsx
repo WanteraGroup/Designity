@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3 } from 'lucide-react';
+import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3 } from 'lucide-react';
+import { CelticEmblem } from './CelticEmblem';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
@@ -17,7 +18,22 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [title, setTitle] = useState('DESIGNLY AI Song');
   const [error, setError] = useState('');
   const [playing, setPlaying] = useState(false);
+  const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string; created_at: string }>>([]);
   const cost = useMemo(() => Math.ceil(duration / 60) * 100, [duration]);
+
+  const loadLibrary = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('music_generations')
+      .select('id,title,duration_seconds,audio_url,created_at')
+      .order('created_at', { ascending: false })
+      .limit(12);
+    setLibrary(data || []);
+  };
+
+  useMemo(() => {
+    void loadLibrary();
+  }, [user?.id]);
 
   const generate = async () => {
     if (!user) { onNavigate('login'); return; }
@@ -38,6 +54,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || data.error || 'A zene generálása sikertelen.');
       setAudioUrl(data.audioUrl);
+      await loadLibrary();
     } catch (e) { setError(e instanceof Error ? e.message : 'A zene generálása sikertelen.'); }
     finally { setLoading(false); }
   };
@@ -48,16 +65,24 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
     if (audio.paused) { void audio.play(); setPlaying(true); } else { audio.pause(); setPlaying(false); }
   };
 
-  const sendEmail = () => {
-    if (!audioUrl) return;
-    const subject = encodeURIComponent('DESIGNLY AI dal – ' + title);
-    const body = encodeURIComponent('Elkészült a DESIGNLY AI dalom.\n\nLejátszás / letöltés:\n' + audioUrl + '\n\nA dalt a DESIGNLY STUDIO készítette.');
+  const sendEmail = (url = audioUrl, songTitle = title) => {
+    if (!url) return;
+    const subject = encodeURIComponent('DESIGNLY AI dal – ' + songTitle);
+    const body = encodeURIComponent('Elkészült a DESIGNLY AI dalom.\n\nLejátszás / letöltés:\n' + url + '\n\nA dalt a DESIGNLY STUDIO készítette.');
     window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
   };
 
   return <div className="space-y-8">
+    <section className="relative overflow-hidden rounded-2xl border border-gold-600/20 bg-ink-950/80 p-6 lg:p-8">
+      <div className="absolute -right-16 -top-20 opacity-30 pointer-events-none"><CelticEmblem size={240} animate showD /></div>
+      <div className="relative z-10 max-w-3xl">
+        <div className="flex items-center gap-2 text-gold-300 text-[11px] uppercase tracking-[0.28em]"><Disc3 className="w-4 h-4" /> DESIGNLY CREATIVE AUDIO</div>
+        <h1 className="font-display text-3xl lg:text-5xl text-cream-50 mt-3">AI Music Studio</h1>
+        <p className="text-cream-300/60 mt-3 max-w-2xl leading-relaxed">Dalszöveg → zene → valódi énekes előadás. A kész mű WAV formátumban lejátszható, letölthető és megosztható e-mailben.</p>
+      </div>
+    </section>
     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
-      <div><div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]"><Music2 className="w-4 h-4" /> AI Music Studio</div><h1 className="font-display text-3xl lg:text-4xl text-cream-100 mt-2">Dalszöveg + zene + ének</h1><p className="text-cream-400/60 mt-2 max-w-2xl">A saját dalszövegedből komplett, énekes AI-dalt készíthetsz. A kész WAV fájl lejátszható és letölthető.</p></div>
+      <div><div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]"><Music2 className="w-4 h-4" /> SONG BUILDER</div><h2 className="font-display text-2xl lg:text-3xl text-cream-100 mt-2">Építsd fel a saját dalodat</h2><p className="text-cream-400/60 mt-2 max-w-2xl">A dalszöveg és a zenei irány alapján a rendszer komplett dalt készít énekkel.</p></div>
       <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-200">{cost} kredit / {duration} mp</div>
     </div>
     <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
@@ -72,6 +97,6 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
         {error && <div className="rounded-xl border border-red-500/20 bg-red-500/5 text-red-200 text-sm p-3">{error}</div>}
       </section>
     </div>
-    {audioUrl && <section className="card-premium p-5 lg:p-7"><div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.2em] text-gold-300">Elkészült mű</div><h2 className="font-display text-2xl text-cream-100 mt-1">{title}</h2></div><div className="flex flex-wrap gap-2"><button onClick={togglePlay} className="btn-gold flex items-center gap-2">{playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />} Lejátszás</button><a href={audioUrl} download target="_blank" rel="noreferrer" className="btn-ghost flex items-center gap-2"><Download className="w-4 h-4" /> WAV letöltése</a><button onClick={sendEmail} className="btn-ghost flex items-center gap-2"><Mail className="w-4 h-4" /> Küldés e-mailben</button></div></div><div className="mt-5 rounded-xl border border-gold-600/10 bg-ink-950/70 p-4"><audio id="designly-audio" src={audioUrl} controls className="w-full" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} /></div><div className="mt-3 flex items-center gap-2 text-xs text-cream-500/60"><Clock3 className="w-3.5 h-3.5" /> A dal a DESIGNLY kredit-egyenlegből készült.</div></section>}
+    {audioUrl && <section className="card-premium p-5 lg:p-7"><div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.2em] text-gold-300">Elkészült mű</div><h2 className="font-display text-2xl text-cream-100 mt-1">{title}</h2></div><div className="flex flex-wrap gap-2"><button onClick={togglePlay} className="btn-gold flex items-center gap-2">{playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />} Lejátszás</button><a href={audioUrl} download target="_blank" rel="noreferrer" className="btn-ghost flex items-center gap-2"><Download className="w-4 h-4" /> WAV letöltése</a><button onClick={sendEmail} className="btn-ghost flex items-center gap-2"><Mail className="w-4 h-4" /> Küldés e-mailben</button></div></div><div className="mt-5 rounded-xl border border-gold-600/10 bg-ink-950/70 p-4"><audio id="designly-audio" src={audioUrl} controls className="w-full music-audio" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} /></div><div className="mt-3 flex items-center gap-2 text-xs text-cream-500/60"><Clock3 className="w-3.5 h-3.5" /> A dal a DESIGNLY kredit-egyenlegből készült.</div></section>}
   </div>;
 }
