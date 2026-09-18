@@ -87,22 +87,22 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
           const x2 = 200 + Math.cos(a2) * r;
           const y2 = 200 + Math.sin(a2) * r;
           return (
-            <path
-              key={`arc-${i}`}
-              d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
-              fill="none"
-              stroke={`url(#${gid}-goldEdge)`}
-              strokeWidth="3.8"
-              opacity="0.9"
-            />
-            <path
-              key={`arc-inner-${i}`}
-              d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
-              fill="none"
-              stroke={`url(#${gid}-gold)`}
-              strokeWidth="1.7"
-              opacity="0.95"
-            />
+            <g key={`arc-${i}`}>
+              <path
+                d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
+                fill="none"
+                stroke={`url(#${gid}-goldEdge)`}
+                strokeWidth="3.8"
+                opacity="0.9"
+              />
+              <path
+                d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
+                fill="none"
+                stroke={`url(#${gid}-gold)`}
+                strokeWidth="1.7"
+                opacity="0.95"
+              />
+            </g>
           );
         })}
 
