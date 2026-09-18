@@ -1,6 +1,6 @@
 export type AppRole = 'owner' | 'admin' | 'user';
 
-export type PlanId = 'free' | 'starter' | 'pro' | 'business' | 'agency' | 'owner';
+export type PlanId = 'free' | 'starter' | 'pro' | 'business' | 'agency' | 'ultimate' | 'owner';
 
 export interface Plan {
   id: PlanId;
