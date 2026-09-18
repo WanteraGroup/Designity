@@ -84,22 +84,22 @@ export function getCustomCreditPrice(credits: number): number {
 }
 
 export const GENERATION_COSTS: GenerationCost[] = [
-  { type: 'social', label: 'Social Media Post', credits: 3 },
-  { type: 'business_card', label: 'Business Card', credits: 4 },
-  { type: 'invitation', label: 'Invitation', credits: 4 },
-  { type: 'flyer', label: 'Flyer', credits: 4 },
-  { type: 'menu', label: 'Menu', credits: 4 },
-  { type: 'pricelist', label: 'Price List', credits: 4 },
-  { type: 'logo', label: 'Logo', credits: 10 },
-  { type: 'poster', label: 'Poster', credits: 6 },
-  { type: 'advertisement', label: 'Advertisement', credits: 8 },
-  { type: 'brand', label: 'Brand Identity', credits: 25 },
-  { type: 'landing', label: 'Landing Page', credits: 30 },
-  { type: 'brochure', label: 'Brochure', credits: 15 },
-  { type: 'presentation', label: 'Presentation', credits: 20 },
-  { type: 'website', label: 'Full Website', credits: 60 },
-  { type: 'campaign', label: 'Campaign Bundle', credits: 40 },
-  { type: 'custom', label: 'Custom Design', credits: 50 },
+  { type: 'social', label: 'Social Media Post', credits: 100 },
+  { type: 'business_card', label: 'Business Card', credits: 150 },
+  { type: 'invitation', label: 'Invitation', credits: 150 },
+  { type: 'flyer', label: 'Flyer', credits: 200 },
+  { type: 'menu', label: 'Menu', credits: 200 },
+  { type: 'pricelist', label: 'Price List', credits: 200 },
+  { type: 'poster', label: 'Poster', credits: 250 },
+  { type: 'logo', label: 'Logo', credits: 300 },
+  { type: 'advertisement', label: 'Advertisement', credits: 300 },
+  { type: 'brochure', label: 'Brochure', credits: 450 },
+  { type: 'brand', label: 'Brand Identity', credits: 600 },
+  { type: 'presentation', label: 'Presentation', credits: 600 },
+  { type: 'landing', label: 'Landing Page', credits: 1000 },
+  { type: 'campaign', label: 'Campaign Bundle', credits: 1500 },
+  { type: 'custom', label: 'Custom Design', credits: 2000 },
+  { type: 'website', label: 'Full Website', credits: 3000 },
 ];
 
 export const AD_FORMATS: AdFormat[] = [
