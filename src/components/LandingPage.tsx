@@ -56,6 +56,15 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="absolute inset-0 bg-gradient-to-b from-ink-950/20 via-ink-950/55 to-ink-950" />
         <div className="hero-art-vignette" aria-hidden="true" />
 
+        <div className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
+          {['AI', 'DESIGN', 'BRAND', 'WEB', 'BUSINESS'].map((item) => <span key={item}>{item}</span>)}
+          <span className="mt-2 h-px w-10 bg-gold-500/50" />
+        </div>
+        <div className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col items-end gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
+          {['VISION', 'STRATEGY', 'CREATIVITY', 'TECHNOLOGY', 'RESULTS'].map((item) => <span key={item}>{item}</span>)}
+          <span className="mt-2 h-px w-10 bg-gold-500/50" />
+        </div>
+
         <div className="relative section-pad max-w-6xl mx-auto text-center z-10 hero-content">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-10 rounded-full border border-gold-600/20 bg-gold-600/5 animate-fade-in">
             <Sparkles className="w-4 h-4 text-gold-400" />
@@ -81,6 +90,16 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
               {t('hero.ctaSecondary')}
             </button>
           </div>
+        </div>
+
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 hidden lg:flex items-center gap-8 text-xs text-cream-300/80">
+          <div><span className="text-gold-300 font-medium">AI POWERED</span><span className="block text-[10px] text-cream-400/60">Professional results</span></div>
+          <div className="h-8 w-px bg-gold-500/20" />
+          <div><span className="text-gold-300 font-medium">PREMIUM TEMPLATES</span><span className="block text-[10px] text-cream-400/60">Print & digital formats</span></div>
+          <div className="h-8 w-px bg-gold-500/20" />
+          <div><span className="text-gold-300 font-medium">BRAND CONSISTENCY</span><span className="block text-[10px] text-cream-400/60">Your style, everywhere</span></div>
+          <div className="h-8 w-px bg-gold-500/20" />
+          <div><span className="text-gold-300 font-medium">SAVE TIME</span><span className="block text-[10px] text-cream-400/60">From idea to reality</span></div>
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-fade-in" style={{ animationDelay: '0.8s' }}>
