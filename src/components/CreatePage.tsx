@@ -31,6 +31,24 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [approved, setApproved] = useState(false);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem('designly_selected_template');
+      if (raw) {
+        const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string };
+        const allowed = GENERATION_COSTS.some((item) => item.type === tpl.type);
+        if (allowed) {
+          setSelectedType(tpl.type as ProjectType);
+          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}.`);
+          setStep(2);
+        }
+        localStorage.removeItem('designly_selected_template');
+      }
+    } catch {
+      localStorage.removeItem('designly_selected_template');
+    }
+  }, []);
+
+  useEffect(() => {
     async function loadBrands() {
       if (!profile) return;
       const { data } = await supabase
