@@ -109,8 +109,11 @@ function templateAt(index: number): DesignlyTemplate {
   };
 }
 
-// 50,000 deterministic templates are generated locally.
-// No 50,000-row database table and no paid template-generation API are required.
-export const DESIGNLY_TEMPLATES: DesignlyTemplate[] = Array.from({ length: 50000 }, (_, i) => templateAt(i));
-
-export const TEMPLATE_TOTAL = DESIGNLY_TEMPLATES.length;
+// 50,000 deterministic templates are available locally.
+// The catalogue is generated on demand to avoid allocating 50,000 objects during app startup.
+export const TEMPLATE_TOTAL = 50000;
+export const DESIGNLY_TEMPLATE_INDEXES = Array.from({ length: TEMPLATE_TOTAL }, (_, i) => i);
+export function getDesignlyTemplate(index: number): DesignlyTemplate {
+  const safeIndex = Math.max(0, Math.min(TEMPLATE_TOTAL - 1, Math.floor(index)));
+  return templateAt(safeIndex);
+}
