@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type SyntheticEvent } from 'react';
 import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -70,6 +70,13 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
+  const canDownloadImages = isOwner || profile?.role === 'admin';
+
+  const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
+    if (!canDownloadImages) {
+      event.preventDefault();
+    }
+  };
 
   const getAgentOutput = (): DesignOutput => {
     const map: Record<string, DesignOutput> = {
@@ -229,7 +236,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             <img
               src={generatedImageUrl}
               alt="DESIGNLY AI generated design"
-              className="block w-full h-auto"
+              draggable={canDownloadImages}
+              onContextMenu={protectImage}
+              onDragStart={protectImage}
+              className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
             />
           </div>
         ) : (
@@ -393,7 +403,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <img
                 src={previewImageUrl}
                 alt="DESIGNLY AI preview"
-                className="block w-full h-auto"
+                draggable={canDownloadImages}
+                onContextMenu={protectImage}
+                onDragStart={protectImage}
+                className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
               />
             </div>
           )}
