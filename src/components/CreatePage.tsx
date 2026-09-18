@@ -29,6 +29,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [preview, setPreview] = useState<AgentDesignBrief | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [approved, setApproved] = useState(false);
+  const [activeAgents, setActiveAgents] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -91,6 +92,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!selectedType || brief.trim().length < 5) return;
     setPreviewError(null);
     setPreview(null);
+    setActiveAgents([]);
     setApproved(false);
     setPreviewLoading(true);
 
@@ -110,6 +112,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     }
 
     setPreview(result.designBrief);
+    setActiveAgents(result.activeAgents || ['master']);
     setStep(3);
   };
 
