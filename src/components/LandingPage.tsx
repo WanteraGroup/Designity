@@ -144,6 +144,46 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
       </section>
 
+      {/* AI Music Studio highlight */}
+      <section id="ai-music" className="py-20 lg:py-28 section-pad relative overflow-hidden">
+        <div className="absolute inset-0 bg-radial-gold opacity-30 pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto">
+          <div className="card-lux overflow-hidden border-gold-600/30 bg-ink-950/80">
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr] items-center">
+              <div className="relative min-h-[300px] flex items-center justify-center p-8 lg:p-12 bg-gradient-to-br from-gold-600/[0.08] to-transparent">
+                <div className="absolute inset-0 flex items-center justify-center opacity-60 pointer-events-none">
+                  <CelticEmblem size={280} animate showD />
+                </div>
+                <div className="relative z-10 w-20 h-20 rounded-full border border-gold-500/40 bg-ink-950/80 flex items-center justify-center shadow-2xl">
+                  <Music2 className="w-9 h-9 text-gold-300" />
+                </div>
+              </div>
+              <div className="p-8 lg:p-12">
+                <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em] mb-4">
+                  <Music2 className="w-4 h-4" /> AI Music Studio
+                </div>
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-cream-50 text-balance mb-5">
+                  Készíts saját dalt, lepd meg vele szeretteid és barátaid
+                </h2>
+                <p className="text-base lg:text-lg text-cream-300/70 leading-relaxed max-w-2xl mb-6">
+                  Írj dalszöveget vagy generáltass egyet, szerkeszd szabadon, majd készíts belőle komplett zenét énekhanggal. Hallgasd meg, töltsd le WAV-ban, és oszd meg e-mailben.
+                </p>
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Dalszöveg-generátor</span>
+                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Szerkeszthető dalszöveg</span>
+                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">Zene + ének</span>
+                  <span className="chip border-gold-600/25 bg-gold-600/10 text-gold-200">WAV letöltés</span>
+                </div>
+                <button onClick={() => onNavigate('signup')} className="btn-gold text-base">
+                  <Music2 className="w-5 h-5" />
+                  Saját dal készítése
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* AI Creative Workflow */}
       <section id="workflow" className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-radial-gold opacity-50" />
