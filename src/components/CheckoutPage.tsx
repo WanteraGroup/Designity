@@ -3,7 +3,7 @@ import { Check, X, AlertCircle, CreditCard, Loader2, ArrowRight, Mail, Clock, Re
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { createCheckout, getPaymentStatus } from '@/lib/ai';
-import { PUBLIC_PLANS, CREDIT_PACKAGES, formatPrice } from '@/lib/constants';
+import { PUBLIC_PLANS, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
 
 interface CheckoutPageProps {
   onNavigate: (page: string) => void;
@@ -54,10 +54,14 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     return () => clearInterval(interval);
   }, [status, paymentId, checkPaymentStatus]);
 
+  const customCreditMatch = item?.type === 'credit_package' ? item.itemId.match(/^custom_(\\d+)$/) : null;
+  const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
   const selectedItem = item
     ? item.type === 'subscription'
       ? PUBLIC_PLANS.find((p) => p.id === item.itemId)
-      : CREDIT_PACKAGES.find((p) => p.id === item.itemId)
+      : customCreditCount !== null
+        ? { id: item.itemId, credits: customCreditCount, price: getCustomCreditPrice(customCreditCount), label: `${customCreditCount.toLocaleString()} credits` }
+        : CREDIT_PACKAGES.find((p) => p.id === item.itemId)
     : null;
 
   const handleCheckout = async () => {
