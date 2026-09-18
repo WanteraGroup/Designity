@@ -154,7 +154,7 @@
 .hero-cinematic {
   isolation: isolate;
   background: #050505;
-  min-height: 980px;
+  min-height: 920px;
 }
 .hero-frame {
   border-bottom: 1px solid rgba(196,154,46,0.18);
@@ -169,7 +169,7 @@
   box-shadow: inset 0 0 80px rgba(0,0,0,0.42);
 }
 .hero-copy-panel {
-  margin-top: 25rem;
+  margin-top: 20rem;
 }
 .hero-copy-panel::before {
   content: '';
@@ -191,7 +191,7 @@
   pointer-events: none;
   background-image: url('/designly-viking-hero.webp');
   background-size: cover;
-  background-position: center top;
+  background-position: center 18%;
   opacity: 1;
   filter: saturate(0.95) contrast(1.05);
   transform: translateZ(0);
@@ -248,7 +248,7 @@
 }
 
 .hero-content {
-  padding-top: 34rem;
+  padding-top: 28rem;
 }
 
 
@@ -392,7 +392,7 @@
   }
 
   .hero-content {
-    padding-top: 25rem;
+    padding-top: 22rem;
   }
 
   .hero-reference-art {
@@ -525,7 +525,7 @@
 
 @media (max-width: 640px) {
   .hero-cinematic { min-height: 900px; }
-  .hero-copy-panel { margin-top: 18rem; }
+  .hero-copy-panel { margin-top: 15rem; }
   .hero-frame::before { inset: .4rem; }
   .hero-emblem { top: 4.2rem; transform: translateX(-50%) scale(0.70); }
 }
