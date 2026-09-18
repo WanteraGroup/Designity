@@ -135,7 +135,13 @@ export function getCreditsForType(type: string): number {
   return cost ? cost.credits : 10;
 }
 
-export function formatPrice(ft: number): string {
+export const DISPLAY_EUR_HUF_RATE = 400;
+
+export function formatPrice(ft: number, lang = 'hu'): string {
+  if (lang !== 'hu') {
+    const eur = ft / DISPLAY_EUR_HUF_RATE;
+    return new Intl.NumberFormat(lang === 'uk' ? 'uk-UA' : lang, { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(eur);
+  }
   return new Intl.NumberFormat('hu-HU').format(ft) + ' Ft';
 }
 
