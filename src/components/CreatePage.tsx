@@ -41,11 +41,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     try {
       const raw = localStorage.getItem('designly_selected_template');
       if (raw) {
-        const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string };
+        const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string; effect?: string; fontPair?: string; palette?: string[] };
         const allowed = GENERATION_COSTS.some((item) => item.type === tpl.type);
         if (allowed) {
           setSelectedType(tpl.type as ProjectType);
-          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}.`);
+          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
           setStep(2);
         }
         localStorage.removeItem('designly_selected_template');
@@ -282,7 +282,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             {DESIGNLY_TEMPLATES.slice(0, 12).map((tpl) => (
               <button key={tpl.id} onClick={() => {
                 setSelectedType(tpl.type as ProjectType);
-                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}.`);
+                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}. Effect: ${tpl.effect}. Typography: ${tpl.fontPair}. Palette: ${tpl.palette.join(', ')}.`);
                 setStep(2);
               }} className="group rounded-xl border border-gold-600/15 bg-ink-950/70 p-3 text-left hover:border-gold-500/40 hover:bg-gold-600/5 transition-all">
                 <div className="aspect-[16/9] rounded-lg overflow-hidden border border-gold-600/10 mb-3" style={{ background: `linear-gradient(135deg, ${tpl.palette[0]}, ${tpl.palette[1]}66, ${tpl.palette[0]})` }}>
