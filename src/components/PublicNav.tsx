@@ -45,6 +45,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     templates: 'templates',
     projects: 'projects',
     music: 'music',
+    pricing: 'pricing',
   };
   const activeId = activePages[currentPage] ?? '';
 
@@ -195,7 +196,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
                 className="flex items-center justify-between py-2.5 text-base text-cream-200 hover:text-gold-200 transition-colors"
                 aria-expanded={mobileResourcesOpen}
               >
-                Resources
+                {lang === 'hu' ? 'Erőforrások' : 'Resources'}
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-300 ${mobileResourcesOpen ? 'rotate-180' : ''}`}
                 />
