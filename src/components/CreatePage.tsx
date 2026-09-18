@@ -25,6 +25,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [genStep, setGenStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [createdProject, setCreatedProject] = useState<string | null>(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [preview, setPreview] = useState<AgentDesignBrief | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -193,6 +194,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
     await refreshProfile();
 
+    setGeneratedImageUrl((genResult.result?.imageUrl as string) || null);
     setCreatedProject(projectData.id);
     setGenStep(5);
     await new Promise((r) => setTimeout(r, 800));
@@ -211,12 +213,25 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           <Check className="w-10 h-10 text-green-400" />
         </div>
         <h2 className="text-2xl font-display font-bold text-cream-50 mb-2">{t('gen.success')}</h2>
-        <p className="text-sm text-cream-300/60 mb-8">{t('gen.successDesc')}</p>
+        <p className="text-sm text-cream-300/60 mb-6">{t('gen.successDesc')}</p>
+        {generatedImageUrl ? (
+          <div className="w-full max-w-2xl mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-ink-900 shadow-2xl">
+            <img
+              src={generatedImageUrl}
+              alt="DESIGNLY AI generated design"
+              className="block w-full h-auto"
+            />
+          </div>
+        ) : (
+          <div className="w-full max-w-2xl mb-8 rounded-xl border border-gold-600/20 bg-ink-900/70 px-5 py-4 text-sm text-cream-300/70">
+            A generálás sikerült, de a kép nem érkezett vissza. Ezt a projektben még ellenőrizhetjük.
+          </div>
+        )}
         <div className="flex gap-3">
           <button onClick={() => onNavigate('editor')} className="btn-gold text-sm">
             {t('common.open')}
           </button>
-          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); }} className="btn-ghost text-sm">
+          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); }} className="btn-ghost text-sm">
             {t('common.createAnother')}
           </button>
         </div>
