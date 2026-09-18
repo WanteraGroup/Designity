@@ -102,7 +102,13 @@ Deno.serve(async (req: Request) => {
     if (!authHeader) return json({ error: "NO_SESSION" }, 401);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS");
+    let serviceRoleKey: string | undefined;
+    try {
+      serviceRoleKey = secretKeysRaw ? JSON.parse(secretKeysRaw)["default"] : undefined;
+    } catch {
+      serviceRoleKey = undefined;
+    }
     if (!supabaseUrl || !serviceRoleKey) return json({ error: "SERVER_CONFIG_ERROR" }, 500);
 
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
