@@ -249,7 +249,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <>
+      <div className="max-w-3xl mx-auto space-y-8">
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3].map((s) => (
@@ -574,7 +575,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
