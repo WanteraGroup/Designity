@@ -16,6 +16,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
+  updatePassword: (password: string) => Promise<{ error: string | null }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -124,7 +125,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
+    if (error) return { error: error.message };
+    return { error: null };
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
     if (error) return { error: error.message };
     return { error: null };
   }, []);
@@ -136,7 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       session, user, profile, loading, authKnown, isOwner, isAdmin, isUnlimited,
-      signUp, signIn, signOut, resetPassword, refreshProfile,
+      signUp, signIn, signOut, resetPassword, updatePassword, refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>
