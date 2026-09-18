@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, AlertCircle, Check } from 'lucide-react';
+import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
-import { GENERATION_COSTS, getCreditsForType } from '@/lib/constants';
+import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice } from '@/lib/constants';
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
@@ -33,6 +33,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [approved, setApproved] = useState(false);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   useEffect(() => {
     try {
@@ -430,7 +431,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               {!hasEnoughCredits && (
                 <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{t('gen.insufficientCredits')} <button onClick={() => onNavigate('credits')} className="underline">{t('credits.buyCredits')}</button>.</span>
+                  <span>{t('gen.insufficientCredits')} <button onClick={() => setShowCreditModal(true)} className="underline">{t('credits.buyCredits')}</button>.</span>
                 </div>
               )}
               <div className="flex justify-between items-center gap-3">
@@ -473,6 +474,71 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               </div>
             </div>
           )}
+        </div>
+      )}
+    </div>
+
+      {showCreditModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="credit-purchase-title"
+            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-gold-600/30 bg-ink-950 shadow-2xl"
+          >
+            <button
+              type="button"
+              onClick={() => setShowCreditModal(false)}
+              className="absolute right-4 top-4 w-9 h-9 rounded-full border border-ink-600/60 bg-ink-900 flex items-center justify-center text-cream-300 hover:text-cream-50"
+              aria-label="Bezárás"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="p-6 sm:p-8">
+              <div className="text-center pr-8">
+                <CreditCard className="w-10 h-10 text-gold-400 mx-auto mb-3" />
+                <h2 id="credit-purchase-title" className="text-xl sm:text-2xl font-display font-bold text-cream-50">
+                  {t('credits.buyCredits')}
+                </h2>
+                <p className="text-sm text-cream-300/60 mt-2">
+                  {t('gen.insufficientCredits')}
+                </p>
+                <div className="mt-3 text-sm text-gold-200">
+                  {t('credits.currentBalance')}: {isOwner ? '∞' : profile?.credits ?? 0} · {t('designer.finalCost')}: {cost}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                {CREDIT_PACKAGES.map((pkg) => (
+                  <div key={pkg.id} className="card-lux p-5 flex flex-col border-gold-600/15 hover:border-gold-600/40 transition-colors">
+                    <div className="text-2xl font-display font-bold gold-text">{pkg.credits.toLocaleString()}</div>
+                    <div className="text-xs text-cream-300/50 mt-1">{t('misc.credits')}</div>
+                    <div className="text-lg font-medium text-cream-100 mt-3 mb-4">{formatPrice(pkg.price, lang)}</div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCreditModal(false);
+                        onNavigate('checkout', { type: 'credit_package', itemId: pkg.id });
+                      }}
+                      className="btn-gold text-sm mt-auto"
+                    >
+                      <CreditCard className="w-4 h-4" />
+                      {t('credits.buyNow')}
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowCreditModal(false)}
+                className="btn-ghost text-sm w-full mt-5"
+              >
+                {t('common.back')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
