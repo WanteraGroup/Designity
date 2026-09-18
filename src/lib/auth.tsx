@@ -11,6 +11,7 @@ interface AuthContextValue {
   authKnown: boolean;
   isOwner: boolean;
   isAdmin: boolean;
+  isUnlimited: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
@@ -30,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async (uid: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, role, plan_id, credits, full_name, avatar_url, created_at')
+      .select('id, email, role, plan_id, credits, unlimited_access, full_name, avatar_url, created_at')
       .eq('id', uid)
       .maybeSingle();
 
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         role: 'user',
         plan_id: 'free',
         credits: 10,
+        unlimited_access: false,
         full_name: null,
         avatar_url: null,
         created_at: new Date().toISOString(),
@@ -129,10 +131,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isOwner = profile?.role === 'owner';
   const isAdmin = profile?.role === 'owner' || profile?.role === 'admin';
+  const isUnlimited = isOwner || profile?.unlimited_access === true;
 
   return (
     <AuthContext.Provider value={{
-      session, user, profile, loading, authKnown, isOwner, isAdmin,
+      session, user, profile, loading, authKnown, isOwner, isAdmin, isUnlimited,
       signUp, signIn, signOut, resetPassword, refreshProfile,
     }}>
       {children}
@@ -147,8 +150,8 @@ export function useAuth() {
 }
 
 export function useCredits() {
-  const { profile, isOwner, refreshProfile } = useAuth();
-  const credits = isOwner ? Infinity : (profile?.credits ?? 0);
+  const { profile, isUnlimited, refreshProfile } = useAuth();
+  const credits = isUnlimited ? Infinity : (profile?.credits ?? 0);
   return { credits, refreshProfile, isOwner };
 }
 
