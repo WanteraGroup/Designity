@@ -55,6 +55,14 @@ export const PUBLIC_PLANS: Plan[] = [
     projectLimit: 1000,
     features: ['1,500 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'],
   },
+  {
+    id: 'ultimate',
+    name: 'Ultimate',
+    priceMonthly: 59990,
+    creditsMonthly: 5000,
+    projectLimit: 5000,
+    features: ['5,000 credits / month', '5,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'],
+  },
 ];
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
