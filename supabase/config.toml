@@ -13,3 +13,7 @@ entrypoint = "./functions/designly-agent/index.ts"
 [functions.admin-gift]
 verify_jwt = true
 entrypoint = "./functions/admin-gift/index.ts"
+
+[functions.music-generate]
+verify_jwt = true
+entrypoint = "./functions/music-generate/index.ts"
