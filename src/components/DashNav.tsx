@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -22,6 +22,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     { id: 'create', label: t('nav.create'), icon: Plus },
     { id: 'advertising', label: t('nav.advertising'), icon: Megaphone },
     { id: 'campaign', label: t('nav.campaign'), icon: Layers },
+    { id: 'music', label: 'AI Music Studio', icon: Music2 },
     { id: 'projects', label: t('nav.projects'), icon: FolderOpen },
     { id: 'brands', label: t('nav.brands'), icon: Palette },
     { id: 'templates', label: t('nav.templatesDash'), icon: LayoutTemplate },
