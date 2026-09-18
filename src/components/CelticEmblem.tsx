@@ -32,11 +32,19 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
       >
         <defs>
           <linearGradient id={`${gid}-gold`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a87f24" />
-            <stop offset="25%" stopColor="#f5ebcc" />
-            <stop offset="50%" stopColor="#d4ab3d" />
-            <stop offset="75%" stopColor="#e0c066" />
+            <stop offset="0%" stopColor="#8a6820" />
+            <stop offset="22%" stopColor="#d8d8d2" />
+            <stop offset="42%" stopColor="#f4f1e8" />
+            <stop offset="58%" stopColor="#b8b8b3" />
+            <stop offset="78%" stopColor="#eee9dc" />
             <stop offset="100%" stopColor="#8a6820" />
+          </linearGradient>
+          <linearGradient id={`${gid}-goldEdge`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8a6820" />
+            <stop offset="35%" stopColor="#d4ab3d" />
+            <stop offset="55%" stopColor="#f5ebcc" />
+            <stop offset="75%" stopColor="#c49a2e" />
+            <stop offset="100%" stopColor="#6b5019" />
           </linearGradient>
           <radialGradient id={`${gid}-sheen`} cx="35%" cy="30%" r="70%">
             <stop offset="0%" stopColor="#f5ebcc" stopOpacity="0.4" />
@@ -61,7 +69,7 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
           const cy = 200 + Math.sin(angle) * 170;
           return (
             <g key={i} transform={`translate(${cx} ${cy}) rotate(${i * 45})`}>
-              <path d="M0,-18 L12,0 L0,18 L-12,0 Z" fill={`url(#${gid}-gold)`} opacity="0.85" />
+              <path d="M0,-18 L12,0 L0,18 L-12,0 Z" fill={`url(#${gid}-gold)`} stroke={`url(#${gid}-goldEdge)`} strokeWidth="2.4" opacity="0.95" />
               <path d="M0,-10 L6,0 L0,10 L-6,0 Z" fill="#0a0a0b" opacity="0.6" />
               <circle cx="0" cy="-22" r="2.5" fill={`url(#${gid}-gold)`} />
               <circle cx="0" cy="22" r="2.5" fill={`url(#${gid}-gold)`} />
@@ -83,9 +91,17 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
               key={`arc-${i}`}
               d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
               fill="none"
+              stroke={`url(#${gid}-goldEdge)`}
+              strokeWidth="3.8"
+              opacity="0.9"
+            />
+            <path
+              key={`arc-inner-${i}`}
+              d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`}
+              fill="none"
               stroke={`url(#${gid}-gold)`}
-              strokeWidth="2"
-              opacity="0.6"
+              strokeWidth="1.7"
+              opacity="0.95"
             />
           );
         })}
@@ -104,9 +120,16 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
               <path
                 d="M-10,-10 Q0,-20 10,-10 Q20,0 10,10 Q0,20 -10,10 Q-20,0 -10,-10 Z"
                 fill="none"
+                stroke={`url(#${gid}-goldEdge)`}
+                strokeWidth="3"
+                opacity="0.85"
+              />
+              <path
+                d="M-10,-10 Q0,-20 10,-10 Q20,0 10,10 Q0,20 -10,10 Q-20,0 -10,-10 Z"
+                fill="none"
                 stroke={`url(#${gid}-gold)`}
                 strokeWidth="1.5"
-                opacity="0.7"
+                opacity="0.95"
               />
               <circle cx="0" cy="0" r="3" fill={`url(#${gid}-gold)`} />
             </g>
