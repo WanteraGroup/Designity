@@ -54,7 +54,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         {/* Subtle gold light */}
         <div className="gold-light" style={{ width: 400, height: 400, top: 30, left: 'calc(50% - 200px)' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-ink-950/20 via-ink-950/55 to-ink-950" />
-        <div className="hero-art-vignette" aria-hidden="true" />
+        <div className="rune-field" aria-hidden="true">
+          {['ᚱ','ᚨ','ᚾ','ᛏ','ᚲ','ᛉ','ᛟ','ᚠ','ᚷ','ᛞ'].map((rune, i) => (
+            <span key={i} className="floating-rune" style={{ ['--rune-i' as string]: i } as React.CSSProperties}>{rune}</span>
+          ))}
+        </div>
+                <div className="hero-art-vignette" aria-hidden="true" />
 
         <div className="absolute left-6 lg:left-12 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col gap-2 text-[10px] sm:text-xs tracking-[0.28em] text-gold-200/80 uppercase">
           {['AI', 'DESIGN', 'BRAND', 'WEB', 'BUSINESS'].map((item) => <span key={item}>{item}</span>)}
