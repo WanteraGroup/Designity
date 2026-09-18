@@ -25,7 +25,7 @@ export const PUBLIC_PLANS: Plan[] = [
   {
     id: 'starter',
     name: 'Starter',
-    priceMonthly: 2990,
+    priceMonthly: 2490,
     creditsMonthly: 50,
     projectLimit: 15,
     features: ['50 credits / month', '15 projects', 'All export formats', 'Email support', 'Commercial usage'],
@@ -33,7 +33,7 @@ export const PUBLIC_PLANS: Plan[] = [
   {
     id: 'pro',
     name: 'Pro',
-    priceMonthly: 7990,
+    priceMonthly: 6990,
     creditsMonthly: 200,
     projectLimit: 60,
     features: ['200 credits / month', '60 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'],
@@ -42,7 +42,7 @@ export const PUBLIC_PLANS: Plan[] = [
   {
     id: 'business',
     name: 'Business',
-    priceMonthly: 14990,
+    priceMonthly: 12990,
     creditsMonthly: 500,
     projectLimit: 200,
     features: ['500 credits / month', '200 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'],
@@ -50,7 +50,7 @@ export const PUBLIC_PLANS: Plan[] = [
   {
     id: 'agency',
     name: 'Agency',
-    priceMonthly: 29990,
+    priceMonthly: 24990,
     creditsMonthly: 1500,
     projectLimit: 1000,
     features: ['1,500 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'],
@@ -58,7 +58,7 @@ export const PUBLIC_PLANS: Plan[] = [
   {
     id: 'ultimate',
     name: 'Ultimate',
-    priceMonthly: 59990,
+    priceMonthly: 49990,
     creditsMonthly: 5000,
     projectLimit: 5000,
     features: ['5,000 credits / month', '5,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'],
