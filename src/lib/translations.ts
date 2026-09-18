@@ -53,6 +53,7 @@ export type TranslationKey =
   | 'auth.forgotPassword' | 'auth.resetPassword' | 'auth.noAccount' | 'auth.haveAccount'
   | 'auth.fullName' | 'auth.backToLogin'
   | 'auth.resetSent' | 'auth.passwordTooShort' | 'auth.passwordMismatch'
+  | 'auth.setNewPassword' | 'auth.newPassword' | 'auth.updatePassword' | 'auth.passwordUpdated' | 'auth.emailRequired'
   // Common
   | 'common.generate' | 'common.cancel' | 'common.save' | 'common.delete' | 'common.edit'
   | 'common.loading' | 'common.comingSoon' | 'common.back' | 'common.close'
@@ -209,8 +210,9 @@ const en: TranslationDict = {
   'auth.forgotPassword': 'Forgot password?', 'auth.resetPassword': 'Send reset link',
   'auth.noAccount': "Don't have an account?", 'auth.haveAccount': 'Already have an account?',
   'auth.fullName': 'Full name', 'auth.backToLogin': 'Back to login',
-  'auth.resetSent': 'Reset link sent to your email.', 'auth.passwordTooShort': 'Password must be at least 6 characters.',
-  'auth.passwordMismatch': 'Passwords do not match.',
+  'auth.resetSent': 'Reset link sent to your email. Check your inbox and spam folder.', 'auth.passwordTooShort': 'Password must be at least 6 characters.',
+  'auth.passwordMismatch': 'Passwords do not match.', 'auth.setNewPassword': 'Set a new password', 'auth.newPassword': 'New password',
+  'auth.updatePassword': 'Update password', 'auth.passwordUpdated': 'Password updated successfully.', 'auth.emailRequired': 'Please enter your email address.',
   'common.generate': 'Generate', 'common.cancel': 'Cancel', 'common.save': 'Save', 'common.delete': 'Delete',
   'common.edit': 'Edit', 'common.loading': 'Loading…', 'common.comingSoon': 'Coming soon',
   'common.back': 'Back', 'common.close': 'Close', 'common.continue': 'Continue',
@@ -402,7 +404,7 @@ const hu: TranslationDict = {
   'auth.noAccount': 'Még nincs fiókod?', 'auth.haveAccount': 'Már van fiókod?',
   'auth.fullName': 'Teljes név', 'auth.backToLogin': 'Vissza a bejelentkezéshez',
   'auth.resetSent': 'Visszaállító link elküldve az e-mail címedre.', 'auth.passwordTooShort': 'A jelszónak legalább 6 karakter hosszúnak kell lennie.',
-  'auth.passwordMismatch': 'A jelszavak nem egyeznek.',
+  'auth.passwordMismatch': 'A jelszavak nem egyeznek.', 'auth.setNewPassword': 'Új jelszó beállítása', 'auth.newPassword': 'Új jelszó', 'auth.updatePassword': 'Jelszó frissítése', 'auth.passwordUpdated': 'A jelszó sikeresen frissítve.', 'auth.emailRequired': 'Add meg az e-mail-címedet.',
   'common.generate': 'Generálás', 'common.cancel': 'Mégse', 'common.save': 'Mentés', 'common.delete': 'Törlés',
   'common.edit': 'Szerkesztés', 'common.loading': 'Betöltés…', 'common.comingSoon': 'Hamarosan',
   'common.back': 'Vissza', 'common.close': 'Bezárás', 'common.continue': 'Folytatás',
