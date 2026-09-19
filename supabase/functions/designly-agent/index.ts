@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
+import { buildOrchestrationPlan } from "../_shared/orchestrator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -311,6 +312,7 @@ Return one coherent structured result.`;
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
     const text = body.brief.toLowerCase();
+    const orchestration = buildOrchestrationPlan(body.brief, fallbackOutputs);
 
     // Preview is intentionally free of DESIGNLY credits, but it still renders
     // a real image so the user can inspect the actual result before approving.
@@ -419,11 +421,11 @@ Return one coherent structured result.`;
     const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
     const isMonkeyDesign = /(monkey design|logo|arculat|brand|ui|ux|weboldal|landing|social|plakát|flyer|brosúra|prezentáció|névjegy)/i.test(text);
 
-    const activeAgents = [
-      "master",
+    const legacySpecialists = [
       ...(isTikTokShop ? ["tiktok_shop_research", "tiktok_shop_product", "tiktok_shop_listing", "tiktok_shop_creative", "tiktok_shop_video", "tiktok_shop_campaign", "tiktok_shop_health"] : []),
       ...(isMonkeyDesign ? ["monkey_design_director", "monkey_logo", "monkey_brand", "monkey_uiux", "monkey_web", "monkey_social", "monkey_marketing", "monkey_print", "monkey_presentation", "monkey_qa"] : []),
     ];
+    const activeAgents = ["master", ...orchestration.agents, ...legacySpecialists.filter((id) => !orchestration.agents.includes(id))];
 
     return json({
       success: true,
@@ -438,8 +440,22 @@ Return one coherent structured result.`;
         brand: structured.requiredOutputs.some((x) => ["logo", "brand_identity"].includes(x)),
         web: structured.requiredOutputs.some((x) => ["landing_page", "website"].includes(x)),
         social: structured.requiredOutputs.some((x) => ["social_post", "social_story"].includes(x)),
-        marketing: structured.requiredOutputs.some((x) => ["flyer", "poster", "brochure", "price_list", "invitation"].includes(x)),
+        marketing: structured.requiredOutputs.some((x) => ["flyer", "poster", "brochure", "price_list", "invitation", "campaign"].includes(x)),
         content: true,
+        video: orchestration.agents.includes("video"),
+        tiktokShop: orchestration.agents.includes("tiktok-shop"),
+        voice: orchestration.agents.includes("voice"),
+        translation: orchestration.agents.includes("translator"),
+        procurement: orchestration.agents.includes("procurement"),
+        recruitment: orchestration.agents.includes("recruitment"),
+        socialPublishing: orchestration.agents.includes("social-publisher"),
+        business: orchestration.agents.includes("vyron"),
+        sales: orchestration.agents.includes("sales"),
+      },
+      orchestration: {
+        agents: orchestration.agents,
+        capabilities: orchestration.capabilities,
+        reasons: orchestration.reasons,
       },
     });
   } catch (error) {
