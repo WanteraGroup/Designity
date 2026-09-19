@@ -178,6 +178,26 @@ Deno.serve(async (req: Request) => {
         message: "A Groq API kulcs nincs beállítva a DESIGNLY backendben. Az AI szerkesztéshez GROQ_API_KEY szükséges.",
       }, 503);
     }
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, role, credits")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError || !profile) {
+      return json({ error: "PROFILE_NOT_FOUND", message: "A felhasználói profil nem található." }, 404);
+    }
+
+    const editCost = 1;
+    if (profile.role !== "owner" && profile.credits < editCost) {
+      return json({
+        error: "INSUFFICIENT_CREDITS",
+        required: editCost,
+        balance: profile.credits,
+        message: "Nincs elegendő kredit az AI szerkesztéshez.",
+      }, 402);
+    }
+
 
     const model = Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
 
@@ -246,6 +266,19 @@ Deno.serve(async (req: Request) => {
     const parsed = JSON.parse(raw);
     const changes = sanitizeChanges(parsed.changes);
     const nextDesign = applyChanges(current, changes);
+
+
+    if (profile.role !== "owner") {
+      const { error: deductError } = await supabase.rpc("deduct_credits", {
+        p_user_id: user.id,
+        p_amount: editCost,
+        p_description: `DESIGNLY AI editor: ${command.slice(0, 80)}`,
+      });
+      if (deductError) {
+        console.error("Designly editor credit deduction failed:", deductError);
+        return json({ error: "CREDIT_DEDUCTION_FAILED", message: "A kredit levonása nem sikerült; a módosítást nem alkalmaztuk." }, 500);
+      }
+    }
 
     return json({
       ok: true,
