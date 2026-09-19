@@ -78,6 +78,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           <p>{t('landing.desc')}</p>
 
           <div className="dl-actions dl-reference-actions">
+            <button className="dl-btn dl-btn-secondary" onClick={() => { const url = import.meta.env.VITE_VYRON_URL; if (url) window.open(url, '_blank', 'noopener,noreferrer'); }}>
+              ◆ VYRON BUSINESS AI
+            </button>
             <button className="dl-btn dl-btn-primary" onClick={() => onNavigate('signup')}>
               {t('landing.start')} <ArrowRight className="w-4 h-4" />
             </button>
