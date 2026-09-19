@@ -73,30 +73,27 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
             <CelticEmblem size={410} animate showD />
           </div>
 
-          <div className="dl-reference-tag">AI-POWERED CREATIVE STUDIO</div>
-          <h1>Design without <em>limits.</em></h1>
-          <p>
-            Alkoss lenyűgöző képeket, videókat, zenét, weboldalakat és teljes márkákat —
-            mindent egy helyen, a mesterséges intelligencia erejével.
-          </p>
+          <div className="dl-reference-tag">{t('landing.tag')}</div>
+          <h1>{t('landing.title')} <em>{t('landing.emphasis')}</em></h1>
+          <p>{t('landing.desc')}</p>
 
           <div className="dl-actions dl-reference-actions">
             <button className="dl-btn dl-btn-primary" onClick={() => onNavigate('signup')}>
-              Kezdj el alkotni <ArrowRight className="w-4 h-4" />
+              {t('landing.start')} <ArrowRight className="w-4 h-4" />
             </button>
             <button className="dl-btn dl-btn-secondary" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
-              <Play className="w-4 h-4" /> Nézd meg a bemutatót
+              <Play className="w-4 h-4" /> {t('landing.demo')}
             </button>
           </div>
 
           <div className="dl-reference-stats">
-            <div><strong>50 000+</strong><span>SABLON</span></div>
+            <div><strong>50 000+</strong><span>{t('landing.templates')}</span></div>
             <i />
-            <div><strong>∞</strong><span>KREATÍV LEHETŐSÉG</span></div>
+            <div><strong>∞</strong><span>{t('landing.possibilities')}</span></div>
             <i />
-            <div><strong>12+</strong><span>AI ESZKÖZ</span></div>
+            <div><strong>12+</strong><span>{t('landing.tools')}</span></div>
             <i />
-            <div><strong>GYORS</strong><span>EREDMÉNYEK</span></div>
+            <div><strong>GYORS</strong><span>{t('landing.results')}</span></div>
           </div>
         </div>
 
