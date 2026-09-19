@@ -93,6 +93,19 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         </div>
       )}
 
+      {/* One-click Business Builder */}
+      <section className="relative overflow-hidden card-lux p-6 lg:p-8 border-gold-600/30 bg-gradient-to-r from-gold-600/10 via-ink-900/60 to-transparent">
+        <div className="absolute right-0 top-0 w-64 h-64 rounded-full bg-gold-500/5 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.28em] text-gold-300 mb-2">◆ AI BUSINESS BUILDER</div>
+            <h2 className="text-2xl lg:text-3xl font-display font-bold text-cream-50">Ötletből kész projekt.</h2>
+            <p className="text-sm text-cream-300/60 mt-2 max-w-2xl">A DESIGNLY létrehozza a projekt alapját, az AI ügynökök pedig a briefből felépítik a struktúrát, tartalmat és vizuális irányt. VYRON riportból is közvetlenül indítható.</p>
+          </div>
+          <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0">◆ AUTOMATIC BUILD INDÍTÁSA</button>
+        </div>
+      </section>
+
       {/* Quick create */}
       <div>
         <h2 className="text-lg font-display font-semibold text-cream-100 mb-4">{t('dash.quickCreate')}</h2>
