@@ -29,7 +29,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     fetch('/designly-landing%20(4).html', { cache: 'force-cache' })
       .then((response) => response.text())
       .then((html) => {
-        const match = html.match(/background-image:url\([\"']?(data:image\\/jpeg;base64,[^\"')]+)[\"']?\)/i);
+        const firstBackground = html.indexOf('background-image:url("');
+        const dataStart = html.indexOf('data:image/jpeg;base64,', firstBackground);
+        const dataEnd = html.indexOf('"', dataStart);
+        const background = dataStart >= 0 && dataEnd > dataStart ? html.slice(dataStart, dataEnd) : null;
+        if (active && background) setLandingHeroBackground(background);
         if (active && match?.[1]) setLandingHeroBackground(match[1]);
       })
       .catch(() => {
