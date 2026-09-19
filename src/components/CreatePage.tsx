@@ -192,7 +192,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       brief,
       brandKitId: selectedBrand ?? undefined,
       projectId: projectData.id,
-      previewId,
+      previewId: previewId ?? undefined,
     });
 
     if (!genResult.success) {
