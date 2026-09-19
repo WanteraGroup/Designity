@@ -113,8 +113,8 @@ Deno.serve(async (req: Request) => {
     const creditCost = (costs as Record<string, number>)[type] ?? 10;
 
     // Check if AI provider is configured
-    const aiProvider = Deno.env.get("AI_PROVIDER") || "none";
-    const aiApiKey = Deno.env.get("AI_API_KEY");
+    const aiProvider = Deno.env.get("AI_PROVIDER") || (Deno.env.get("GROQ_API_KEY") ? "groq" : "none");
+    const aiApiKey = Deno.env.get("AI_API_KEY") || Deno.env.get("GROQ_API_KEY");
 
     if (aiProvider === "none" || !aiApiKey) {
       // Provider not configured — record the job as failed, refund credits
