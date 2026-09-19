@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type SyntheticEvent } from 'react';
 import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
-import { DESIGNLY_TEMPLATES } from '@/lib/designly-templates';
+import { DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate } from '@/lib/designly-templates';
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
@@ -41,11 +41,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     try {
       const raw = localStorage.getItem('designly_selected_template');
       if (raw) {
-        const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string };
+        const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string; effect?: string; fontPair?: string; palette?: string[] };
         const allowed = GENERATION_COSTS.some((item) => item.type === tpl.type);
         if (allowed) {
           setSelectedType(tpl.type as ProjectType);
-          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}.`);
+          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
           setStep(2);
         }
         localStorage.removeItem('designly_selected_template');
@@ -70,6 +70,13 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
+  const canDownloadImages = isOwner || profile?.role === 'admin';
+
+  const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
+    if (!canDownloadImages) {
+      event.preventDefault();
+    }
+  };
 
   const getAgentOutput = (): DesignOutput => {
     const map: Record<string, DesignOutput> = {
@@ -229,7 +236,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             <img
               src={generatedImageUrl}
               alt="DESIGNLY AI generated design"
-              className="block w-full h-auto"
+              draggable={canDownloadImages}
+              onContextMenu={protectImage}
+              onDragStart={protectImage}
+              className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
             />
           </div>
         ) : (
@@ -279,10 +289,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             <button onClick={() => onNavigate('templates')} className="btn-ghost text-xs whitespace-nowrap">Összes sablon →</button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-            {DESIGNLY_TEMPLATES.slice(0, 12).map((tpl) => (
+            {DESIGNLY_TEMPLATE_INDEXES.slice(0, 12).map((index) => { const tpl = getDesignlyTemplate(index); return (
               <button key={tpl.id} onClick={() => {
                 setSelectedType(tpl.type as ProjectType);
-                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}.`);
+                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}. Effect: ${tpl.effect}. Typography: ${tpl.fontPair}. Palette: ${tpl.palette.join(', ')}.`);
                 setStep(2);
               }} className="group rounded-xl border border-gold-600/15 bg-ink-950/70 p-3 text-left hover:border-gold-500/40 hover:bg-gold-600/5 transition-all">
                 <div className="aspect-[16/9] rounded-lg overflow-hidden border border-gold-600/10 mb-3" style={{ background: `linear-gradient(135deg, ${tpl.palette[0]}, ${tpl.palette[1]}66, ${tpl.palette[0]})` }}>
@@ -297,7 +307,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                 <div className="text-xs font-medium text-cream-100 truncate">{tpl.name}</div>
                 <div className="text-[10px] text-gold-400/70 mt-1">{tpl.type}</div>
               </button>
-            ))}
+            ); })}
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -393,7 +403,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <img
                 src={previewImageUrl}
                 alt="DESIGNLY AI preview"
-                className="block w-full h-auto"
+                draggable={canDownloadImages}
+                onContextMenu={protectImage}
+                onDragStart={protectImage}
+                className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
               />
             </div>
           )}

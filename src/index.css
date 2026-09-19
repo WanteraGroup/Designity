@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bebas+Neue&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Marcellus&family=Merriweather:wght@400;700&family=Montserrat:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=Syne:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -139,6 +139,14 @@
   .chip {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border;
   }
+
+  .designly-glow-hover { transition: transform .45s ease, box-shadow .45s ease, border-color .45s ease; }
+  .designly-glow-hover:hover { transform: translateY(-3px); box-shadow: 0 18px 50px rgba(196,154,46,.14), inset 0 1px 0 rgba(255,255,255,.05); }
+  .designly-metallic { background: linear-gradient(115deg, rgba(255,255,255,.03), rgba(229,201,107,.14), rgba(255,255,255,.03)); background-size: 220% 100%; animation: designly-metal-sweep 7s ease-in-out infinite; }
+  .designly-glass { backdrop-filter: blur(14px) saturate(120%); background: linear-gradient(135deg, rgba(255,255,255,.055), rgba(255,255,255,.015)); }
+  .designly-grain { position: relative; }
+  .designly-grain::after { content:''; position:absolute; inset:0; pointer-events:none; opacity:.07; mix-blend-mode:screen; background-image:radial-gradient(rgba(255,255,255,.65) .6px, transparent .6px); background-size:4px 4px; }
+  @keyframes designly-metal-sweep { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 }
 
 @layer utilities {

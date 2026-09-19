@@ -14,55 +14,12 @@ export const LANGUAGES: Language[] = [
 ];
 
 export const PUBLIC_PLANS: Plan[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    priceMonthly: 0,
-    creditsMonthly: 10,
-    projectLimit: 3,
-    features: ['10 credits / month', '3 projects', 'Basic exports (PNG, JPG)', 'Community support'],
-  },
-  {
-    id: 'starter',
-    name: 'Starter',
-    priceMonthly: 2490,
-    creditsMonthly: 50,
-    projectLimit: 15,
-    features: ['50 credits / month', '15 projects', 'All export formats', 'Email support', 'Commercial usage'],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    priceMonthly: 6990,
-    creditsMonthly: 200,
-    projectLimit: 60,
-    features: ['200 credits / month', '60 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'],
-    highlighted: true,
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    priceMonthly: 12990,
-    creditsMonthly: 500,
-    projectLimit: 200,
-    features: ['500 credits / month', '200 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'],
-  },
-  {
-    id: 'agency',
-    name: 'Agency',
-    priceMonthly: 24990,
-    creditsMonthly: 1500,
-    projectLimit: 1000,
-    features: ['1,500 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'],
-  },
-  {
-    id: 'ultimate',
-    name: 'Ultimate',
-    priceMonthly: 49990,
-    creditsMonthly: 5000,
-    projectLimit: 5000,
-    features: ['5,000 credits / month', '5,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'],
-  },
+  { id: 'free', name: 'Free', priceMonthly: 0, creditsMonthly: 10, projectLimit: 3, features: ['10 credits / month', '3 projects', 'Basic exports (PNG, JPG)', 'Community support'] },
+  { id: 'starter', name: 'Starter', priceMonthly: 2490, creditsMonthly: 50, projectLimit: 15, features: ['50 credits / month', '15 projects', 'All export formats', 'Email support', 'Commercial usage'] },
+  { id: 'pro', name: 'Pro', priceMonthly: 6990, creditsMonthly: 200, projectLimit: 60, features: ['200 credits / month', '60 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'], highlighted: true },
+  { id: 'business', name: 'Business', priceMonthly: 12990, creditsMonthly: 500, projectLimit: 200, features: ['500 credits / month', '200 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'] },
+  { id: 'agency', name: 'Agency', priceMonthly: 24990, creditsMonthly: 1500, projectLimit: 1000, features: ['1,500 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'] },
+  { id: 'ultimate', name: 'Ultimate', priceMonthly: 49990, creditsMonthly: 5000, projectLimit: 5000, features: ['5,000 credits / month', '5,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'] },
 ];
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
@@ -76,8 +33,6 @@ export const CREDIT_PACKAGES: CreditPackage[] = [
 
 export function getCustomCreditPrice(credits: number): number {
   const c = Math.max(1, Math.min(10000, Math.floor(credits)));
-  // Price tiers: every additional 100 credits reduces the unit price by 1 Ft,
-  // starting at 20 Ft/credit for 100 credits, with a floor of 10 Ft/credit.
   const tier = Math.floor(c / 100);
   const unitPrice = Math.max(10, 21 - tier);
   return c * unitPrice;
@@ -119,26 +74,22 @@ export const AD_FORMATS: AdFormat[] = [
 ];
 
 export const DESIGN_STYLES = [
-  'premium', 'luxury', 'minimal', 'modern', 'corporate', 'elegant',
-  'bold', 'cinematic', 'automotive', 'fashion', 'restaurant', 'real_estate',
-  'technology', 'industrial', 'creative',
+  'premium','luxury','minimal','modern','corporate','elegant','bold','cinematic',
+  'automotive','fashion','restaurant','real_estate','technology','industrial','creative',
+  'nordic','celtic','editorial','art_deco','brutalist','futuristic','organic','tech_noir',
+  'high_fashion','architectural','dark_academia','soft_luxury',
 ];
 
 export const CAMPAIGN_FORMATS = [
-  { id: 'poster', labelKey: 'campaign.fmtPoster' },
-  { id: 'flyer', labelKey: 'campaign.fmtFlyer' },
-  { id: 'facebook', labelKey: 'campaign.fmtFacebook' },
-  { id: 'instagram_post', labelKey: 'campaign.fmtInstagram' },
-  { id: 'instagram_story', labelKey: 'campaign.fmtStory' },
-  { id: 'tiktok', labelKey: 'campaign.fmtTiktok' },
-  { id: 'linkedin', labelKey: 'campaign.fmtLinkedin' },
-  { id: 'banner', labelKey: 'campaign.fmtBanner' },
+  { id: 'poster', labelKey: 'campaign.fmtPoster' }, { id: 'flyer', labelKey: 'campaign.fmtFlyer' },
+  { id: 'facebook', labelKey: 'campaign.fmtFacebook' }, { id: 'instagram_post', labelKey: 'campaign.fmtInstagram' },
+  { id: 'instagram_story', labelKey: 'campaign.fmtStory' }, { id: 'tiktok', labelKey: 'campaign.fmtTiktok' },
+  { id: 'linkedin', labelKey: 'campaign.fmtLinkedin' }, { id: 'banner', labelKey: 'campaign.fmtBanner' },
 ];
 
 export const AI_VARIATION_COMMANDS = [
-  'more_premium', 'more_minimal', 'more_professional', 'more_elegant',
-  'more_bold', 'regenerate', 'change_headline', 'change_colors',
-  'change_image', 'change_layout',
+  'more_premium','more_minimal','more_professional','more_elegant','more_bold',
+  'regenerate','change_headline','change_colors','change_image','change_layout',
 ];
 
 export function getCreditsForType(type: string): number {
@@ -157,6 +108,7 @@ export function formatPrice(ft: number, lang = 'hu'): string {
 }
 
 export const TEMPLATE_CATEGORIES = [
-  'Business', 'Restaurant', 'Real Estate', 'Beauty', 'Fitness',
-  'Technology', 'Events', 'Wedding', 'Personal', 'E-commerce', 'Marketing', 'Corporate',
+  'Business','Restaurant','Real Estate','Beauty','Fitness','Technology','Events','Wedding',
+  'Personal','E-commerce','Marketing','Corporate','Automotive','Hospitality','Healthcare',
+  'Education','Finance','Construction','Fashion','Travel','Creator','Gaming','Nonprofit','Luxury',
 ];
