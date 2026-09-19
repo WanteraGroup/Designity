@@ -1458,15 +1458,18 @@ button{font-family:inherit}
   height:100%;
   object-fit:cover;
   object-position:center center;
-  filter:saturate(.95) contrast(1.08) brightness(.72);
+  filter:saturate(.95) contrast(1.08) brightness(.82);
   transform:none;
+  z-index:0;
 }
 .dl-hero-reference .dl-hero-shade{
   position:absolute;
   inset:0;
+  z-index:1;
+  pointer-events:none;
   background:
-    radial-gradient(circle at 50% 36%,rgba(0,0,0,.02),rgba(0,0,0,.45) 55%,rgba(0,0,0,.82) 100%),
-    linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.04) 25%,rgba(0,0,0,.12) 55%,rgba(0,0,0,.82) 100%);
+    radial-gradient(circle at 50% 36%,rgba(0,0,0,.02),rgba(0,0,0,.30) 55%,rgba(0,0,0,.68) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,.02) 25%,rgba(0,0,0,.08) 55%,rgba(0,0,0,.72) 100%);
 }
 .dl-reference-frame{
   position:absolute;
@@ -1842,3 +1845,18 @@ button{font-family:inherit}
   .dl-raven-eye-right{left:71.2%;top:28%}
   .dl-raven-eye-left-small,.dl-raven-eye-right-small{display:none}
 }
+
+
+/* FIX: preserve the supplied artwork by keeping overlays above the image,
+   never behind the hero's own background. */
+.dl-hero-reference{isolation:isolate}
+.dl-hero-reference .dl-hero-bg{z-index:0!important}
+.dl-hero-reference .dl-hero-shade{z-index:1!important}
+.dl-hero-reference .dl-reference-frame{z-index:2!important}
+.dl-hero-reference .dl-atmosphere{z-index:3!important}
+.dl-hero-reference .dl-reference-runes{z-index:4!important}
+.dl-hero-reference .dl-reference-center{z-index:5!important}
+.dl-hero-reference .dl-reference-claim{z-index:6!important}
+.dl-hero-reference .dl-reference-scroll,
+.dl-hero-reference .dl-reference-footer{z-index:7!important}
+.dl-hero-reference .dl-raven-eye{z-index:8!important}
