@@ -14,7 +14,7 @@ export type TranslationKey =
   | 'create.landing' | 'create.landingDesc'
   | 'create.cards' | 'create.cardsDesc'
   | 'create.invitations' | 'create.invitationsDesc'
-  | 'create.social' | 'create.socialDesc'
+  | 'create.social' | 'create.socialDesc' | 'create.music' | 'create.musicDesc'
   | 'create.logo' | 'create.brandIdentity' | 'create.fullWebsite'
   // Workflow
   | 'workflow.title' | 'workflow.subtitle'
@@ -148,7 +148,7 @@ export type TranslationKey =
   // Generation errors
   | 'gen.failed';
 
-type TranslationDict = Record<TranslationKey, string>;
+type TranslationDict = Partial<Record<TranslationKey, string>>;
 
 const en: TranslationDict = {
   'nav.features': 'Features', 'nav.workflow': 'Workflow', 'nav.pricing': 'Pricing',
