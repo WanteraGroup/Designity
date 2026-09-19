@@ -1367,3 +1367,38 @@ button{font-family:inherit}
   .dl-faq-item>button strong{font-size:18px}
   .dl-faq-answer{padding-left:50px}
 }
+
+/* New navigation treatment */
+.celtic-header{
+  background:rgba(4,5,6,.48)!important;
+  border-bottom:1px solid rgba(244,239,227,.08)!important;
+  backdrop-filter:blur(18px)!important;
+  box-shadow:none!important;
+}
+.celtic-header--scrolled{
+  background:rgba(5,6,7,.92)!important;
+  border-bottom-color:rgba(211,170,76,.20)!important;
+  box-shadow:0 10px 40px rgba(0,0,0,.35)!important;
+}
+.celtic-header-accent{
+  height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(211,170,76,.55),transparent)!important;
+}
+.celtic-header .nav-link{
+  position:relative;
+  color:rgba(244,239,227,.58);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.12em!important;
+  text-transform:uppercase;
+  transition:color .25s ease;
+}
+.celtic-header .nav-link:hover,.celtic-header .nav-link--active{color:#f4efe3}
+.celtic-header .nav-link--active::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-9px;
+  height:1px;
+  background:var(--dl-gold);
+}
+.celtic-header .section-pad{max-width:1320px!important}
