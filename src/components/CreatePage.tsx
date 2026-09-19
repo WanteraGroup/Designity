@@ -138,6 +138,26 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, []);
 
   useEffect(() => {
+    try {
+      const raw = localStorage.getItem('designly_auto_build');
+      if (!raw) return;
+      const build = JSON.parse(raw) as { type?: ProjectType; brief?: string };
+      localStorage.removeItem('designly_auto_build');
+      if (build.type && build.brief) {
+        setSelectedType(build.type);
+        setBrief(build.brief);
+        setStep(2);
+        window.setTimeout(() => {
+          // The preview is the safe automatic first pass; final generation remains an explicit approval.
+          handlePreview();
+        }, 250);
+      }
+    } catch {
+      localStorage.removeItem('designly_auto_build');
+    }
+  }, []);
+
+  useEffect(() => {
     async function loadBrands() {
       if (!profile) return;
       const { data } = await supabase
