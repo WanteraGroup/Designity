@@ -1,5 +1,6 @@
 export type TranslationKey =
   // Nav
+  | 'nav.home' | 'nav.studio' | 'nav.music' | 'nav.projectsPublic' | 'nav.resources'
   | 'nav.features' | 'nav.workflow' | 'nav.pricing' | 'nav.templates' | 'nav.faq'
   | 'nav.login' | 'nav.signup' | 'nav.startCreating'
   | 'nav.dashboard' | 'nav.create' | 'nav.projects' | 'nav.brands' | 'nav.templatesDash'
