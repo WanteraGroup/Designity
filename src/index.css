@@ -553,9 +553,9 @@
 
 .designly-hero {
   position:relative;
-  min-height:860px;
-  height:920px;
-  max-height:980px;
+  min-height:740px;
+  height:780px;
+  max-height:820px;
   overflow:hidden;
   isolation:isolate;
   display:flex;
@@ -613,10 +613,10 @@
 .designly-hero-emblem {
   position:absolute;
   left:50%;
-  top:82px;
+  top:28px;
   transform:translateX(-50%);
   z-index:2;
-  opacity:.32;
+  opacity:.22;
   filter:drop-shadow(0 0 35px rgba(196,154,46,.22));
   pointer-events:none;
 }
@@ -626,7 +626,7 @@
   z-index:6;
   width:min(760px,92vw);
   margin:0 auto;
-  padding:0 0 72px;
+  padding:0 0 92px;
   text-align:center;
 }
 
