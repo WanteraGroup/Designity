@@ -1215,3 +1215,21 @@ const nl: PartialTranslationDict = {
 export const translations: Record<string, PartialTranslationDict> = {
   en, hu, de, fr, es, it, pl, uk, ro, nl,
 };
+
+// DESIGNLY public navigation additions
+for (const [lang, dict] of Object.entries(translations)) {
+  const d = dict as Record<string, string>;
+  const values: Record<string, Record<string,string>> = {
+    en:{'nav.home':'Home','nav.studio':'Studio','nav.music':'AI Music','nav.projectsPublic':'Projects','nav.resources':'Resources'},
+    hu:{'nav.home':'Kezdőlap','nav.studio':'Stúdió','nav.music':'AI Zene','nav.projectsPublic':'Projektek','nav.resources':'Erőforrások'},
+    de:{'nav.home':'Startseite','nav.studio':'Studio','nav.music':'KI-Musik','nav.projectsPublic':'Projekte','nav.resources':'Ressourcen'},
+    fr:{'nav.home':'Accueil','nav.studio':'Studio','nav.music':'Musique IA','nav.projectsPublic':'Projets','nav.resources':'Ressources'},
+    es:{'nav.home':'Inicio','nav.studio':'Estudio','nav.music':'Música IA','nav.projectsPublic':'Proyectos','nav.resources':'Recursos'},
+    it:{'nav.home':'Home','nav.studio':'Studio','nav.music':'Musica IA','nav.projectsPublic':'Progetti','nav.resources':'Risorse'},
+    pl:{'nav.home':'Start','nav.studio':'Studio','nav.music':'Muzyka AI','nav.projectsPublic':'Projekty','nav.resources':'Zasoby'},
+    uk:{'nav.home':'Головна','nav.studio':'Студія','nav.music':'ШІ-музика','nav.projectsPublic':'Проєкти','nav.resources':'Ресурси'},
+    ro:{'nav.home':'Acasă','nav.studio':'Studio','nav.music':'Muzică AI','nav.projectsPublic':'Proiecte','nav.resources':'Resurse'},
+    nl:{'nav.home':'Home','nav.studio':'Studio','nav.music':'AI-muziek','nav.projectsPublic':'Projecten','nav.resources':'Bronnen'}
+  };
+  Object.assign(d, values[lang] || values.en);
+}
