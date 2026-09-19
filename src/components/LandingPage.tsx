@@ -38,44 +38,62 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
   return (
     <div className="designly-site">
-      <section className="dl-hero" aria-label="DESIGNLY STUDIO">
+      <section className="dl-hero dl-hero-reference" aria-label="DESIGNLY STUDIO">
         <img src="/stilus.png" alt="" className="dl-hero-bg" aria-hidden="true" />
         <div className="dl-hero-shade" aria-hidden="true" />
-        <div className="dl-hero-grid" aria-hidden="true" />
-        <div className="dl-runes" aria-hidden="true">ᛉ ᚨ ᛟ <span>ᚱ ᚦ ᚷ</span> ᛏ ᚹ ᛒ</div>
+        <div className="dl-reference-frame" aria-hidden="true" />
 
-        <div className="dl-hero-inner">
-          <div className="dl-hero-copy">
-            <div className="dl-overline"><i /> AI CREATIVE STUDIO <i /></div>
-            <h1>Design without<br /><em>limits.</em></h1>
-            <p className="dl-hero-lead">
-              Turn an idea into a finished website, brand, campaign, social asset or music track —
-              with AI doing the heavy lifting.
-            </p>
-            <div className="dl-actions">
-              <button className="dl-btn dl-btn-primary" onClick={() => onNavigate('signup')}>
-                Start creating <ArrowRight className="w-4 h-4" />
-              </button>
-              <button className="dl-btn dl-btn-secondary" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
-                <Play className="w-4 h-4" /> Explore studio
-              </button>
-            </div>
-            <div className="dl-trust-row">
-              <span><b>AI</b> assisted</span><span><b>01</b> workspace</span><span><b>∞</b> ideas</span>
-            </div>
+        <div className="dl-reference-runes dl-reference-runes-left" aria-hidden="true">ᛉ<br/>ᚨ<br/>ᛟ<br/>ᚱ<br/>ᚦ<br/>ᚷ<br/>ᛏ<br/>ᚹ<br/>ᛒ</div>
+        <div className="dl-reference-runes dl-reference-runes-right" aria-hidden="true">ᛉ<br/>ᚨ<br/>ᛟ<br/>ᚱ<br/>ᚦ<br/>ᚷ<br/>ᛏ<br/>ᚹ<br/>ᛒ</div>
+
+        <div className="dl-reference-center">
+          <div className="dl-reference-crest">
+            <div className="dl-reference-glow" />
+            <CelticEmblem size={410} animate showD />
           </div>
 
-          <div className="dl-hero-card">
-            <div className="dl-card-top"><span>DESIGNLY / CORE</span><span>01—04</span></div>
-            <div className="dl-emblem-wrap"><CelticEmblem size={190} animate showD={false} /></div>
-            <div className="dl-card-bottom">
-              <span>CREATE / REFINE / SHIP</span>
-              <strong>YOUR IDEA<br />BECOMES REAL.</strong>
-            </div>
+          <div className="dl-reference-tag">AI-POWERED CREATIVE STUDIO</div>
+          <h1>Design without <em>limits.</em></h1>
+          <p>
+            Alkoss lenyűgöző képeket, videókat, zenét, weboldalakat és teljes márkákat —
+            mindent egy helyen, a mesterséges intelligencia erejével.
+          </p>
+
+          <div className="dl-actions dl-reference-actions">
+            <button className="dl-btn dl-btn-primary" onClick={() => onNavigate('signup')}>
+              Kezdj el alkotni <ArrowRight className="w-4 h-4" />
+            </button>
+            <button className="dl-btn dl-btn-secondary" onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>
+              <Play className="w-4 h-4" /> Nézd meg a bemutatót
+            </button>
+          </div>
+
+          <div className="dl-reference-stats">
+            <div><strong>50 000+</strong><span>SABLON</span></div>
+            <i />
+            <div><strong>∞</strong><span>KREATÍV LEHETŐSÉG</span></div>
+            <i />
+            <div><strong>12+</strong><span>AI ESZKÖZ</span></div>
+            <i />
+            <div><strong>GYORS</strong><span>EREDMÉNYEK</span></div>
           </div>
         </div>
 
-        <div className="dl-hero-bottom"><span>SCROLL TO EXPLORE</span><span className="dl-line" /><span>BUILT FOR CREATORS</span></div>
+        <div className="dl-reference-claim">
+          <span>IDEAS</span><br/><strong>BECOME REALITY™</strong>
+          <small>AI POWERED<br/>CREATIVE STUDIO</small>
+        </div>
+
+        <div className="dl-reference-scroll">
+          <span className="dl-mouse"><b /></span>
+          <small>GÖRGESS TOVÁBB</small>
+          <span>⌄</span>
+        </div>
+
+        <div className="dl-reference-footer">
+          <span>KREATIVITÁS　✦　TECHNOLÓGIA　✦　SZABADSÁG</span>
+          <span>DESIGNLY STUDIO　—　BUILT FOR CREATORS</span>
+        </div>
       </section>
 
       <section className="dl-metrics" aria-label="Studio overview">
