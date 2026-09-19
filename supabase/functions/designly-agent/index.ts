@@ -188,41 +188,124 @@ If this is a TikTok Shop request, internally apply these specialist roles as app
 If this is a Monkey Design Studio request, internally apply: Design Director, Logo, Brand, UI/UX, Web, Social, Marketing, Print, Presentation, and Visual QA. Keep all outputs aligned with the supplied Brand Kit.
 Return one coherent structured result.`;
 
-    // GPT-5.6 models are called through the Responses API.
-    // Keep this request server-side so the OpenAI key never reaches the browser.
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        input: [
-          { role: "system", content: [{ type: "input_text", text: system }] },
-          { role: "user", content: [{ type: "input_text", text: userPrompt }] },
-        ],
-        max_output_tokens: 1400,
-      }),
-    });
+    // Provider adapter: Groq uses the OpenAI-compatible Chat Completions API.
+    // OpenAI remains supported for backwards compatibility.
+    let content = "";
 
-    if (!response.ok) {
-      const providerBody = await response.text().catch(() => "");
-      console.error("OpenAI Responses API error:", response.status, providerBody);
+    if (provider === "groq") {
+      const groqKey = Deno.env.get("GROQ_API_KEY") || apiKey;
+      if (!groqKey) {
+        return json({
+          error: "PROVIDER_NOT_CONFIGURED",
+          providerNotConfigured: true,
+          message: "GROQ_API_KEY is not configured. No credits were charged.",
+        }, 503);
+      }
+
+      const groqModel = Deno.env.get("AI_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: groqModel,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: userPrompt },
+          ],
+          reasoning_effort: "low",
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "designly_design_brief",
+              strict: true,
+              schema: {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  businessName: { type: ["string", "null"] },
+                  businessType: { type: ["string", "null"] },
+                  targetAudience: { type: ["string", "null"] },
+                  industry: { type: ["string", "null"] },
+                  visualStyle: { type: ["string", "null"] },
+                  mood: { type: ["string", "null"] },
+                  primaryColors: { type: "array", items: { type: "string" } },
+                  secondaryColors: { type: "array", items: { type: "string" } },
+                  typographyDirection: { type: ["string", "null"] },
+                  imageryDirection: { type: ["string", "null"] },
+                  requiredOutputs: {
+                    type: "array",
+                    items: { type: "string", enum: Array.from(allowedOutputs) },
+                  },
+                  language: { type: "string" },
+                  additionalInstructions: { type: ["string", "null"] },
+                },
+                required: [
+                  "businessName", "businessType", "targetAudience", "industry",
+                  "visualStyle", "mood", "primaryColors", "secondaryColors",
+                  "typographyDirection", "imageryDirection", "requiredOutputs",
+                  "language", "additionalInstructions",
+                ],
+              },
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const providerBody = await response.text().catch(() => "");
+        console.error("Groq Responses error:", response.status, providerBody);
+        return json({
+          error: "GENERATION_FAILED",
+          message: `Groq AI provider returned ${response.status}.`,
+        }, 502);
+      }
+
+      const groqData = await response.json();
+      content = groqData.choices?.[0]?.message?.content || "";
+    } else if (provider === "openai") {
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          input: [
+            { role: "system", content: [{ type: "input_text", text: system }] },
+            { role: "user", content: [{ type: "input_text", text: userPrompt }] },
+          ],
+          max_output_tokens: 1400,
+        }),
+      });
+
+      if (!response.ok) {
+        const providerBody = await response.text().catch(() => "");
+        console.error("OpenAI Responses API error:", response.status, providerBody);
+        return json({
+          error: "GENERATION_FAILED",
+          message: `AI provider returned ${response.status}. Check the DESIGNLY AI model/API configuration.`,
+        }, 502);
+      }
+
+      const aiData = await response.json();
+      content =
+        aiData.output_text ||
+        aiData.output
+          ?.flatMap((item: any) => item.content || [])
+          ?.map((item: any) => item.text || "")
+          ?.join("") ||
+        "";
+    } else {
       return json({
-        error: "GENERATION_FAILED",
-        message: `AI provider returned ${response.status}. Check the DESIGNLY AI model/API configuration.`,
-      }, 502);
+        error: "UNSUPPORTED_PROVIDER",
+        message: `Provider '${provider}' is not supported by the current DESIGNLY agent adapter.`,
+      }, 400);
     }
 
-    const aiData = await response.json();
-    const content =
-      aiData.output_text ||
-      aiData.output
-        ?.flatMap((item: any) => item.content || [])
-        ?.map((item: any) => item.text || "")
-        ?.join("") ||
-      "";
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
     const text = body.brief.toLowerCase();
