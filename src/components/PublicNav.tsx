@@ -138,6 +138,14 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
+          <a
+            href={import.meta.env.VITE_VYRON_URL || '#'}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gold-600/25 bg-ink-950/70 text-[10px] font-semibold tracking-[0.12em] text-gold-200 hover:border-gold-500/60 hover:bg-gold-600/10 transition-all"
+          >
+            ◆ VYRON AI
+          </a>
           <LanguageSelector />
           {user ? (
             <button onClick={() => go('dashboard')} className="btn-gold text-sm px-5 py-2.5">
