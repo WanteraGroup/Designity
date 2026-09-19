@@ -105,7 +105,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="dl-reference-footer">
-          <span>KREATIVITÁS　✦　TECHNOLÓGIA　✦　SZABADSÁG</span>
+          <span>KREATIVITÁS · TECHNOLÓGIA · SZABADSÁG</span>
           <span>DESIGNLY STUDIO　—　BUILT FOR CREATORS</span>
         </div>
       </section>
