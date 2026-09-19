@@ -203,6 +203,7 @@ Return one coherent structured result.`;
       }
 
       const groqModel = Deno.env.get("AI_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
+      const isCompound = groqModel === "groq/compound" || groqModel === "groq/compound-mini";
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -215,9 +216,11 @@ Return one coherent structured result.`;
             { role: "system", content: system },
             { role: "user", content: userPrompt },
           ],
-          reasoning_effort: "low",
-          response_format: {
-            type: "json_schema",
+          ...(isCompound ? {} : { reasoning_effort: "low" }),
+          response_format: isCompound
+            ? { type: "json_object" }
+            : {
+                type: "json_schema",
             json_schema: {
               name: "designly_design_brief",
               strict: true,
@@ -249,8 +252,10 @@ Return one coherent structured result.`;
                   "language", "additionalInstructions",
                 ],
               },
+                  },
+                },
+              },
             },
-          },
         }),
       });
 
