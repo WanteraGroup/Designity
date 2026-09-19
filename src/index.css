@@ -1913,62 +1913,55 @@ button{font-family:inherit}
 
 
 /* FINAL REFERENCE HERO TUNING */
-.dl-hero-reference .dl-reference-runes{
-  display:flex!important;
-  flex-direction:column;
-  gap:7px;
-  top:118px;
-  left:28px;
-  right:auto;
-  z-index:6!important;
-  color:rgba(222,177,72,.86);
-  text-shadow:0 0 10px rgba(211,170,76,.42);
-}
-.dl-hero-reference .dl-reference-runes-right{left:auto;right:28px}
-.dl-hero-reference .dl-reference-runes span{
-  animation:dlRuneFlash 5.5s ease-in-out infinite;
-}
-.dl-hero-reference .dl-raven-eye{
-  display:block!important;
-  z-index:8!important;
-}
+/* Keep the requested live Nordic effects visible over the supplied artwork. */
 .dl-hero-reference .dl-reference-crest{
   display:grid!important;
-  position:absolute;
-  left:50%;
-  top:19%;
-  width:min(430px,42vw);
-  height:min(430px,42vw);
-  transform:translateX(-50%);
+  width:clamp(220px,24vw,390px);
+  height:clamp(220px,24vw,390px);
+  margin-top:0;
+  opacity:.92;
   z-index:4!important;
-  opacity:.82;
   pointer-events:none;
+  filter:drop-shadow(0 0 22px rgba(212,171,61,.24));
 }
 .dl-hero-reference .dl-reference-glow{
   display:block!important;
-  z-index:-1;
+  width:92%;
+  height:92%;
+  animation:dlCelticGlow 4.5s ease-in-out infinite;
 }
 .dl-hero-reference .dl-reference-crest .celtic-emblem{
   width:100%;
   height:100%;
-  filter:drop-shadow(0 0 22px rgba(229,201,107,.32));
+  animation:dlCelticHalo 28s linear infinite;
 }
-.dl-hero-reference .dl-reference-center{
-  padding-top:300px;
+@keyframes dlCelticGlow{
+  0%,100%{opacity:.35;transform:scale(.96)}
+  50%{opacity:.85;transform:scale(1.04)}
 }
-.dl-hero-reference .dl-atmosphere{
-  z-index:3!important;
-  opacity:.52;
+@keyframes dlCelticHalo{to{transform:rotate(360deg)}}
+
+.dl-hero-reference .dl-raven-eye{
+  display:block!important;
+  z-index:8!important;
+  opacity:.12;
+}
+.dl-hero-reference .dl-raven-eye-left{
+  left:26.8%;top:25.2%;
+}
+.dl-hero-reference .dl-raven-eye-right{
+  left:71.2%;top:28%;
+}
+.dl-hero-reference .dl-raven-eye-left-small{
+  left:14.4%;top:14.6%;
+}
+.dl-hero-reference .dl-raven-eye-right-small{
+  left:87.2%;top:16.2%;
 }
 @media (max-width:700px){
-  .dl-hero-reference .dl-reference-runes{top:90px;left:9px}
-  .dl-hero-reference .dl-reference-runes-right{right:9px;left:auto}
   .dl-hero-reference .dl-reference-crest{
-    top:13%;
-    width:285px;
-    height:285px;
-    opacity:.72;
+    width:250px;height:250px;
   }
-  .dl-hero-reference .dl-reference-center{padding-top:210px}
+  .dl-hero-reference .dl-raven-eye-left{left:26.8%;top:25.2%}
+  .dl-hero-reference .dl-raven-eye-right{left:71.2%;top:28%}
 }
-
