@@ -11,7 +11,10 @@ import { CelticEmblem } from './CelticEmblem';
 import type { ProjectType, BrandKit } from '@/types';
 
 interface CreatePageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (
+    page: string,
+    item?: { type: 'subscription' | 'credit_package'; itemId: string }
+  ) => void;
 }
 
 export function CreatePage({ onNavigate }: CreatePageProps) {
@@ -187,7 +190,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       mode: 'final',
       type: selectedType,
       brief,
-      brandKitId: selectedBrand,
+      brandKitId: selectedBrand ?? undefined,
       projectId: projectData.id,
       previewId,
     });
@@ -448,7 +451,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <div className="flex flex-wrap gap-2 mt-2">
                     {preview.requiredOutputs.map((output) => (
                       <span key={output} className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize">
-                        {output.replaceAll('_', ' ')}
+                        {output.replace(/_/g, ' ')}
                       </span>
                     ))}
                   </div>
