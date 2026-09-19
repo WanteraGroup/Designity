@@ -237,11 +237,12 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
   const { t } = useI18n();
   const fallbackPlans = [
-    { id: 'free', name: t('plan.free'), price: 0, credits: 10, features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
-    { id: 'starter', name: t('plan.starter'), price: 2490, credits: 50, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
-    { id: 'pro', name: t('plan.pro'), price: 6990, credits: 200, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
-    { id: 'business', name: t('plan.business'), price: 12990, credits: 500, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
-    { id: 'agency', name: t('plan.agency'), price: 24990, credits: 1500, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
+    { id: 'free', name: t('plan.free'), price: 0, credits: 25, features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
+    { id: 'starter', name: t('plan.starter'), price: 2990, credits: 100, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
+    { id: 'pro', name: t('plan.pro'), price: 7990, credits: 300, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
+    { id: 'business', name: t('plan.business'), price: 14990, credits: 800, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
+    { id: 'agency', name: t('plan.agency'), price: 29990, credits: 2000, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
+    { id: 'ultimate', name: t('plan.ultimate'), price: 59990, credits: 5000, features: [t('plan.agencyF1'), t('plan.agencyF2'), '5000 AI kredit / hó'], highlight: false },
   ];
   const [plans, setPlans] = useState(fallbackPlans);
   useEffect(() => {
