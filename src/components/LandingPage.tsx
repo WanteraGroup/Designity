@@ -28,7 +28,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     let active = true;
 
     const extractLargestImage = (html: string) => {
-      const matches = html.match(/data:image\\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/=]+/g) ?? [];
+            const matches = html.match(/data:image\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/=]+/g) ?? [];
       return matches.sort((a, b) => b.length - a.length)[0] ?? null;
     };
 
