@@ -10,6 +10,10 @@ entrypoint = "./functions/payment-checkout/index.ts"
 verify_jwt = true
 entrypoint = "./functions/designly-agent/index.ts"
 
+[functions.designly-huginn]
+verify_jwt = false
+entrypoint = "./functions/designly-huginn/index.ts"
+
 [functions.admin-gift]
 verify_jwt = true
 entrypoint = "./functions/admin-gift/index.ts"
