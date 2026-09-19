@@ -48,7 +48,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="designly-hero-emblem" aria-hidden="true">
-          <CelticEmblem size={620} animate showD={false} />
+          <CelticEmblem size={520} animate showD={false} />
         </div>
 
         <div className="designly-hero-copy">
