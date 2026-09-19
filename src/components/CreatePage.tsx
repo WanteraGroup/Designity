@@ -383,7 +383,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           </div>
         )}
         <div className="flex gap-3">
-          <button onClick={() => onNavigate('editor')} className="btn-gold text-sm">
+          <button onClick={() => { if (createdProject) localStorage.setItem('designly_selected_project', createdProject); onNavigate('editor'); }} className="btn-gold text-sm">
             {t('common.open')}
           </button>
           <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); }} className="btn-ghost text-sm">
