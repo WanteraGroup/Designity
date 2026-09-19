@@ -1402,3 +1402,40 @@ button{font-family:inherit}
   background:var(--dl-gold);
 }
 .celtic-header .section-pad{max-width:1320px!important}
+
+/* Supplied brand artwork is the visual foundation across the public site. */
+.designly-site{
+  background:
+    linear-gradient(rgba(5,6,7,.66),rgba(5,6,7,.84)),
+    url('/stilus.png') center top / cover fixed no-repeat;
+  background-color:#050607;
+}
+.designly-site::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(5,6,7,.15),rgba(5,6,7,.38) 45%,rgba(5,6,7,.72)),
+    radial-gradient(circle at 50% 18%,transparent 0,rgba(0,0,0,.28) 75%);
+}
+.designly-site>*{position:relative;z-index:1}
+.dl-hero-bg{
+  content:url('/stilus.png');
+  object-position:center center;
+  filter:saturate(.9) contrast(1.05) brightness(.62);
+}
+.dl-hero-shade{
+  background:
+    linear-gradient(90deg,rgba(5,6,7,.88),rgba(5,6,7,.38) 52%,rgba(5,6,7,.76)),
+    linear-gradient(180deg,rgba(5,6,7,.28),transparent 35%,rgba(5,6,7,.92));
+}
+.designly-frame-spin{
+  animation:designlyFrameSpin 28s linear infinite;
+  transform-origin:center;
+}
+@keyframes designlyFrameSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .designly-frame-spin{animation:none}
+}
