@@ -1,4 +1,4 @@
-import { useMemo, useState, type ComponentType } from 'react';
+import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import {
   Monitor,
   Tablet,
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 import {
   runDesignlyGroqEditor,
   type DesignEditorState,
@@ -69,12 +70,36 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [listening, setListening] = useState(false);
   const [history, setHistory] = useState<DesignEditorState[]>([]);
   const [future, setFuture] = useState<DesignEditorState[]>([]);
+  const [projectName, setProjectName] = useState('DESIGNLY STUDIO');
+  const [buildSpec, setBuildSpec] = useState<any>(null);
+  const [projectLoading, setProjectLoading] = useState(true);
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
     [t],
   );
   const [design, setDesign] = useState<DesignEditorState>(defaultDesign);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadProject() {
+      const projectId = localStorage.getItem('designly_selected_project');
+      if (!projectId) { setProjectLoading(false); return; }
+      const { data } = await supabase.from('projects').select('*').eq('id', projectId).maybeSingle();
+      if (cancelled) return;
+      if (data) {
+        setProjectName(data.name || 'DESIGNLY STUDIO');
+        const config = (data.config || {}) as Record<string, any>;
+        const spec = config.buildSpec || config.orchestration?.buildSpec || null;
+        setBuildSpec(spec);
+        const content = spec?.content || {};
+        setDesign((current) => ({ ...current, heroTitle: String(content.heroTitle || content.title || data.name || current.heroTitle), heroDescription: String(content.heroDescription || content.description || data.brief || current.heroDescription), heroButton: String(content.cta || content.heroButton || current.heroButton), celticBorder: true, atmosphere: 'mist' }));
+      }
+      setProjectLoading(false);
+    }
+    void loadProject();
+    return () => { cancelled = true; };
+  }, []);
 
   const deviceWidths = {
     desktop: '100%',
