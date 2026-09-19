@@ -22,6 +22,21 @@ const capabilities = [
 
 export function LandingPage({ onNavigate }: LandingPageProps) {
   const { t } = useI18n();
+  const [landingHeroBackground, setLandingHeroBackground] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/designly-landing%20(4).html', { cache: 'force-cache' })
+      .then((response) => response.text())
+      .then((html) => {
+        const match = html.match(/background-image:url\\([\"']?(data:image\\/jpeg;base64,[^\"')]+)[\"']?\\)/i);
+        if (active && match?.[1]) setLandingHeroBackground(match[1]);
+      })
+      .catch(() => {
+        // Keep the repository artwork fallback when the standalone landing file is unavailable.
+      });
+    return () => { active = false; };
+  }, []);
 
   const workflow = [
     ['01', t('workflow.step1Title'), t('workflow.step1Desc')],
@@ -39,7 +54,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="designly-site">
       <section className="dl-hero dl-hero-reference" aria-label="DESIGNLY STUDIO">
-        <img src="/stilus.png" alt="" className="dl-hero-bg" aria-hidden="true" />
+        <div
+          className="dl-hero-bg"
+          aria-hidden="true"
+          style={landingHeroBackground ? { backgroundImage: `url("${landingHeroBackground}")` } : undefined}
+        />
         <div className="dl-hero-shade" aria-hidden="true" />
         <div className="dl-reference-frame" aria-hidden="true" />
         <div className="dl-atmosphere" aria-hidden="true">
