@@ -94,7 +94,7 @@ export function ProjectsPage({ onNavigate }: ProjectsPageProps) {
             <div key={project.id} className="card-lux p-5 group">
               <div
                 className="aspect-video rounded-lg bg-ink-700/40 mb-3 flex items-center justify-center cursor-pointer overflow-hidden"
-                onClick={() => onNavigate('editor')}
+                onClick={() => { localStorage.setItem('designly_selected_project', project.id); onNavigate('editor'); }}
               >
                 {project.preview_url ? (
                   <img src={project.preview_url} alt={project.name} className="w-full h-full object-cover" />
