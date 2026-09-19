@@ -52,6 +52,8 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
         <span className="dl-raven-eye dl-raven-eye-left" aria-hidden="true" />
         <span className="dl-raven-eye dl-raven-eye-right" aria-hidden="true" />
+        <span className="dl-raven-eye dl-raven-eye-left-small" aria-hidden="true" />
+        <span className="dl-raven-eye dl-raven-eye-right-small" aria-hidden="true" />
 
         <div className="dl-reference-runes dl-reference-runes-left" aria-hidden="true">
           {['ᛉ','ᚨ','ᛟ','ᚱ','ᚦ','ᚷ','ᛏ','ᚹ','ᛒ'].map((rune, i) => <span key={`l-${rune}` + i}>{rune}</span>)}
