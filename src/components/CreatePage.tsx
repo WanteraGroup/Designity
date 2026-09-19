@@ -235,6 +235,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setStep(3);
   };
 
+  // Automatic Business Builder: trigger the free AI preview after the dashboard handoff is loaded.
   useEffect(() => {
     if (!autoBuildRequested || !selectedType || brief.trim().length < 5 || previewLoading) return;
     setAutoBuildRequested(false);
