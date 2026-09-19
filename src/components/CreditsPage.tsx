@@ -73,7 +73,7 @@ export function CreditsPage({ onNavigate }: CreditsPageProps) {
               <div className="text-xs text-cream-300/50 mb-4">{t('misc.credits')}</div>
               <div className="text-lg font-medium text-cream-100 mb-4">{formatPrice(pkg.price)}</div>
               <button
-                onClick={() => onNavigate('billing')}
+                onClick={() => onNavigate('checkout', { type: 'credit_package', itemId: pkg.id })}
                 className="btn-gold text-sm mt-auto"
               >
                 <TrendingUp className="w-4 h-4" />
