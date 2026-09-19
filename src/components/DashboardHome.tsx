@@ -87,7 +87,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
               <InfinityIcon className="w-5 h-5 text-gold-400" />
             </div>
             <p className="text-sm text-cream-300/60">
-              {t('dash.ownerDesc')}
+              {isOwner ? '100 000 000 tulajdonosi kredit · nincs kreditlevonás · korlátlan DESIGNLY AI használat.' : t('dash.ownerDesc')}
             </p>
           </div>
         </div>
