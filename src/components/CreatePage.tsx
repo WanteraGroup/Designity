@@ -42,6 +42,20 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   useEffect(() => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      const handoff = params.get('vyron');
+      if (handoff) {
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(handoff))));
+        if (decoded?.brief) {
+          setSelectedType((decoded.type || 'website') as ProjectType);
+          setBrief(decoded.brief);
+          setStep(2);
+          window.history.replaceState({}, '', window.location.pathname + '#create');
+          return;
+        }
+      }
+    } catch {}
+    try {
       const raw = localStorage.getItem('designly_selected_template');
       if (raw) {
         const tpl = JSON.parse(raw) as { id?: string; name?: string; type?: string; description?: string; style?: string; effect?: string; fontPair?: string; palette?: string[] };
