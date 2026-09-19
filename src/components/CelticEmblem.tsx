@@ -183,8 +183,7 @@ export function CelticEmblem({ size = 200, className = '', animate = true, showD
           }}
         >
           <img
-            src="/logo.png"
-            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/designly-logo.webp'; }}
+            src="/designly-logo.webp"
             alt="DESIGNLY"
             className="w-full h-full object-contain rounded-full"
             style={{ pointerEvents: 'none' }}
