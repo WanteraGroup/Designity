@@ -10,6 +10,64 @@ import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type Desi
 import { CelticEmblem } from './CelticEmblem';
 import type { ProjectType, BrandKit } from '@/types';
 
+
+interface VyronBlueprint {
+  source: 'VYRON';
+  businessName: string;
+  businessType: string;
+  targetAudience: string;
+  features: string[];
+  channels: string[];
+  adminModules: string[];
+  monetization: string[];
+  cta: string;
+  responsive: boolean;
+  brief: string;
+  report: string;
+}
+
+function extractVyronBusinessName(text: string): string {
+  const match = text.match(/(?:ÜZLETI ÖTLET|ÜZLETI ÖTLET[\s\S]{0,80}?)(?:\*\*)?[\s:—-]*[„"“]?([^\n„"“”]+)[”"]?/i);
+  const candidate = match?.[1]?.replace(/\*\*/g, '').trim();
+  return candidate && candidate.length >= 4 && candidate.length <= 90
+    ? candidate.replace(/^[-–—:]+\s*/, '')
+    : 'VYRON AI üzleti projekt';
+}
+
+function buildVyronBlueprint(brief: string, report: string): VyronBlueprint {
+  const combined = `${brief}\n${report}`;
+  const extracted = extractVyronBusinessName(report);
+  const businessName = extracted !== 'VYRON AI üzleti projekt'
+    ? extracted
+    : (combined.match(/Virág Rendelés Asszisztens/i)?.[0] || 'VYRON AI üzleti projekt');
+
+  return {
+    source: 'VYRON',
+    businessName,
+    businessType: 'AI-alapú üzleti webplatform',
+    targetAudience: 'A VYRON riportban meghatározott célcsoport',
+    features: [
+      'AI chat asszisztens',
+      'Online rendelési rendszer',
+      'Messenger / WhatsApp rendelési folyamat koncepció',
+      'Admin felület',
+      'Árképzés és csomagok',
+      'CTA és kapcsolatfelvétel',
+      'Mobilbarát reszponzív felület',
+      'Üzleti bemutatkozó oldal',
+      'Termék / szolgáltatás katalógus',
+      'Ügyfél- és rendeléskezelési folyamat',
+    ],
+    channels: ['Web', 'Messenger', 'WhatsApp'],
+    adminModules: ['Dashboard', 'Rendelések', 'Ügyfelek', 'Termékek', 'Árak', 'Beállítások'],
+    monetization: ['A VYRON riportban javasolt bevételi modell', 'Ellenőrizendő árképzés és csomagok'],
+    cta: 'Rendelés indítása',
+    responsive: true,
+    brief,
+    report,
+  };
+}
+
 interface CreatePageProps {
   onNavigate: (
     page: string,
@@ -38,7 +96,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [approved, setApproved] = useState(false);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [showCreditModal, setShowCreditModal] = useState(false);
-  const [customCredits, setCustomCredits] = useState(100);
+  const [customCredits, setCustomCredits] = useState(100);\n  const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
 
   useEffect(() => {
     try {
@@ -47,8 +105,13 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       if (handoff) {
         const decoded = JSON.parse(decodeURIComponent(escape(atob(handoff))));
         if (decoded?.brief) {
+          const report = typeof decoded.report === 'string' ? decoded.report : '';
+          const originalMission = typeof decoded.mission === 'string' ? decoded.mission : decoded.brief;
+          const blueprint = buildVyronBlueprint(originalMission, report);
+          const enrichedBrief = `VYRON BUSINESS BUILD SPEC\n\nPROJECT: ${blueprint.businessName}\n\nORIGINAL MISSION:\n${originalMission}\n\nFULL VYRON REPORT:\n${report}\n\nAUTOMATIC BUILD REQUIREMENTS:\n- Build the complete responsive website/app concept, not only a hero image.\n- Include AI chat assistant, ordering flow, Messenger/WhatsApp concept, admin dashboard, pricing, CTA, mobile layout, product/service catalogue and customer/order flow.\n- Use the VYRON report as the source of truth for business details; mark unsupported assumptions as editable placeholders.\n- Produce a production-oriented MVP structure that can be saved as a DESIGNLY project.\n`;
+          setVyronBlueprint(blueprint);
           setSelectedType((decoded.type || 'website') as ProjectType);
-          setBrief(decoded.brief);
+          setBrief(enrichedBrief);
           setStep(2);
           window.history.replaceState({}, '', window.location.pathname + '#create');
           return;
@@ -182,12 +245,12 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       .from('projects')
       .insert({
         user_id: profile.id,
-        name: brief.slice(0, 50) || `${selectedType} project`,
+        name: vyronBlueprint?.businessName || brief.slice(0, 50) || `${selectedType} project`,
         type: selectedType,
         status: 'processing',
         brief,
         brand_kit_id: selectedBrand,
-        config: { type: selectedType, brief, brand_kit_id: selectedBrand },
+        config: { type: selectedType, brief, brand_kit_id: selectedBrand, ...(vyronBlueprint ? { source: 'VYRON', websiteBlueprint: vyronBlueprint, buildStatus: 'planned' } : {}) },
       })
       .select()
       .single();
@@ -226,9 +289,35 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       return;
     }
 
+    const generatedImageUrlValue = (genResult.result?.imageUrl as string) || null;
+    await supabase
+      .from('projects')
+      .update({
+        status: 'completed',
+        preview_url: generatedImageUrlValue,
+        updated_at: new Date().toISOString(),
+        config: {
+          ...(projectData.config || {}),
+          ...(vyronBlueprint ? {
+            source: 'VYRON',
+            websiteBlueprint: {
+              ...vyronBlueprint,
+              buildStatus: 'generated',
+              generatedAt: new Date().toISOString(),
+            },
+          } : {}),
+          generation: {
+            ...(projectData.config?.generation || {}),
+            imageUrl: generatedImageUrlValue,
+            generatedAt: new Date().toISOString(),
+          },
+        },
+      })
+      .eq('id', projectData.id);
+
     await refreshProfile();
 
-    setGeneratedImageUrl((genResult.result?.imageUrl as string) || null);
+    setGeneratedImageUrl(generatedImageUrlValue);
     setCreatedProject(projectData.id);
     setGenStep(5);
     await new Promise((r) => setTimeout(r, 800));
