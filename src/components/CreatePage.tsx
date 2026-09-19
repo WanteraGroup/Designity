@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS, getCreditsForType, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
 import { DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate } from '@/lib/designly-templates';
 import { generateDesign } from '@/lib/ai';
-import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput } from '@/lib/designly-agent';
+import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput, type MasterAgentResult as AgentDesignResult } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
 import type { ProjectType, BrandKit } from '@/types';
 
@@ -95,6 +95,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [approved, setApproved] = useState(false);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [orchestration, setOrchestration] = useState<AgentDesignResult['orchestration'] | null>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [customCredits, setCustomCredits] = useState(100);\n  const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
 
@@ -188,6 +189,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setPreviewImageUrl(null);
     setPreviewId(null);
     setActiveAgents([]);
+    setOrchestration(null);
     setApproved(false);
     setPreviewLoading(true);
 
@@ -210,6 +212,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setPreviewImageUrl(result.previewImageUrl || null);
     setPreviewId(result.previewId || null);
     setActiveAgents(result.activeAgents || ['master']);
+    setOrchestration(result.orchestration || null);
     setStep(3);
   };
 
@@ -250,7 +253,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         status: 'processing',
         brief,
         brand_kit_id: selectedBrand,
-        config: { type: selectedType, brief, brand_kit_id: selectedBrand, ...(vyronBlueprint ? { source: 'VYRON', websiteBlueprint: vyronBlueprint, buildStatus: 'planned' } : {}) },
+        config: { type: selectedType, brief, brand_kit_id: selectedBrand, ...(vyronBlueprint ? { source: 'VYRON', websiteBlueprint: vyronBlueprint, buildStatus: 'planned' } : {}), ...(orchestration ? { orchestration, buildSpec: orchestration.buildSpec, qaStatus: orchestration.qaStatus, blockers: orchestration.blockers } : {}) },
       })
       .select()
       .single();
@@ -290,6 +293,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     }
 
     const generatedImageUrlValue = (genResult.result?.imageUrl as string) || null;
+    const finalOrchestration = orchestration;
     await supabase
       .from('projects')
       .update({
