@@ -160,7 +160,7 @@ export function useAuth() {
 }
 
 export function useCredits() {
-  const { profile, isUnlimited, refreshProfile } = useAuth();
+  const { profile, isUnlimited, isOwner, refreshProfile } = useAuth();
   const credits = isUnlimited ? Infinity : (profile?.credits ?? 0);
   return { credits, refreshProfile, isOwner };
 }
