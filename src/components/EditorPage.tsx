@@ -316,7 +316,12 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-full border border-gold-600/20 bg-ink-950/90 backdrop-blur-xl shadow-xl">
+  <span className="text-[10px] uppercase tracking-[.18em] text-gold-300">{projectLoading ? 'BETÖLTÉS…' : projectName}</span>
+  {buildSpec?.pages?.length ? <span className="text-[9px] text-cream-300/45">{buildSpec.pages.length} oldal · {buildSpec.sections?.length || 0} szekció · {buildSpec.components?.length || 0} komponens</span> : null}
+</div>
+
+<div className="flex flex-1 overflow-hidden">
         <div className="hidden md:flex w-56 flex-col border-r border-gold-600/10 bg-ink-900/50 overflow-y-auto">
           <div className="p-3">
             <div className="text-xs text-cream-300/40 uppercase tracking-wider mb-3 px-2">
