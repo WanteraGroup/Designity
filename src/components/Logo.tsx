@@ -9,7 +9,7 @@ export function Logo({ size = 40, showText = true, variant = 'full', className =
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
       <img
-        src="/logo.png"
+        src="/designly-logo.webp"
         width={size}
         height={size}
         className="shrink-0 rounded-full"
