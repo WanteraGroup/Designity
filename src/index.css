@@ -553,9 +553,9 @@
 
 .designly-hero {
   position:relative;
-  min-height:980px;
-  height:1080px;
-  max-height:1200px;
+  min-height:860px;
+  height:920px;
+  max-height:980px;
   overflow:hidden;
   isolation:isolate;
   display:flex;
@@ -616,7 +616,7 @@
   top:82px;
   transform:translateX(-50%);
   z-index:2;
-  opacity:.48;
+  opacity:.32;
   filter:drop-shadow(0 0 35px rgba(196,154,46,.22));
   pointer-events:none;
 }
