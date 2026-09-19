@@ -97,7 +97,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const [orchestration, setOrchestration] = useState<AgentDesignResult['orchestration'] | null>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
-  const [customCredits, setCustomCredits] = useState(100);\n  const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
+  const [customCredits, setCustomCredits] = useState(100);
+  const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
 
   useEffect(() => {
     try {
