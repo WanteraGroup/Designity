@@ -180,7 +180,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {projects.map((project) => (
-              <div key={project.id} className="card-lux p-5 cursor-pointer group" onClick={() => onNavigate('editor')}>
+              <div key={project.id} className="card-lux p-5 cursor-pointer group" onClick={() => { localStorage.setItem('designly_selected_project', project.id); onNavigate('editor'); }}>
                 <div className="aspect-video rounded-lg bg-ink-700/40 mb-3 flex items-center justify-center overflow-hidden">
                   {project.preview_url ? (
                     <img src={project.preview_url} alt={project.name} className="w-full h-full object-cover" />
