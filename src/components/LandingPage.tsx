@@ -68,6 +68,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="dl-reference-center">
+          <div className="dl-suite-badge">VYRON INTELLIGENCE × DESIGNLY STUDIO · ONE AI SYSTEM</div>
           <div className="dl-reference-crest">
             <div className="dl-reference-glow" />
             <CelticEmblem size={410} animate showD />
