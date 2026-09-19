@@ -328,6 +328,8 @@ Return one coherent structured result.`;
     }
 
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
+    const text = body.brief.toLowerCase();
+    const orchestration = buildOrchestrationPlan(body.brief, fallbackOutputs);
 
     // TEAM BUILD: the selected specialists now execute against the structured brief.
     // This is a real multi-stage provider workflow, not only a label in the UI.
@@ -409,9 +411,6 @@ Return one coherent structured result.`;
         required: ["status", "blockers", "buildSpec"],
       }
     );
-
-    const text = body.brief.toLowerCase();
-    const orchestration = buildOrchestrationPlan(body.brief, fallbackOutputs);
 
     // Preview is intentionally free of DESIGNLY credits, but it still renders
     // a real image so the user can inspect the actual result before approving.
