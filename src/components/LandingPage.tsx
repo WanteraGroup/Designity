@@ -34,7 +34,6 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         const dataEnd = html.indexOf('"', dataStart);
         const background = dataStart >= 0 && dataEnd > dataStart ? html.slice(dataStart, dataEnd) : null;
         if (active && background) setLandingHeroBackground(background);
-        if (active && match?.[1]) setLandingHeroBackground(match[1]);
       })
       .catch(() => {
         // Keep the repository artwork fallback when the standalone landing file is unavailable.
