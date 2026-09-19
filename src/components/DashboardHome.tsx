@@ -102,7 +102,13 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
             <h2 className="text-2xl lg:text-3xl font-display font-bold text-cream-50">Ötletből kész projekt.</h2>
             <p className="text-sm text-cream-300/60 mt-2 max-w-2xl">A DESIGNLY létrehozza a projekt alapját, az AI ügynökök pedig a briefből felépítik a struktúrát, tartalmat és vizuális irányt. VYRON riportból is közvetlenül indítható.</p>
           </div>
-          <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0">◆ AUTOMATIC BUILD INDÍTÁSA</button>
+          <button onClick={() => {
+            localStorage.setItem('designly_auto_build', JSON.stringify({
+              type: 'website',
+              brief: 'AUTOMATIC BUSINESS BUILD: Create a complete production-oriented responsive business website/app from the user\'s next idea. Include a premium hero, clear value proposition, services/products, pricing, CTA, contact flow, mobile navigation, AI assistant concept, admin/dashboard structure, customer/order flow where relevant, and a coherent brand system. Make all unsupported business details editable placeholders. Use DESIGNLY\'s premium black, gold, metallic and Celtic visual language.'
+            }));
+            onNavigate('create');
+          }} className="btn-gold text-sm shrink-0">◆ AUTOMATIC BUILD INDÍTÁSA</button>
         </div>
       </section>
 
