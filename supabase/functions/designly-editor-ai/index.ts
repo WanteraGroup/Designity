@@ -89,6 +89,10 @@ function sanitizeChanges(input: unknown): Array<{ target: keyof DesignState; val
     .slice(0, 8);
 }
 
+function isHexColor(value: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(value.trim());
+}
+
 function applyChanges(base: DesignState, changes: Array<{ target: keyof DesignState; value: string | boolean | number }>): DesignState {
   const next = { ...base };
 
@@ -97,10 +101,14 @@ function applyChanges(base: DesignState, changes: Array<{ target: keyof DesignSt
       case "heroTitle":
       case "heroDescription":
       case "heroButton":
+        if (typeof change.value === "string" && change.value.trim().length <= 240) {
+          next[change.target] = change.value.trim();
+        }
+        break;
       case "accent":
       case "surface":
       case "text":
-        if (typeof change.value === "string" && change.value.trim().length <= 240) {
+        if (typeof change.value === "string" && isHexColor(change.value)) {
           next[change.target] = change.value.trim();
         }
         break;
