@@ -1,7 +1,20 @@
 import { useState } from 'react';
-import { Bird, ChevronDown, MessageCircle, Send, Sparkles, X } from 'lucide-react';
+import { ChevronDown, Send, Sparkles, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { askHuginn } from '@/lib/huginn-agent';
+
+
+function HuginnRaven({ className = '' }: { className?: string }) {
+  return <svg className={`huginn-raven ${className}`} viewBox="0 0 100 72" aria-hidden="true">
+    <defs><linearGradient id="huginnMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f0d48a"/><stop offset=".45" stopColor="#b98a2f"/><stop offset="1" stopColor="#4b3514"/></linearGradient></defs>
+    <path className="huginn-wing" d="M45 38C28 15 17 12 5 9c10 13 15 24 29 34 5 4 8 3 11-5Z" fill="#111417" stroke="url(#huginnMetal)" strokeWidth="1.4"/>
+    <ellipse cx="55" cy="43" rx="25" ry="14" fill="#0b0d0f" stroke="url(#huginnMetal)" strokeWidth="1.5"/>
+    <circle cx="70" cy="27" r="11" fill="#0a0c0e" stroke="url(#huginnMetal)" strokeWidth="1.4"/>
+    <path d="M79 28l16 5-16 5z" fill="#18130a" stroke="#b98a2f" strokeWidth="1"/>
+    <circle className="huginn-eye" cx="73" cy="26" r="2.2" fill="#ffd56a"/>
+    <path d="M39 48c8 12 19 17 30 16" fill="none" stroke="#17191b" strokeWidth="6" strokeLinecap="round"/>
+  </svg>;
+}
 
 interface HuginnAgentProps { onNavigate: (page: string) => void; }
 
@@ -50,7 +63,7 @@ export function HuginnAgent({ onNavigate }: HuginnAgentProps) {
       {open && (
         <section className="huginn-panel" aria-label="Huginn AI agent">
           <header className="huginn-header">
-            <div className="huginn-avatar"><Bird /></div>
+            <div className="huginn-avatar"><HuginnRaven /></div>
             <div><strong>HUGINN</strong><span>{lang === 'hu' ? 'ODIN HOLLÓJA · AI ASSZISZTENS' : 'ODIN’S RAVEN · AI GUIDE'}</span></div>
             <button onClick={() => setOpen(false)} aria-label="Close"><X /></button>
           </header>
@@ -74,7 +87,7 @@ export function HuginnAgent({ onNavigate }: HuginnAgentProps) {
         </section>
       )}
       <button className="huginn-orb" onClick={() => setOpen((v) => !v)} aria-label="Huginn AI agent">
-        {open ? <ChevronDown /> : <><Bird /><span><b>HUGINN</b><small>AI</small></span><Sparkles /></>}
+        {open ? <ChevronDown /> : <><HuginnRaven /><span><b>HUGINN</b><small>AI</small></span><Sparkles /></>}
       </button>
     </div>
   );
