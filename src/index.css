@@ -1914,19 +1914,61 @@ button{font-family:inherit}
 
 /* FINAL REFERENCE HERO TUNING */
 .dl-hero-reference .dl-reference-runes{
+  display:flex!important;
+  flex-direction:column;
+  gap:7px;
+  top:118px;
+  left:28px;
+  right:auto;
+  z-index:6!important;
+  color:rgba(222,177,72,.86);
+  text-shadow:0 0 10px rgba(211,170,76,.42);
+}
+.dl-hero-reference .dl-reference-runes-right{left:auto;right:28px}
+.dl-hero-reference .dl-reference-runes span{
+  animation:dlRuneFlash 5.5s ease-in-out infinite;
+}
+.dl-hero-reference .dl-raven-eye{
   display:block!important;
-  top:120px;
-  left:22px;
-  right:22px;
+  z-index:8!important;
+}
+.dl-hero-reference .dl-reference-crest{
+  display:grid!important;
+  position:absolute;
+  left:50%;
+  top:19%;
+  width:min(430px,42vw);
+  height:min(430px,42vw);
+  transform:translateX(-50%);
   z-index:4!important;
-  color:rgba(222,177,72,.82);
-  text-shadow:0 0 13px rgba(211,170,76,.38);
+  opacity:.82;
+  pointer-events:none;
 }
-.dl-hero-reference .dl-reference-runes-left{left:28px}
-.dl-hero-reference .dl-reference-runes-right{right:28px;left:auto}
-.dl-hero-reference .dl-raven-eye{display:none!important}
+.dl-hero-reference .dl-reference-glow{
+  display:block!important;
+  z-index:-1;
+}
+.dl-hero-reference .dl-reference-crest .celtic-emblem{
+  width:100%;
+  height:100%;
+  filter:drop-shadow(0 0 22px rgba(229,201,107,.32));
+}
+.dl-hero-reference .dl-reference-center{
+  padding-top:300px;
+}
+.dl-hero-reference .dl-atmosphere{
+  z-index:3!important;
+  opacity:.52;
+}
 @media (max-width:700px){
-  .dl-hero-reference .dl-reference-runes{top:92px}
-  .dl-hero-reference .dl-reference-runes-left{left:10px}
-  .dl-hero-reference .dl-reference-runes-right{right:10px}
+  .dl-hero-reference .dl-reference-runes{top:90px;left:9px}
+  .dl-hero-reference .dl-reference-runes-right{right:9px;left:auto}
+  .dl-hero-reference .dl-reference-crest{
+    top:13%;
+    width:285px;
+    height:285px;
+    opacity:.72;
+  }
+  .dl-hero-reference .dl-reference-center{padding-top:210px}
 }
+
