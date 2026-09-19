@@ -1941,6 +1941,13 @@ button{font-family:inherit}
 }
 @keyframes dlCelticHalo{to{transform:rotate(360deg)}}
 
+.dl-hero-reference .dl-reference-runes{
+  display:block!important;
+  z-index:4!important;
+}
+.dl-hero-reference .dl-reference-runes-left{left:28px}
+.dl-hero-reference .dl-reference-runes-right{right:28px;left:auto}
+
 .dl-hero-reference .dl-raven-eye{
   display:block!important;
   z-index:8!important;
