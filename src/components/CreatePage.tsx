@@ -99,6 +99,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [customCredits, setCustomCredits] = useState(100);
   const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
+  const [autoBuildRequested, setAutoBuildRequested] = useState(false);
 
   useEffect(() => {
     try {
@@ -147,10 +148,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         setSelectedType(build.type);
         setBrief(build.brief);
         setStep(2);
-        window.setTimeout(() => {
-          // The preview is the safe automatic first pass; final generation remains an explicit approval.
-          handlePreview();
-        }, 250);
+        setAutoBuildRequested(true);
       }
     } catch {
       localStorage.removeItem('designly_auto_build');
@@ -236,6 +234,12 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setOrchestration(result.orchestration || null);
     setStep(3);
   };
+
+  useEffect(() => {
+    if (!autoBuildRequested || !selectedType || brief.trim().length < 5 || previewLoading) return;
+    setAutoBuildRequested(false);
+    void handlePreview();
+  }, [autoBuildRequested, selectedType, brief]);
 
   const handleGenerate = async () => {
     if (!profile || !selectedType || !approved) return;
