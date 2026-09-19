@@ -148,9 +148,9 @@ Deno.serve(async (req: Request) => {
 
     const language = body.language?.trim() || "en";
     const fallbackOutputs = (body.requestedOutputs || []).filter((v) => allowedOutputs.has(v)).slice(0, 20);
-    const provider = Deno.env.get("AI_PROVIDER") || "none";
-    const apiKey = Deno.env.get("AI_API_KEY");
-    const model = Deno.env.get("AI_MODEL") || "gpt-5.6-luna";
+    const provider = Deno.env.get("AI_PROVIDER") || (Deno.env.get("GROQ_API_KEY") ? "groq" : "none");
+    const apiKey = Deno.env.get("AI_API_KEY") || Deno.env.get("GROQ_API_KEY");
+    const model = Deno.env.get("AI_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
 
     if (provider === "none" || !apiKey) {
       return json({
@@ -269,7 +269,7 @@ Return one coherent structured result.`;
       const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${groqKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -317,6 +317,14 @@ Return one coherent structured result.`;
 
     if (body.mode === "preview") {
       const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-2";
+      const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || (provider === "openai" ? apiKey : undefined);
+      if (!imageApiKey) {
+        return json({
+          error: "PREVIEW_IMAGE_PROVIDER_NOT_CONFIGURED",
+          providerNotConfigured: true,
+          message: "A visual image provider is required for free DESIGNLY previews. Set AI_IMAGE_API_KEY/OPENAI_API_KEY; Groq handles the design reasoning.",
+        }, 503);
+      }
       const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
