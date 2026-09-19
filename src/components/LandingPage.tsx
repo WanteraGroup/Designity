@@ -22,42 +22,7 @@ const capabilities = [
 
 export function LandingPage({ onNavigate }: LandingPageProps) {
   const { t } = useI18n();
-  const [landingHeroBackground, setLandingHeroBackground] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    const extractLargestImage = (html: string) => {
-            const matches = html.match(/data:image\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/=]+/g) ?? [];
-      return matches.sort((a, b) => b.length - a.length)[0] ?? null;
-    };
-
-    // Prefer the Celtic reference artwork, then fall back to the Designly landing reference.
-    const loadReference = async () => {
-      const sources = [
-        '/Kelta%20Minta%20K%C3%A9pment%C3%A9s%20_%20Use%20AI.html',
-        '/designly-landing%20(4).html',
-      ];
-
-      for (const source of sources) {
-        try {
-          const response = await fetch(source, { cache: 'force-cache' });
-          if (!response.ok) continue;
-          const html = await response.text();
-          const background = extractLargestImage(html);
-          if (active && background) {
-            setLandingHeroBackground(background);
-            return;
-          }
-        } catch {
-          // Try the next repository reference.
-        }
-      }
-    };
-
-    void loadReference();
-    return () => { active = false; };
-  }, []);
+  const landingHeroBackground = '/stilus.png';
 
   const workflow = [
     ['01', t('workflow.step1Title'), t('workflow.step1Desc')],
