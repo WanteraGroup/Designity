@@ -1439,3 +1439,235 @@ button{font-family:inherit}
 @media (prefers-reduced-motion:reduce){
   .designly-frame-spin{animation:none}
 }
+
+/* =========================================================
+   REFERENCE HERO — supplied Nordic/Viking direction
+   ========================================================= */
+.dl-hero-reference{
+  min-height:calc(100svh - 1px);
+  height:auto;
+  max-height:none;
+  padding-top:80px;
+  display:block;
+  background:#030405;
+}
+.dl-hero-reference .dl-hero-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center center;
+  filter:saturate(.95) contrast(1.08) brightness(.72);
+  transform:none;
+}
+.dl-hero-reference .dl-hero-shade{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(0,0,0,.02),rgba(0,0,0,.45) 55%,rgba(0,0,0,.82) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.04) 25%,rgba(0,0,0,.12) 55%,rgba(0,0,0,.82) 100%);
+}
+.dl-reference-frame{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  border:1px solid rgba(211,170,76,.22);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02),inset 0 0 80px rgba(0,0,0,.25);
+}
+.dl-reference-frame:before,.dl-reference-frame:after{
+  content:"";
+  position:absolute;
+  top:0;bottom:0;
+  width:86px;
+  opacity:.72;
+  background:
+    linear-gradient(90deg,rgba(211,170,76,.28),transparent 30%),
+    repeating-linear-gradient(90deg,transparent 0 20px,rgba(211,170,76,.08) 21px 22px);
+}
+.dl-reference-frame:before{left:0}
+.dl-reference-frame:after{right:0;transform:scaleX(-1)}
+
+.dl-reference-center{
+  position:relative;
+  z-index:5;
+  width:min(1180px,calc(100% - 40px));
+  min-height:calc(100svh - 80px);
+  margin:0 auto;
+  padding:25px 0 95px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.dl-reference-crest{
+  position:relative;
+  width:430px;
+  height:430px;
+  display:grid;
+  place-items:center;
+  margin-top:-12px;
+}
+.dl-reference-crest .celtic-emblem{width:100%;height:100%}
+.dl-reference-glow{
+  position:absolute;
+  width:390px;height:390px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(211,170,76,.20),rgba(211,170,76,.05) 38%,transparent 70%);
+  filter:blur(18px);
+  pointer-events:none;
+}
+.dl-reference-tag{
+  margin-top:-2px;
+  color:#d7b45d;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.38em;
+  text-transform:uppercase;
+  text-shadow:0 0 16px rgba(211,170,76,.25);
+}
+.dl-reference-center h1{
+  margin:10px 0 0;
+  font:500 clamp(3.4rem,6vw,6rem)/.86 "Cormorant Garamond",Georgia,serif;
+  letter-spacing:-.055em;
+  color:#f6f0e4;
+  text-shadow:0 5px 30px rgba(0,0,0,.75);
+}
+.dl-reference-center h1 em{
+  color:#d8b45c;
+  font-style:italic;
+}
+.dl-reference-center>p{
+  width:min(700px,92vw);
+  margin:17px auto 0;
+  color:rgba(244,239,227,.78);
+  font-size:14px;
+  line-height:1.55;
+  text-shadow:0 2px 14px rgba(0,0,0,.9);
+}
+.dl-reference-actions{
+  margin-top:22px;
+  justify-content:center;
+}
+.dl-reference-actions .dl-btn{min-width:255px}
+.dl-reference-stats{
+  margin-top:24px;
+  width:min(1050px,100%);
+  display:grid;
+  grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;
+  align-items:center;
+}
+.dl-reference-stats>div{display:flex;flex-direction:column;gap:5px}
+.dl-reference-stats strong{
+  color:#e8c96f;
+  font:500 26px/1 "Cormorant Garamond",Georgia,serif;
+  text-shadow:0 0 18px rgba(211,170,76,.2);
+}
+.dl-reference-stats span{
+  color:rgba(244,239,227,.52);
+  font-size:8px;
+  letter-spacing:.2em;
+}
+.dl-reference-stats i{
+  width:1px;height:40px;
+  background:rgba(211,170,76,.32);
+}
+.dl-reference-runes{
+  position:absolute;
+  top:155px;
+  z-index:4;
+  color:rgba(222,177,72,.74);
+  font-size:19px;
+  line-height:1.62;
+  text-align:center;
+  text-shadow:0 0 13px rgba(211,170,76,.3);
+}
+.dl-reference-runes-left{left:42px}
+.dl-reference-runes-right{right:42px}
+.dl-reference-claim{
+  position:absolute;
+  z-index:6;
+  right:18%;
+  top:240px;
+  text-align:center;
+  color:rgba(244,239,227,.88);
+  font:400 15px/1.05 "Cormorant Garamond",Georgia,serif;
+  letter-spacing:.12em;
+  text-shadow:0 2px 16px #000;
+}
+.dl-reference-claim strong{font-size:16px}
+.dl-reference-claim small{
+  display:block;
+  margin-top:14px;
+  color:rgba(244,239,227,.48);
+  font:700 7px/1.7 Inter,system-ui,sans-serif;
+  letter-spacing:.28em;
+}
+.dl-reference-scroll{
+  position:absolute;
+  z-index:7;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  color:#d6b15a;
+}
+.dl-reference-scroll small{font-size:8px;letter-spacing:.25em}
+.dl-reference-scroll>span:last-child{font-size:18px;line-height:.6}
+.dl-mouse{
+  position:relative;
+  width:24px;height:39px;
+  border:2px solid #d6b15a;
+  border-radius:15px;
+  display:block;
+}
+.dl-mouse b{
+  position:absolute;
+  left:50%;top:7px;
+  width:3px;height:7px;
+  transform:translateX(-50%);
+  border-radius:4px;
+  background:#d6b15a;
+}
+.dl-reference-footer{
+  position:absolute;
+  z-index:7;
+  left:42px;right:42px;bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  color:rgba(244,239,227,.38);
+  font-size:7px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+}
+@media (max-width:1100px){
+  .dl-reference-claim{right:8%;top:215px}
+  .dl-reference-runes-left{left:15px}
+  .dl-reference-runes-right{right:15px}
+}
+@media (max-width:700px){
+  .dl-hero-reference{padding-top:68px}
+  .dl-reference-center{
+    width:calc(100% - 24px);
+    min-height:calc(100svh - 68px);
+    padding:10px 0 80px;
+  }
+  .dl-reference-crest{width:285px;height:285px}
+  .dl-reference-glow{width:260px;height:260px}
+  .dl-reference-center h1{font-size:clamp(3rem,15vw,4.5rem)}
+  .dl-reference-center>p{font-size:12px}
+  .dl-reference-actions{flex-direction:column;width:100%}
+  .dl-reference-actions .dl-btn{width:min(310px,100%)}
+  .dl-reference-stats{grid-template-columns:1fr 1fr;gap:15px}
+  .dl-reference-stats i{display:none}
+  .dl-reference-runes{display:none}
+  .dl-reference-claim{display:none}
+  .dl-reference-footer{left:16px;right:16px;bottom:8px;font-size:6px}
+  .dl-reference-footer span:last-child{display:none}
+  .dl-reference-scroll{bottom:34px}
+}
