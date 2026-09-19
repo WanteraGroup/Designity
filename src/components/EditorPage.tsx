@@ -91,9 +91,10 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
         setProjectName(data.name || 'DESIGNLY STUDIO');
         const config = (data.config || {}) as Record<string, any>;
         const spec = config.buildSpec || config.orchestration?.buildSpec || null;
+        const savedDesign = config.designState as DesignEditorState | undefined;
         setBuildSpec(spec);
         const content = spec?.content || {};
-        setDesign((current) => ({ ...current, heroTitle: String(content.heroTitle || content.title || data.name || current.heroTitle), heroDescription: String(content.heroDescription || content.description || data.brief || current.heroDescription), heroButton: String(content.cta || content.heroButton || current.heroButton), celticBorder: true, atmosphere: 'mist' }));
+        setDesign((current) => savedDesign || ({ ...current, heroTitle: String(content.heroTitle || content.title || data.name || current.heroTitle), heroDescription: String(content.heroDescription || content.description || data.brief || current.heroDescription), heroButton: String(content.cta || content.heroButton || current.heroButton), celticBorder: true, atmosphere: 'mist' }));
       }
       setProjectLoading(false);
     }
