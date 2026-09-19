@@ -71,6 +71,24 @@ function extractJson(text: string): Record<string, unknown> {
   return JSON.parse(candidate);
 }
 
+async function callGroqTeam(groqKey: string, model: string, system: string, user: string, schemaName: string, schema: Record<string, unknown>) {
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${groqKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "system", content: system }, { role: "user", content: user }],
+      reasoning_effort: "low",
+      response_format: { type: "json_schema", json_schema: { name: schemaName, strict: true, schema } },
+    }),
+  });
+  if (!response.ok) throw new Error(`Groq team stage failed: ${response.status}`);
+  const data = await response.json();
+  const raw = data.choices?.[0]?.message?.content;
+  if (typeof raw !== "string" || !raw.trim()) throw new Error("Groq team stage returned no structured result");
+  return JSON.parse(raw);
+}
+
 function buildImagePrompt(brief: DesignBrief, originalBrief: string): string {
   return [
     "Create a polished visual preview for DESIGNLY STUDIO based on the approved design direction below.",
@@ -311,6 +329,87 @@ Return one coherent structured result.`;
 
     const structured = normalizeBrief(extractJson(content), language, fallbackOutputs);
 
+    // TEAM BUILD: the selected specialists now execute against the structured brief.
+    // This is a real multi-stage provider workflow, not only a label in the UI.
+    const teamModel = Deno.env.get("DESIGNLY_TEAM_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
+    const teamPlan = await callGroqTeam(
+      Deno.env.get("GROQ_API_KEY") || apiKey,
+      teamModel,
+      "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. Produce actionable, concrete outputs. Never claim external actions were performed. Return only JSON.",
+      JSON.stringify({
+        brief: structured,
+        selectedAgents: orchestration.agents,
+        responsibilities: orchestration.reasons,
+        instruction: "For each selected specialist, produce its deliverable. Then produce one integrated build specification. Keep assumptions explicit."
+      }),
+      "designly_specialist_team",
+      {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          specialistOutputs: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                agent: { type: "string" },
+                deliverable: { type: "string" },
+                decisions: { type: "array", items: { type: "string" } },
+              },
+              required: ["agent", "deliverable", "decisions"],
+            },
+          },
+          buildSpec: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              pages: { type: "array", items: { type: "string" } },
+              sections: { type: "array", items: { type: "string" } },
+              components: { type: "array", items: { type: "string" } },
+              content: { type: "array", items: { type: "string" } },
+              interactions: { type: "array", items: { type: "string" } },
+              responsiveRules: { type: "array", items: { type: "string" } },
+              acceptanceCriteria: { type: "array", items: { type: "string" } },
+            },
+            required: ["pages", "sections", "components", "content", "interactions", "responsiveRules", "acceptanceCriteria"],
+          },
+        },
+        required: ["specialistOutputs", "buildSpec"],
+      }
+    );
+
+    const reviewedTeam = await callGroqTeam(
+      Deno.env.get("GROQ_API_KEY") || apiKey,
+      teamModel,
+      "You are the DESIGNLY QA/Builder gate. Review the proposed specialist output for contradictions, missing essentials, unsafe arbitrary-code requests, and buildability. Return a corrected build specification only. Do not claim anything was deployed.",
+      JSON.stringify({ brief: structured, selectedAgents: orchestration.agents, proposal: teamPlan }),
+      "designly_build_gate",
+      {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          status: { type: "string", enum: ["PASS", "BLOCK"] },
+          blockers: { type: "array", items: { type: "string" } },
+          buildSpec: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              pages: { type: "array", items: { type: "string" } },
+              sections: { type: "array", items: { type: "string" } },
+              components: { type: "array", items: { type: "string" } },
+              content: { type: "array", items: { type: "string" } },
+              interactions: { type: "array", items: { type: "string" } },
+              responsiveRules: { type: "array", items: { type: "string" } },
+              acceptanceCriteria: { type: "array", items: { type: "string" } },
+            },
+            required: ["pages", "sections", "components", "content", "interactions", "responsiveRules", "acceptanceCriteria"],
+          },
+        },
+        required: ["status", "blockers", "buildSpec"],
+      }
+    );
+
     const text = body.brief.toLowerCase();
     const orchestration = buildOrchestrationPlan(body.brief, fallbackOutputs);
 
@@ -456,6 +555,11 @@ Return one coherent structured result.`;
         agents: orchestration.agents,
         capabilities: orchestration.capabilities,
         reasons: orchestration.reasons,
+        teamExecuted: true,
+        specialistOutputs: teamPlan.specialistOutputs || [],
+        buildSpec: reviewedTeam.buildSpec,
+        qaStatus: reviewedTeam.status,
+        blockers: reviewedTeam.blockers || [],
       },
     });
   } catch (error) {
