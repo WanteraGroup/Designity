@@ -145,9 +145,24 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   };
 
   const startVoiceCommand = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      (window as Window & { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition;
+    type SpeechRecognitionLike = {
+      lang: string;
+      interimResults: boolean;
+      continuous: boolean;
+      onstart: (() => void) | null;
+      onend: (() => void) | null;
+      onerror: (() => void) | null;
+      onresult: ((event: unknown) => void) | null;
+      start: () => void;
+    };
+
+    type SpeechRecognitionWindow = {
+      SpeechRecognition?: new () => SpeechRecognitionLike;
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+    };
+
+    const speechWindow = window as unknown as SpeechRecognitionWindow;
+    const SpeechRecognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       setAiError('A böngészőben nincs elérhető beszédfelismerés. Írd be a parancsot.');
@@ -168,7 +183,10 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
       setAiError('A hangfelismerés nem sikerült. Próbáld újra.');
     };
     recognition.onresult = (event) => {
-      const text = event.results?.[0]?.[0]?.transcript || '';
+      const resultEvent = event as {
+        results?: ArrayLike<ArrayLike<{ transcript?: string }>>;
+      };
+      const text = resultEvent.results?.[0]?.[0]?.transcript || '';
       setAiCommand(text);
       if (text.trim()) void applyAiCommand(text);
     };
