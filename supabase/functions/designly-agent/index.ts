@@ -328,7 +328,7 @@ Return one coherent structured result.`;
       const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${imageApiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
