@@ -1860,3 +1860,19 @@ button{font-family:inherit}
 .dl-hero-reference .dl-reference-scroll,
 .dl-hero-reference .dl-reference-footer{z-index:7!important}
 .dl-hero-reference .dl-raven-eye{z-index:8!important}
+
+/* Exact artwork from public/designly-landing (4).html.
+   The standalone landing file contains the intended ships + twin ravens artwork. */
+.dl-hero-reference .dl-hero-bg{
+  z-index:0!important;
+  background-image:url('/stilus.png');
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+  filter:saturate(.98) contrast(1.04) brightness(.90);
+  transform:none;
+}
+.dl-hero-reference .dl-hero-bg[style]{
+  background-size:cover!important;
+  background-position:center center!important;
+}
