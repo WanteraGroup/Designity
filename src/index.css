@@ -1787,3 +1787,58 @@ button{font-family:inherit}
   .dl-fog{opacity:.28}
   .dl-smoke{opacity:.16}
 }
+
+
+/* REFERENCE DETAIL — eye positions match the supplied landing reference */
+.dl-raven-eye-left{left:26.8%;top:25.2%}
+.dl-raven-eye-right{right:auto;left:71.2%;top:28%;animation-delay:-2.8s}
+.dl-raven-eye-left-small{
+  left:14.4%;top:14.6%;width:12px;height:12px;
+  background:radial-gradient(circle,#e9fbff 0 18%,#59d8ff 30%,rgba(56,194,255,.7) 48%,transparent 72%);
+  box-shadow:0 0 5px #59d8ff,0 0 18px rgba(56,216,255,.75);
+  animation-delay:-1.2s;
+}
+.dl-raven-eye-right-small{
+  right:auto;left:87.2%;top:16.2%;width:12px;height:12px;
+  background:radial-gradient(circle,#fff5ce 0 18%,#f0b64d 30%,rgba(218,148,39,.72) 48%,transparent 72%);
+  box-shadow:0 0 5px #f0b64d,0 0 18px rgba(240,182,77,.75);
+  animation-delay:-4.1s;
+}
+.dl-reference-medallion{
+  position:absolute;
+  left:50%;top:34%;
+  width:clamp(210px,22vw,360px);
+  aspect-ratio:1;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:4;
+  opacity:.48;
+  mix-blend-mode:screen;
+}
+.dl-reference-medallion>*{position:absolute;inset:0;border-radius:50%}
+.dl-medallion-outer{border:1px dashed rgba(255,214,140,.5);animation:dlSpin 34s linear infinite}
+.dl-medallion-inner{inset:16%;border:1px solid rgba(255,226,170,.42);animation:dlSpin 22s linear infinite reverse}
+.dl-medallion-spokes{
+  inset:6%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,214,140,.55) 0deg 2.2deg,rgba(255,214,140,0) 2.2deg 22.5deg);
+  -webkit-mask:radial-gradient(circle,transparent 48%,#000 62%,#000 94%,transparent 100%);
+  mask:radial-gradient(circle,transparent 48%,#000 62%,#000 94%,transparent 100%);
+  animation:dlSpin 48s linear infinite;
+}
+.dl-medallion-spokes.reverse{
+  inset:22%;
+  background:repeating-conic-gradient(from 7deg,rgba(255,236,190,.6) 0deg 1.6deg,rgba(255,236,190,0) 1.6deg 30deg);
+  -webkit-mask:radial-gradient(circle,transparent 40%,#000 60%,#000 92%,transparent 100%);
+  mask:radial-gradient(circle,transparent 40%,#000 60%,#000 92%,transparent 100%);
+  animation:dlSpin 30s linear infinite reverse;
+}
+@keyframes dlSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .dl-reference-medallion>*{animation:none!important}
+}
+@media (max-width:700px){
+  .dl-reference-medallion{width:250px;opacity:.34}
+  .dl-raven-eye-left{left:26.8%;top:25.2%}
+  .dl-raven-eye-right{left:71.2%;top:28%}
+  .dl-raven-eye-left-small,.dl-raven-eye-right-small{display:none}
+}
