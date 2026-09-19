@@ -30,3 +30,22 @@ DESIGNLY now has a modular AI stack:
 - **MCP-ready architecture:** the provider layer is kept server-side so remote MCP can be added without exposing API keys. Groq supports OpenAI-compatible remote MCP through its Responses API. citeturn0search9
 
 For strict structured JSON, GPT-OSS 120B supports Groq Structured Outputs. Tool use and Structured Outputs are separate modes in the current Groq API, so the Compound path intentionally uses JSON Object Mode instead. citeturn0search0turn0search3
+
+## Unified Agent Layer
+
+DESIGNLY now contains a shared agent registry and orchestration plan at:
+- `supabase/functions/_shared/agent-registry.ts`
+- `supabase/functions/_shared/orchestrator.ts`
+
+The registry consolidates reusable capabilities identified across the WanteraGroup projects:
+- VYRON/NEXORA: business planning, MVP/product factory, research, tech scouting, builder, reviewer and sales
+- TRENOVA/WANTERA: commerce, TikTok Shop, product/listing, campaign and social publishing workflows
+- MIRA/Mira-Mobile: assistant, voice, multilingual translation/interpreter, reminders/mobile concepts
+- VEYRA: realtime translation architecture and a browser-only free translation fallback
+- DESIGNLY: Master, Brand, Web, Social, Marketing, Content, Vision, Voice and safe AI editor
+- HUGINN: user-facing DESIGNLY guide/navigation agent
+- AVENTOR/WANTERA: procurement and recruitment capability definitions
+
+The orchestrator selects relevant specialists from the request and exposes the selected plan to the Master Agent response. Provider credentials and external side effects remain server-side and are only enabled when the corresponding integration is actually configured and authorized.
+
+This layer is deliberately capability-based: source projects are not blindly copied across incompatible runtimes. Reusable logic is represented as shared agent contracts, while provider-specific code remains isolated behind adapters.
