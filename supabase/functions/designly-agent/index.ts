@@ -160,7 +160,7 @@ Deno.serve(async (req: Request) => {
       }, 503);
     }
 
-    if (provider !== "openai") {
+    if (provider !== "openai" && provider !== "groq") {
       return json({ error: "UNSUPPORTED_PROVIDER", message: `Provider '${provider}' is not supported by the current DESIGNLY agent adapter.` }, 400);
     }
 
@@ -269,7 +269,7 @@ Return one coherent structured result.`;
       const response = await fetch("https://api.openai.com/v1/responses", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${groqKey}`,
+          "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
