@@ -42,9 +42,23 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <img src="/stilus.png" alt="" className="dl-hero-bg" aria-hidden="true" />
         <div className="dl-hero-shade" aria-hidden="true" />
         <div className="dl-reference-frame" aria-hidden="true" />
+        <div className="dl-atmosphere" aria-hidden="true">
+          <span className="dl-fog dl-fog-a" />
+          <span className="dl-fog dl-fog-b" />
+          <span className="dl-fog dl-fog-c" />
+          <span className="dl-smoke dl-smoke-a" />
+          <span className="dl-smoke dl-smoke-b" />
+        </div>
 
-        <div className="dl-reference-runes dl-reference-runes-left" aria-hidden="true">ᛉ<br/>ᚨ<br/>ᛟ<br/>ᚱ<br/>ᚦ<br/>ᚷ<br/>ᛏ<br/>ᚹ<br/>ᛒ</div>
-        <div className="dl-reference-runes dl-reference-runes-right" aria-hidden="true">ᛉ<br/>ᚨ<br/>ᛟ<br/>ᚱ<br/>ᚦ<br/>ᚷ<br/>ᛏ<br/>ᚹ<br/>ᛒ</div>
+        <span className="dl-raven-eye dl-raven-eye-left" aria-hidden="true" />
+        <span className="dl-raven-eye dl-raven-eye-right" aria-hidden="true" />
+
+        <div className="dl-reference-runes dl-reference-runes-left" aria-hidden="true">
+          {['ᛉ','ᚨ','ᛟ','ᚱ','ᚦ','ᚷ','ᛏ','ᚹ','ᛒ'].map((rune, i) => <span key={`l-${rune}` + i}>{rune}</span>)}
+        </div>
+        <div className="dl-reference-runes dl-reference-runes-right" aria-hidden="true">
+          {['ᛉ','ᚨ','ᛟ','ᚱ','ᚦ','ᚷ','ᛏ','ᚹ','ᛒ'].map((rune, i) => <span key={`r-${rune}` + i}>{rune}</span>)}
+        </div>
 
         <div className="dl-reference-center">
           <div className="dl-reference-crest">
