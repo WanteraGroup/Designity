@@ -166,8 +166,11 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
       setDesign(result.design);
       const projectId = localStorage.getItem('designly_selected_project');
       if (projectId) {
+        const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
+        const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
         await supabase.from('projects').update({
           config: {
+            ...currentConfig,
             designState: result.design,
             updatedBy: 'DESIGNLY_AI_EDITOR',
             updatedAt: new Date().toISOString(),
