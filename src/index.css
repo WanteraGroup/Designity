@@ -1910,3 +1910,23 @@ button{font-family:inherit}
     padding:210px 0 55px;
   }
 }
+
+
+/* FINAL REFERENCE HERO TUNING */
+.dl-hero-reference .dl-reference-runes{
+  display:block!important;
+  top:120px;
+  left:22px;
+  right:22px;
+  z-index:4!important;
+  color:rgba(222,177,72,.82);
+  text-shadow:0 0 13px rgba(211,170,76,.38);
+}
+.dl-hero-reference .dl-reference-runes-left{left:28px}
+.dl-hero-reference .dl-reference-runes-right{right:28px;left:auto}
+.dl-hero-reference .dl-raven-eye{display:none!important}
+@media (max-width:700px){
+  .dl-hero-reference .dl-reference-runes{top:92px}
+  .dl-hero-reference .dl-reference-runes-left{left:10px}
+  .dl-hero-reference .dl-reference-runes-right{right:10px}
+}
