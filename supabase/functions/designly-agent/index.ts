@@ -221,42 +221,39 @@ Return one coherent structured result.`;
             ? { type: "json_object" }
             : {
                 type: "json_schema",
-            json_schema: {
-              name: "designly_design_brief",
-              strict: true,
-              schema: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  businessName: { type: ["string", "null"] },
-                  businessType: { type: ["string", "null"] },
-                  targetAudience: { type: ["string", "null"] },
-                  industry: { type: ["string", "null"] },
-                  visualStyle: { type: ["string", "null"] },
-                  mood: { type: ["string", "null"] },
-                  primaryColors: { type: "array", items: { type: "string" } },
-                  secondaryColors: { type: "array", items: { type: "string" } },
-                  typographyDirection: { type: ["string", "null"] },
-                  imageryDirection: { type: ["string", "null"] },
-                  requiredOutputs: {
-                    type: "array",
-                    items: { type: "string", enum: Array.from(allowedOutputs) },
+                json_schema: {
+                  name: "designly_design_brief",
+                  strict: true,
+                  schema: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                      businessName: { type: ["string", "null"] },
+                      businessType: { type: ["string", "null"] },
+                      targetAudience: { type: ["string", "null"] },
+                      industry: { type: ["string", "null"] },
+                      visualStyle: { type: ["string", "null"] },
+                      mood: { type: ["string", "null"] },
+                      primaryColors: { type: "array", items: { type: "string" } },
+                      secondaryColors: { type: "array", items: { type: "string" } },
+                      typographyDirection: { type: ["string", "null"] },
+                      imageryDirection: { type: ["string", "null"] },
+                      requiredOutputs: {
+                        type: "array",
+                        items: { type: "string", enum: Array.from(allowedOutputs) },
+                      },
+                      language: { type: "string" },
+                      additionalInstructions: { type: ["string", "null"] },
+                    },
+                    required: [
+                      "businessName", "businessType", "targetAudience", "industry",
+                      "visualStyle", "mood", "primaryColors", "secondaryColors",
+                      "typographyDirection", "imageryDirection", "requiredOutputs",
+                      "language", "additionalInstructions",
+                    ],
                   },
-                  language: { type: "string" },
-                  additionalInstructions: { type: ["string", "null"] },
                 },
-                required: [
-                  "businessName", "businessType", "targetAudience", "industry",
-                  "visualStyle", "mood", "primaryColors", "secondaryColors",
-                  "typographyDirection", "imageryDirection", "requiredOutputs",
-                  "language", "additionalInstructions",
-                ],
-              },
-                  },
-                },
-              },
-            },
-        }),
+              },        }),
       });
 
       if (!response.ok) {
