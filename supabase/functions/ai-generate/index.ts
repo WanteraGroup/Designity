@@ -316,7 +316,7 @@ Deno.serve(async (req: Request) => {
     });
   }
 });
-\n
+
 function buildImagePrompt(type: string, brief: string, style?: string, format?: string): string {
   const parts = [
     "Create a polished, production-ready visual design for DESIGNLY STUDIO.",
@@ -329,9 +329,9 @@ function buildImagePrompt(type: string, brief: string, style?: string, format?: 
     "Avoid watermarks, mock browser frames, random UI chrome, distorted anatomy, and generic stock-photo composition.",
     "Return the actual finished visual, not a description of the design.",
   ].filter(Boolean);
-  return parts.join("\n");
+  return parts.join("");
 }
-\nfunction parseDesignDirection(content: string, type: string, style?: string): Record<string, unknown> {
+function parseDesignDirection(content: string, type: string, style?: string): Record<string, unknown> {
   return {
     type,
     style: style || "premium",
