@@ -26,18 +26,36 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
   useEffect(() => {
     let active = true;
-    fetch('/designly-landing%20(4).html', { cache: 'force-cache' })
-      .then((response) => response.text())
-      .then((html) => {
-        const firstBackground = html.indexOf('background-image:url("');
-        const dataStart = html.indexOf('data:image/jpeg;base64,', firstBackground);
-        const dataEnd = html.indexOf('"', dataStart);
-        const background = dataStart >= 0 && dataEnd > dataStart ? html.slice(dataStart, dataEnd) : null;
-        if (active && background) setLandingHeroBackground(background);
-      })
-      .catch(() => {
-        // Keep the repository artwork fallback when the standalone landing file is unavailable.
-      });
+
+    const extractLargestImage = (html: string) => {
+      const matches = html.match(/data:image\\/(?:png|jpe?g|webp);base64,[A-Za-z0-9+/=]+/g) ?? [];
+      return matches.sort((a, b) => b.length - a.length)[0] ?? null;
+    };
+
+    // Prefer the Celtic reference artwork, then fall back to the Designly landing reference.
+    const loadReference = async () => {
+      const sources = [
+        '/Kelta%20Minta%20K%C3%A9pment%C3%A9s%20_%20Use%20AI.html',
+        '/designly-landing%20(4).html',
+      ];
+
+      for (const source of sources) {
+        try {
+          const response = await fetch(source, { cache: 'force-cache' });
+          if (!response.ok) continue;
+          const html = await response.text();
+          const background = extractLargestImage(html);
+          if (active && background) {
+            setLandingHeroBackground(background);
+            return;
+          }
+        } catch {
+          // Try the next repository reference.
+        }
+      }
+    };
+
+    void loadReference();
     return () => { active = false; };
   }, []);
 
