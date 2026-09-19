@@ -19,6 +19,7 @@ import { SettingsPage } from '@/components/SettingsPage';
 import { AdvertisingStudio } from '@/components/AdvertisingStudio';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
+import { HuginnAgent } from '@/components/HuginnAgent';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
@@ -171,6 +172,8 @@ function AppInner() {
     <div className="min-h-screen bg-ink-950">
       {isPublic && <PublicNav onNavigate={navigate} currentPage={page} />}
       {isDashboard && <DashNav currentPage={page} onNavigate={navigate} />}
+
+      <HuginnAgent onNavigate={navigate} />
 
       <div className={contentWrapperClass}>
         {isPublic && (
