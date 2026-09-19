@@ -2007,3 +2007,6 @@ button{font-family:inherit}
 .huginn-avatar .huginn-raven{width:31px;height:24px}.huginn-orb>.huginn-raven{width:27px;height:21px}
 @keyframes huginnWing{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-8deg) translateY(-2px)}}
 @keyframes huginnEye{0%,70%,100%{opacity:.35}76%,84%{opacity:1}80%{opacity:.2}}
+
+.dl-suite-badge{display:inline-flex;align-items:center;justify-content:center;margin:0 auto 16px;padding:7px 13px;border:1px solid rgba(212,175,55,.35);border-radius:999px;background:rgba(8,7,4,.72);color:#d8b866;font-size:8px;letter-spacing:1.7px;box-shadow:0 0 24px rgba(193,139,37,.12)}
+@media(max-width:640px){.dl-suite-badge{font-size:7px;letter-spacing:1px;padding:6px 9px}}
