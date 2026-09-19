@@ -39,7 +39,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="designly-site">
       <section className="dl-hero" aria-label="DESIGNLY STUDIO">
-        <img src="/alap.jpg" alt="" className="dl-hero-bg" aria-hidden="true" />
+        <img src="/stilus.png" alt="" className="dl-hero-bg" aria-hidden="true" />
         <div className="dl-hero-shade" aria-hidden="true" />
         <div className="dl-hero-grid" aria-hidden="true" />
         <div className="dl-runes" aria-hidden="true">ᛉ ᚨ ᛟ <span>ᚱ ᚦ ᚷ</span> ᛏ ᚹ ᛒ</div>
