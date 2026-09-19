@@ -22,12 +22,12 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
   const resourcesRef = useRef<HTMLDivElement>(null);
 
   const primary: NavItem[] = [
-    { id: 'home', label: 'Home', page: 'landing' },
+    { id: 'home', label: t('nav.home'), page: 'landing' },
     { id: 'create', label: t('nav.create'), page: 'create' },
-    { id: 'studio', label: 'Studio', page: 'advertising' },
-    { id: 'music', label: 'AI Music', page: 'music' },
+    { id: 'studio', label: t('nav.studio'), page: 'advertising' },
+    { id: 'music', label: t('nav.music'), page: 'music' },
     { id: 'templates', label: t('nav.templates'), page: 'templates' },
-    { id: 'projects', label: 'Projects', page: 'projects' },
+    { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
     { id: 'pricing', label: t('nav.pricing'), page: 'pricing' },
   ];
 
@@ -115,7 +115,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
               aria-expanded={resourcesOpen}
               aria-haspopup="true"
             >
-              {lang === 'hu' ? 'Erőforrások' : 'Resources'}
+              {t('nav.resources')}
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-300 ${resourcesOpen ? 'rotate-180' : ''}`}
               />
