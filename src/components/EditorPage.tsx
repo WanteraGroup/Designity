@@ -164,6 +164,17 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     if (changed) {
       pushHistory(design);
       setDesign(result.design);
+      const projectId = localStorage.getItem('designly_selected_project');
+      if (projectId) {
+        await supabase.from('projects').update({
+          config: {
+            designState: result.design,
+            updatedBy: 'DESIGNLY_AI_EDITOR',
+            updatedAt: new Date().toISOString(),
+          },
+          updated_at: new Date().toISOString(),
+        }).eq('id', projectId);
+      }
     }
 
     setAiReply(result.reply || 'A módosítást alkalmaztam.');
