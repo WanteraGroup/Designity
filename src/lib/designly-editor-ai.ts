@@ -33,6 +33,8 @@ export interface DesignEditorResult {
 
 export async function runDesignlyGroqEditor(params: {
   command: string;
+  mode?: 'preview' | 'final';
+  approvedChanges?: DesignEditorChange[];
   selectedElement?: string | null;
   device?: 'desktop' | 'tablet' | 'mobile';
   design: DesignEditorState;
