@@ -217,7 +217,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
           <div className='card-lux overflow-hidden border-gold-600/30 bg-black'>
             <div className='flex flex-wrap items-center justify-between gap-3 border-b border-gold-600/15 bg-ink-900/90 px-5 py-4'>
               <div><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/65'>KÉSZ MŰ · NAGY ELŐNÉZET</div><div className='mt-1 text-lg font-display text-cream-50'>{creator || 'CREATOR'} · {product.label}</div></div>
-              <div className='flex gap-2'><button onClick={downloadSpec} className='btn-ghost text-xs'><Download className='h-4 w-4'/> Production spec</button><button onClick={()=>onNavigate('projects')} className='btn-gold text-xs'>Projekt megnyitása</button></div>
+              <div className='flex gap-2'><button onClick={downloadSpec} className='btn-ghost text-xs'><Download className='h-4 w-4'/> Production spec</button><a href={imageUrl || undefined} download target='_blank' rel='noreferrer' className='btn-ghost text-xs'><Download className='h-4 w-4'/> Végleges PNG</a><button onClick={()=>onNavigate('projects')} className='btn-gold text-xs'>Projekt megnyitása</button></div>
             </div>
             <div className='relative min-h-[70vh] overflow-auto bg-[#020303] p-2 sm:p-5 lg:p-8'>
               {imageUrl && <img src={imageUrl} alt='Creator merch master artwork' className='mx-auto block w-full max-w-[1500px] h-auto object-contain rounded-xl' draggable={false} />}
