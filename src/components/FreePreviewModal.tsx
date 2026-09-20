@@ -5,6 +5,7 @@ interface FreePreviewModalProps {
   title: string;
   imageUrl?: string | null;
   previewText?: string | null;
+  previewAudioUrl?: string | null;
   loading?: boolean;
   cost: number;
   balance?: number | null;
@@ -20,6 +21,7 @@ export function FreePreviewModal({
   title,
   imageUrl,
   previewText,
+  previewAudioUrl,
   loading = false,
   cost,
   balance,
@@ -80,6 +82,13 @@ export function FreePreviewModal({
                     <Eye className="w-12 h-12 mx-auto mb-4 opacity-35" />
                     <div className="text-sm">AI előnézeti koncepció</div>
                     <div className="mt-2 text-[9px] uppercase tracking-[.18em]">0 KREDIT · PREVIEW</div>
+                    {previewAudioUrl && (
+                      <div className="mt-5 rounded-2xl border border-black/10 bg-white/70 p-4 text-left">
+                        <div className="mb-2 text-[9px] font-bold uppercase tracking-[.18em] text-black/45">INGYENES ZENEI ELŐHALLGATÁS · NINCS KREDIT</div>
+                        <audio controls controlsList="nodownload noplaybackrate" className="w-full" src={previewAudioUrl} />
+                        <div className="mt-2 text-[9px] text-black/45">Lejátszás engedélyezett. Letöltés csak a véglegesítés és kreditlevonás után.</div>
+                      </div>
+                    )}
                     {previewText && <div className="mt-5 rounded-2xl border border-black/10 bg-white/60 p-5 text-left text-sm leading-7 text-black/65">{previewText}</div>}
                   </div>
                 </div>
@@ -110,7 +119,7 @@ export function FreePreviewModal({
               )}
 
               <div className="mt-6 space-y-2">
-                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText) || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
+                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText && !previewAudioUrl) || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
                   {approvedLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   {approvedLoading ? 'VÉGLEGES GENERÁLÁS…' : `KÉREM · ${cost} KREDIT`}
                 </button>
