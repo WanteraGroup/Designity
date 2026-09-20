@@ -1,0 +1,24 @@
+name: Vercel AI Gateway
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  generate-text:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Vercel AI smoke test
+        uses: vercel/ai-action@v2.2.0
+        id: prompt
+        with:
+          prompt: "Analyze the DESIGNLY project context and return a concise three-point engineering review: architecture, reliability, and next validation step."
+          model: "openai/gpt5"
+          api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
+
+      - name: Show AI result
+        env:
+          AI_RESULT: ${{ steps.prompt.outputs.text }}
+        run: |
+          printf '%s\n' "$AI_RESULT"
