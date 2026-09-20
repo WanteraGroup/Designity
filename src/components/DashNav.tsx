@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -30,6 +30,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     { id: 'streamer', label: 'Streamer Studio', icon: Radio },
     { id: 'tattoo', label: 'Tattoo Library', icon: PenTool },
     { id: 'planner', label: 'Planner & Visualizer', icon: Ruler },
+    { id: 'cnc', label: 'CNC CAM', icon: Hammer },
     { id: 'projects', label: t('nav.projects'), icon: FolderOpen },
     { id: 'brands', label: t('nav.brands'), icon: Palette },
     { id: 'templates', label: '100K+ Templates', icon: LayoutTemplate },
