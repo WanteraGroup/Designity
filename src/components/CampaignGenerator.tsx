@@ -156,9 +156,9 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     return <CampaignGenOverlay step={genStep} t={t} total={selectedFormats.length} />;
   }
 
-  if (step === 4 && campaignId) {
+  if (campaignId) {
     return (
-    <>
+      <div
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <div className="w-20 h-20 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mb-6">
@@ -198,7 +198,8 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <>
+      <div className="max-w-3xl mx-auto space-y-8">
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3].map((s) => (
