@@ -71,17 +71,21 @@ export function FreePreviewModal({
                   <img
                     src={imageUrl}
                     alt={title + ' AI preview'}
-                    className={`block max-h-[72vh] w-full object-contain select-none ${isAdmin ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                    className={`block max-h-[72vh] w-full object-contain ${isAdmin ? 'pointer-events-auto' : 'select-none pointer-events-none'}`}
                     draggable={isAdmin}
                   />
-                  <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
-                    <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
-                      DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
-                    </div>
-                  </div>
-                  <div className="pointer-events-none absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[9px] uppercase tracking-[.18em] text-white/60 backdrop-blur-sm">
-                    VÍZJELZETT ELŐNÉZET · LETÖLTÉS A JÓVÁHAGYÁS UTÁN
-                  </div>
+                  {!isAdmin && (
+                    <>
+                      <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
+                        <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
+                          DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
+                        </div>
+                      </div>
+                      <div className="pointer-events-none absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[9px] uppercase tracking-[.18em] text-white/60 backdrop-blur-sm">
+                        VÍZJELZETT ELŐNÉZET · LETÖLTÉS A JÓVÁHAGYÁS UTÁN
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="min-h-[52vh] grid place-items-center text-center text-black/50 px-8">
