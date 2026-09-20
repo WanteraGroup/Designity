@@ -1,9 +1,14 @@
 import { useMemo, useState } from 'react';
 import {
-  Bookmark, ChevronDown, Crown, Download, Filter, Heart, LayoutTemplate,
-  Printer, Save, Search, Sparkles, Users, X
+  Bookmark, ChevronDown, Check, Crown, Download, Filter, Heart, LayoutTemplate,
+  Printer, Save, Search, Sparkles, Users, Wand2, X
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { useAuth } from '@/lib/auth';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
+import { generateDesign } from '@/lib/ai';
+import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { getCreditsForType } from '@/lib/constants';
 
 type TattooCategory = {
   id: string;
