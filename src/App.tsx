@@ -1,3 +1,4 @@
+import './designly-brand-overrides.css';
 import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
