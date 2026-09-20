@@ -60,7 +60,7 @@ function clampHistory<T>(items: T[], limit = 30) {
 
 export function EditorPage({ onNavigate }: EditorPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner } = useAuth();
+  const { profile, isOwner, refreshProfile } = useAuth();
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [selectedElement, setSelectedElement] = useState<string | null>('hero');
   const [aiCommand, setAiCommand] = useState('');
@@ -526,7 +526,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
         </div>
       </div>
     </div>
-    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
+    <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
     </>
   );
 }
