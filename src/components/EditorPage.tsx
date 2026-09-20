@@ -13,13 +13,10 @@ import {
   Mic,
   Send,
   Check,
-  Maximize2,
-  Minimize2,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
-import { PreviewWatermark } from './PreviewWatermark';
 import { supabase } from '@/lib/supabase';
 import {
   runDesignlyGroqEditor,
@@ -77,9 +74,6 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [projectName, setProjectName] = useState('DESIGNLY STUDIO');
   const [buildSpec, setBuildSpec] = useState<any>(null);
   const [projectLoading, setProjectLoading] = useState(true);
-  const [saveStatus, setSaveStatus] = useState<string>('MENTVE');
-  const [showCreditModal, setShowCreditModal] = useState(false);
-  const [focusPreview, setFocusPreview] = useState(false);
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
@@ -246,254 +240,25 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     recognition.start();
   };
 
-  const escapeHtml = (value: string) => value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-
-  const exportBaseName = (projectName || 'designly-site')
-    .replace(/[^a-z0-9-_]+/gi, '-')
-    .replace(/^-+|-+$/g, '')
-    .toLowerCase() || 'designly-site';
-
-  const buildExportStyles = () => `/* DESIGNLY STUDIO export — ${escapeHtml(projectName)} */
-*{box-sizing:border-box}
-:root{color-scheme:dark}
-html{scroll-behavior:smooth}
-body{margin:0;background:${design.surface};color:${design.text};font-family:Inter,Arial,sans-serif}
-main{min-height:100vh;background:radial-gradient(circle at 50% 15%,rgba(214,170,74,.16),transparent 35%),linear-gradient(180deg,#15171c,#08090b)}
-.hero{min-height:70vh;display:flex;flex-direction:column;align-items:${design.heroAlign==='left'?'flex-start':design.heroAlign==='right'?'flex-end':'center'};justify-content:center;text-align:${design.heroAlign};padding:64px 8%;gap:18px}
-.badge{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:${design.accent};color:#08090b;font-weight:800;font-size:24px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-h1{font-size:clamp(42px,7vw,88px);margin:0;font-family:Georgia,serif}
-p{max-width:720px;line-height:1.7;opacity:.72}
-button,.cta{border:0;border-radius:10px;padding:14px 24px;background:${design.accent};color:#08090b;font-weight:800;text-decoration:none;cursor:pointer}
-footer{padding:28px 8%;border-top:1px solid rgba(214,170,74,.2);opacity:.55}
-`;
-
-  const buildExportScript = () => `document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('[data-action="cta"]').forEach((el)=>el.addEventListener('click',()=>document.querySelector('#contact')?.scrollIntoView({behavior:'smooth'})));});`;
-
-  const buildExportHtml = (externalFiles = false) => {
-    const title = projectName || 'DESIGNLY STUDIO';
-    const description = design.heroDescription || 'Premium website created with DESIGNLY STUDIO AI.';
-    const css = externalFiles ? '<link rel="stylesheet" href="styles.css">' : `<style>\n${buildExportStyles()}\n</style>`;
-    const script = externalFiles ? '<script src="script.js" defer><\\/script>' : `<script>\n${buildExportScript()}\n<\\/script>`;
-    return `<!doctype html>
-<html lang="hu">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapeHtml(title)}</title>
-<meta name="description" content="${escapeHtml(description)}">
-${css}
-</head>
-<body>
-<main>
-<section class="hero">
-<div class="badge">D</div>
-<h1>${escapeHtml(title)}</h1>
-<p>${escapeHtml(description)}</p>
-<a class="cta" data-action="cta" href="#contact">${escapeHtml(design.heroButton || 'GET STARTED')}</a>
-</section>
-<section id="contact" style="padding:48px 8%;min-height:220px"><h2>Kapcsolat</h2><p>A projekt szerkeszthető, és a DESIGNLY STUDIO export rendszerével továbbépíthető.</p></section>
-<footer>Created with DESIGNLY STUDIO</footer>
-</main>
-${script}
-</body>
-</html>`;
-  };
-
-  const encodeUtf8 = (value: string) => new TextEncoder().encode(value);
-
-  const crc32 = (bytes: Uint8Array) => {
-    let crc = 0xffffffff;
-    for (let i = 0; i < bytes.length; i += 1) {
-      crc ^= bytes[i];
-      for (let j = 0; j < 8; j += 1) {
-        crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
-      }
-    }
-    return (crc ^ 0xffffffff) >>> 0;
-  };
-
-  const u16 = (n: number) => new Uint8Array([n & 0xff, (n >>> 8) & 0xff]);
-  const u32 = (n: number) => new Uint8Array([n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff]);
-  const concatBytes = (parts: Uint8Array[]) => {
-    const total = parts.reduce((sum, part) => sum + part.length, 0);
-    const output = new Uint8Array(total);
-    let offset = 0;
-    parts.forEach((part) => { output.set(part, offset); offset += part.length; });
-    return output;
-  };
-
-  const makeZip = (files: Record<string, string>) => {
-    const localParts: Uint8Array[] = [];
-    const centralParts: Uint8Array[] = [];
-    let offset = 0;
-
-    Object.entries(files).forEach(([filename, content]) => {
-      const nameBytes = encodeUtf8(filename);
-      const dataBytes = encodeUtf8(content);
-      const crc = crc32(dataBytes);
-      const localHeader = concatBytes([
-        u32(0x04034b50),
-        u16(20),
-        u16(0x0800),
-        u16(0),
-        u16(0),
-        u16(0),
-        u32(crc),
-        u32(dataBytes.length),
-        u32(dataBytes.length),
-        u16(nameBytes.length),
-        u16(0),
-        nameBytes,
-      ]);
-      localParts.push(localHeader, dataBytes);
-
-      const centralHeader = concatBytes([
-        u32(0x02014b50),
-        u16(20),
-        u16(20),
-        u16(0x0800),
-        u16(0),
-        u16(0),
-        u16(0),
-        u32(crc),
-        u32(dataBytes.length),
-        u32(dataBytes.length),
-        u16(nameBytes.length),
-        u16(0),
-        u16(0),
-        u16(0),
-        u16(0),
-        u32(0),
-        u32(offset),
-        nameBytes,
-      ]);
-      centralParts.push(centralHeader);
-      offset += localHeader.length + dataBytes.length;
-    });
-
-    const centralDirectory = concatBytes(centralParts);
-    const localDirectory = concatBytes(localParts);
-    const endRecord = concatBytes([
-      u32(0x06054b50),
-      u16(0),
-      u16(0),
-      u16(Object.keys(files).length),
-      u16(Object.keys(files).length),
-      u32(centralDirectory.length),
-      u32(localDirectory.length),
-      u16(0),
-    ]);
-
-    return concatBytes([localDirectory, centralDirectory, endRecord]);
-  };
-
-  const buildExportFiles = () => {
-    const payload = JSON.stringify({
-      product: 'DESIGNLY STUDIO',
-      version: 3,
-      exportedAt: new Date().toISOString(),
-      projectName,
-      device,
-      design,
-      buildSpec,
-    }, null, 2);
-
-    const readme = `DESIGNLY STUDIO PROJECT\\n\\n${projectName}\\n\\nFájlok:\\n- index.html — weboldal\\n- styles.css — stílusok\\n- script.js — alap interakciók\\n- project.json — DESIGNLY projektállapot\\n`;
-
-    return {
-      'index.html': buildExportHtml(true),
-      'styles.css': buildExportStyles(),
-      'script.js': buildExportScript(),
-      'project.json': payload,
-      'README.txt': readme,
-    };
-  };
-
-  const saveProjectNow = async () => {
-    const projectId = localStorage.getItem('designly_selected_project');
-    if (!projectId) {
-      setSaveStatus('NINCS KIVÁLASZTOTT PROJEKT');
-      return;
-    }
-    setSaveStatus('MENTÉS…');
-    const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
-    const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
-    const { error } = await supabase.from('projects').update({
-      config: {
-        ...currentConfig,
-        designState: design,
-        buildSpec,
-        exportVersion: 3,
-        updatedBy: 'DESIGNLY_EDITOR',
-        updatedAt: new Date().toISOString(),
-      },
-      updated_at: new Date().toISOString(),
-    }).eq('id', projectId);
-    setSaveStatus(error ? 'MENTÉSI HIBA' : 'MENTVE');
-  };
-
-  const downloadFile = (filename: string, content: string, mime: string) => {
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportWebsite = () => {
-    downloadFile(`${exportBaseName}.html`, buildExportHtml(), 'text/html;charset=utf-8');
-  };
-
-  const exportCss = () => {
-    downloadFile('styles.css', buildExportStyles(), 'text/css;charset=utf-8');
-  };
-
-  const exportJs = () => {
-    downloadFile('script.js', buildExportScript(), 'text/javascript;charset=utf-8');
-  };
-
-  const exportWebsiteZip = () => {
-    const files = buildExportFiles();
-    const zip = makeZip(files);
-    const blob = new Blob([zip], { type: 'application/zip' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `${exportBaseName}-designly.zip`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-  };
-
-  const exportSvg = () => {
-    const title = projectName || 'DESIGNLY STUDIO';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><rect width="1200" height="630" fill="${design.surface}"/><circle cx="600" cy="220" r="58" fill="${design.accent}"/><text x="600" y="235" text-anchor="middle" font-size="42" font-family="Arial" font-weight="700" fill="#08090b">D</text><text x="600" y="390" text-anchor="middle" font-size="64" font-family="Georgia" fill="${design.text}">${escapeHtml(title)}</text></svg>`;
-    downloadFile('designly-logo-preview.svg', svg, 'image/svg+xml;charset=utf-8');
-  };
-
   const exportSettings = () => {
     const payload = JSON.stringify(
       {
         product: 'DESIGNLY STUDIO',
-        version: 3,
+        version: 1,
         device,
         design,
-        buildSpec,
       },
       null,
       2,
     );
 
-    downloadFile('designly-project.json', payload, 'application/json;charset=utf-8');
+    const blob = new Blob([payload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'designly-editor-settings.json';
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   const galleryItems = Array.from({ length: design.galleryColumns * 2 }, (_, i) => i + 1);
@@ -517,7 +282,8 @@ ${script}
     : null;
 
   return (
-      <div className="flex flex-col h-[calc(100vh-0px)] -mt-6 -mx-5 lg:-mx-8 bg-ink-950">
+    <>
+    <div className="flex flex-col h-[calc(100vh-0px)] -mt-6 -mx-5 lg:-mx-8 bg-ink-950">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gold-600/10 bg-ink-900/90 backdrop-blur-xl gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <button
@@ -530,13 +296,6 @@ ${script}
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             GROQ AI
           </div>
-          <button
-            onClick={() => setFocusPreview((value) => !value)}
-            className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-lg border border-gold-600/20 bg-ink-800/50 text-[10px] uppercase tracking-wider text-gold-200 hover:bg-gold-600/10"
-          >
-            {focusPreview ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            {focusPreview ? 'Szerkesztő vissza' : 'Nagy előnézet'}
-          </button>
         </div>
 
         <div className="flex items-center gap-1 p-1 rounded-lg bg-ink-800/50 border border-ink-600/40">
@@ -573,21 +332,13 @@ ${script}
           >
             <Redo2 className="w-4 h-4" />
           </button>
-          <div className="relative group">
-            <button className="btn-gold text-xs px-4 py-2">
-              <Download className="w-3.5 h-3.5" />
-              EXPORT / MENTÉS · {saveStatus}
-            </button>
-            <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block w-52 rounded-xl border border-gold-600/20 bg-ink-900/95 p-2 shadow-2xl backdrop-blur-xl">
-              <button onClick={exportWebsiteZip} className="w-full text-left px-3 py-2 rounded-lg text-xs text-gold-200 hover:bg-gold-600/10 font-semibold">WEBOLDAL · ZIP CSOMAG</button>
-              <button onClick={exportWebsite} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">WEBOLDAL · HTML</button>
-              <button onClick={exportCss} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">STÍLUS · CSS</button>
-              <button onClick={exportJs} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">KÓD · JS</button>
-              <button onClick={exportSettings} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">PROJEKT · JSON</button>
-              <button onClick={exportSvg} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">LOGÓ / GRAFIKA · SVG</button>
-              <button onClick={() => window.location.href = `mailto:?subject=${encodeURIComponent(projectName + ' · DESIGNLY projekt')}&body=${encodeURIComponent('A DESIGNLY projekt ZIP csomagját a jobb felső Export menüből tudod csatolni és elküldeni.')}`} className="w-full text-left px-3 py-2 rounded-lg text-xs text-emerald-200 hover:bg-emerald-600/10">EMAIL · MEGNYITÁS</button>
-            </div>
-          </div>
+          <button
+            onClick={exportSettings}
+            className="btn-gold text-xs px-4 py-2"
+          >
+            <Download className="w-3.5 h-3.5" />
+            {t('editor.export')}
+          </button>
         </div>
       </div>
 
@@ -597,7 +348,7 @@ ${script}
 </div>
 
 <div className="flex flex-1 overflow-hidden">
-        {!focusPreview && <div className="hidden md:flex w-48 xl:w-56 flex-col border-r border-gold-600/10 bg-ink-900/50 overflow-y-auto">
+        <div className="hidden md:flex w-56 flex-col border-r border-gold-600/10 bg-ink-900/50 overflow-y-auto">
           <div className="p-3">
             <div className="text-xs text-cream-300/40 uppercase tracking-wider mb-3 px-2">
               {t('editor.sections')}
@@ -636,17 +387,10 @@ ${script}
             <div className="text-xs text-gold-200 mt-1">Groq · GPT-OSS 120B</div>
             <div className="text-[10px] text-cream-300/30 mt-1">Structured safe edits</div>
           </div>
-        </div>}
+        </div>
 
-        <div className="flex-1 min-w-0 overflow-auto bg-ink-950 flex justify-center p-2 sm:p-4 lg:p-6 xl:p-8">
-          <div
-            className="relative rounded-xl border border-gold-600/20 shadow-2xl overflow-hidden bg-black transition-all duration-300"
-            style={{
-              width: deviceWidths[device],
-              maxWidth: '100%',
-              minHeight: focusPreview ? 'calc(100vh - 150px)' : 'calc(100vh - 220px)',
-            }}
-          >
+        <div className="flex-1 overflow-auto bg-ink-950 flex justify-center p-4 lg:p-8">
+          <div className="rounded-xl border border-ink-600/40 shadow-2xl overflow-hidden bg-black" style={{ width: deviceWidths[device], maxWidth: '100%' }}>
             {businessPreview || (
               <div className={`min-h-[800px] p-8 ${atmosphereClass}`}>
                 <section className={`py-16 min-h-[420px] flex flex-col justify-center ${heroAlignClass} px-4`}>
@@ -657,11 +401,10 @@ ${script}
                 </section>
               </div>
             )}
-            <PreviewWatermark hidden={isOwner} projectName={projectName} label="DESIGNLY · EDITOR PREVIEW" />
           </div>
         </div>
 
-        {!focusPreview && <div className="hidden lg:flex w-72 xl:w-80 flex-col border-l border-gold-600/10 bg-ink-900/60">
+        <div className="hidden lg:flex w-80 flex-col border-l border-gold-600/10 bg-ink-900/60">
           <div className="p-4 border-b border-gold-600/10">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -781,8 +524,9 @@ ${script}
           </div>
         </div>
       </div>
-            <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
-      </div>
+    </div>
+    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
+    </>
   );
 }
 
