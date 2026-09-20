@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { generateDesign } from '@/lib/ai';
 import { AD_FORMATS, DESIGN_STYLES, getCreditsForType } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
+import { CreditPurchaseModal } from './CreditPurchaseModal';
 import type { BrandKit } from '@/types';
 
 interface AdvertisingStudioProps {
@@ -26,6 +27,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const [error, setError] = useState<string | null>(null);
   const [providerNotConfigured, setProviderNotConfigured] = useState(false);
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   useEffect(() => {
     async function loadBrands() {
@@ -102,6 +104,11 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
 
   const handleVariation = async (command: string) => {
     if (!brief) return;
+    if (!isOwner && (profile?.credits ?? 0) < cost) {
+      setError(t('gen.insufficientCredits'));
+      setShowCreditModal(true);
+      return;
+    }
     setError(null);
     setGenerating(true);
     setGenStep(0);
@@ -351,6 +358,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         </div>
       )}
     </div>
+    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az Ad Studio-ból, visszalépés nélkül." />
   );
 }
 
