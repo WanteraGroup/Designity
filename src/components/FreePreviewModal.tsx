@@ -1,4 +1,5 @@
 import { Check, CreditCard, Eye, Loader2, Sparkles, X } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
 
 interface FreePreviewModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function FreePreviewModal({
   onBuyCredits,
   approvedLoading = false,
 }: FreePreviewModalProps) {
+  const { isAdmin } = useAuth();
   if (!open) return null;
 
   const enough = balance == null || balance >= cost;
@@ -63,10 +65,15 @@ export function FreePreviewModal({
               ) : imageUrl ? (
                 <div
                   className="relative max-h-[72vh] w-full overflow-hidden"
-                  onContextMenu={(e) => e.preventDefault()}
-                  onDragStart={(e) => e.preventDefault()}
+                  onContextMenu={isAdmin ? undefined : (e) => e.preventDefault()}
+                  onDragStart={isAdmin ? undefined : (e) => e.preventDefault()}
                 >
-                  <img src={imageUrl} alt={title + ' AI preview'} className="block max-h-[72vh] w-full object-contain select-none pointer-events-none" draggable={false} />
+                  <img
+                    src={imageUrl}
+                    alt={title + ' AI preview'}
+                    className={`block max-h-[72vh] w-full object-contain select-none ${isAdmin ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                    draggable={isAdmin}
+                  />
                   <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
                     <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
                       DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
