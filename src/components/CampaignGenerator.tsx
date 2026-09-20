@@ -364,8 +364,9 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
           </div>
         </div>
       )}
-    </div>
-    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül a Campaign Engine-ből, visszalépés nélkül." />
+      </div>
+      <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül a Campaign Engine-ből, visszalépés nélkül." />
+    </>
   );
 }
 
