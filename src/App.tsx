@@ -28,6 +28,7 @@ import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
 import { CreatorMerchPage } from '@/components/CreatorMerchPage';
 import { StreamerStudioPage } from '@/components/StreamerStudioPage';
+import { ShopifyStudioPage } from '@/components/ShopifyStudioPage';
 import { DesignPlannerPage } from '@/components/DesignPlannerPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
@@ -36,14 +37,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer',
+  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify',
 ];
 
 function pageFromHash(): Page {
@@ -180,6 +181,7 @@ function AppInner() {
       case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
+      case 'shopify': return <ShopifyStudioPage onNavigate={navigate} />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
