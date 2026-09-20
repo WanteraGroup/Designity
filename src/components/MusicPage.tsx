@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/auth';
 const DURATIONS = [60, 120, 180, 240, 300];
 
 export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }) {
-  const { user, profile, isOwner, refreshProfile } = useAuth();
+  const { user, profile, isUnlimited, refreshProfile } = useAuth();
   const [lyrics, setLyrics] = useState('');
   const [lyricsTheme, setLyricsTheme] = useState('');
   const [lyricsTitle, setLyricsTitle] = useState('');
@@ -168,7 +168,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const generate = async () => {
     if (!user) { onNavigate('login'); return; }
     if (!lyrics.trim()) { setError('Írd be a dalszöveget.'); return; }
-    if (!isOwner && (profile?.credits ?? 0) < cost) {
+    if (!isUnlimited && (profile?.credits ?? 0) < cost) {
       setError('Ehhez a dalhoz ' + cost + ' kredit szükséges.');
       setShowCreditModal(true);
       return;
@@ -244,7 +244,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       <div><div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]"><Music2 className="w-4 h-4" /> SONG BUILDER</div><h2 className="font-display text-2xl lg:text-3xl text-cream-100 mt-2">Építsd fel a saját dalodat</h2><p className="text-cream-400/60 mt-2 max-w-2xl">A dalszöveg és a zenei irány alapján a rendszer komplett dalt készít énekkel.</p></div>
       <div className="flex flex-wrap items-center gap-2">
         <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-200">{cost} kredit / {duration} mp</div>
-        {!isOwner && <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">KREDIT VÁSÁRLÁS</button>}
+        {!isUnlimited && <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">KREDIT VÁSÁRLÁS</button>}
       </div>
     </div>
     <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
@@ -265,7 +265,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
         <div><label className="text-sm text-cream-200">Hangulat</label><input value={mood} onChange={e => setMood(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Énekhang</label><input value={vocal} onChange={e => setVocal(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Hossz</label><div className="grid grid-cols-5 gap-2 mt-2">{DURATIONS.map(d => <button key={d} onClick={() => setDuration(d)} className={'rounded-lg py-2 text-xs border transition ' + (duration === d ? 'border-gold-500/50 bg-gold-600/15 text-gold-200' : 'border-gold-600/10 text-cream-400/70 hover:border-gold-600/30')}>{d / 60}p</button>)}</div></div>
-        <button onClick={() => void buildMusicPreview()} disabled={loading || previewLoading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'INGYENES ZENEI ELŐNÉZET'}</button>
+        <button onClick={() => void buildMusicPreview()} disabled={loading || previewLoading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'INGYENES ELŐHALLGATÁS · 0 KREDIT'}</button>
         {error && <div className="rounded-xl border border-red-500/20 bg-red-500/5 text-red-200 text-sm p-3">{error}</div>}
       </section>
     </div>
