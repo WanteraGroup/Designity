@@ -53,22 +53,22 @@ type TattooDesign = {
 };
 
 const CATEGORIES: TattooCategory[] = [
-  { id: 'dragon', name: 'Sárkányok', description: 'Keleti, fantasy, kínai és japán sárkány flash minták.', motifs: ['sárkány', 'szárny', 'láng', 'kígyótest', 'karmok'], count: 420, glyph: 'DR' },
-  { id: 'rose', name: 'Rózsák & virágok', description: 'Rózsa, peónia, liliom, bazsarózsa és botanika.', motifs: ['rózsa', 'peónia', 'liliom', 'levelek', 'tüske'], count: 380, glyph: 'RO' },
-  { id: 'skull', name: 'Koponyák', description: 'Koponya, kaszás, csont és dark flash kollekciók.', motifs: ['koponya', 'kaszás', 'csont', 'díszítés', 'láng'], count: 360, glyph: 'SK' },
-  { id: 'cross', name: 'Keresztek & vallási', description: 'Kereszt, rózsafüzér, szent szimbólumok és ornamentika.', motifs: ['kereszt', 'rózsafüzér', 'szárny', 'glória', 'ornament'], count: 260, glyph: 'CR' },
-  { id: 'lettering', name: 'Feliratok', description: 'Nevek, idézetek, dátumok és custom lettering.', motifs: ['név', 'idézet', 'dátum', 'gótikus betű', 'kézírás'], count: 340, glyph: 'LT' },
-  { id: 'maori', name: 'Maori & Polinéz', description: 'Törzsi, polinéz, samoai és geometrikus rendszerek.', motifs: ['spirál', 'harcos', 'óceán', 'napszimbólum', 'törzsi ív'], count: 330, glyph: 'MO' },
-  { id: 'celtic', name: 'Kelta', description: 'Kelta csomók, rúnák, hollók, farkasok és sárkányok.', motifs: ['kelta csomó', 'runa', 'holló', 'farkas', 'sárkány'], count: 300, glyph: 'KE' },
-  { id: 'japanese', name: 'Japán', description: 'Irezumi ihlette koi, hannya, tigris, hullám és krizantém.', motifs: ['koi', 'hannya', 'tigris', 'hullám', 'krizantém'], count: 310, glyph: 'JP' },
-  { id: 'geometric', name: 'Geometrikus', description: 'Mandala, sacred geometry, linework és szerkesztett formák.', motifs: ['mandala', 'fraktál', 'kör', 'vonal', 'szimmetria'], count: 270, glyph: 'GE' },
-  { id: 'animal', name: 'Állatok', description: 'Farkas, medve, sas, oroszlán, kígyó, szarvas.', motifs: ['farkas', 'sas', 'oroszlán', 'szarvas', 'kígyó'], count: 390, glyph: 'AN' },
-  { id: 'bird', name: 'Madarak', description: 'Holló, sas, bagoly, főnix és tollas kompozíciók.', motifs: ['holló', 'sas', 'bagoly', 'főnix', 'toll'], count: 250, glyph: 'BD' },
-  { id: 'minimal', name: 'Minimal & Fine Line', description: 'Apró, finom, egyvonalas és letisztult minták.', motifs: ['vonal', 'pont', 'szimbólum', 'botanika', 'csillag'], count: 290, glyph: 'MF' },
-  { id: 'ornamental', name: 'Ornament & Mandala', description: 'Dekoratív körök, csipkeminták és ornamentális kompozíciók.', motifs: ['mandala', 'csipke', 'ornament', 'szimmetria', 'pontozás'], count: 280, glyph: 'OR' },
-  { id: 'oldschool', name: 'Old School', description: 'Klasszikus hajó, rózsa, kígyó, tőr, szív és tradicionális flash.', motifs: ['hajó', 'tőr', 'szív', 'kígyó', 'rózsa'], count: 240, glyph: 'OS' },
-  { id: 'gothic', name: 'Gothic & Dark', description: 'Sötét ornamentika, gótikus motívumok és blackwork.', motifs: ['gótika', 'korona', 'sötét angyal', 'runa', 'tüske'], count: 300, glyph: 'GD' },
-  { id: 'symbol', name: 'Szimbólumok', description: 'Rúnák, csillagképek, szakrális jelek és személyes ikonok.', motifs: ['runa', 'nap', 'hold', 'csillag', 'szem'], count: 220, glyph: 'SY' },
+  { id: 'dragon', name: 'Sárkányok', description: 'Keleti, fantasy, kínai és japán sárkány flash minták.', motifs: ['sárkány', 'szárny', 'láng', 'kígyótest', 'karmok'], count: 900, glyph: 'DR' },
+  { id: 'rose', name: 'Rózsák & virágok', description: 'Rózsa, peónia, liliom, bazsarózsa és botanika.', motifs: ['rózsa', 'peónia', 'liliom', 'levelek', 'tüske'], count: 850, glyph: 'RO' },
+  { id: 'skull', name: 'Koponyák', description: 'Koponya, kaszás, csont és dark flash kollekciók.', motifs: ['koponya', 'kaszás', 'csont', 'díszítés', 'láng'], count: 800, glyph: 'SK' },
+  { id: 'cross', name: 'Keresztek & vallási', description: 'Kereszt, rózsafüzér, szent szimbólumok és ornamentika.', motifs: ['kereszt', 'rózsafüzér', 'szárny', 'glória', 'ornament'], count: 650, glyph: 'CR' },
+  { id: 'lettering', name: 'Feliratok', description: 'Nevek, idézetek, dátumok és custom lettering.', motifs: ['név', 'idézet', 'dátum', 'gótikus betű', 'kézírás'], count: 800, glyph: 'LT' },
+  { id: 'maori', name: 'Maori & Polinéz', description: 'Törzsi, polinéz, samoai és geometrikus rendszerek.', motifs: ['spirál', 'harcos', 'óceán', 'napszimbólum', 'törzsi ív'], count: 800, glyph: 'MO' },
+  { id: 'celtic', name: 'Kelta', description: 'Kelta csomók, rúnák, hollók, farkasok és sárkányok.', motifs: ['kelta csomó', 'runa', 'holló', 'farkas', 'sárkány'], count: 750, glyph: 'KE' },
+  { id: 'japanese', name: 'Japán', description: 'Irezumi ihlette koi, hannya, tigris, hullám és krizantém.', motifs: ['koi', 'hannya', 'tigris', 'hullám', 'krizantém'], count: 800, glyph: 'JP' },
+  { id: 'geometric', name: 'Geometrikus', description: 'Mandala, sacred geometry, linework és szerkesztett formák.', motifs: ['mandala', 'fraktál', 'kör', 'vonal', 'szimmetria'], count: 700, glyph: 'GE' },
+  { id: 'animal', name: 'Állatok', description: 'Farkas, medve, sas, oroszlán, kígyó, szarvas.', motifs: ['farkas', 'sas', 'oroszlán', 'szarvas', 'kígyó'], count: 850, glyph: 'AN' },
+  { id: 'bird', name: 'Madarak', description: 'Holló, sas, bagoly, főnix és tollas kompozíciók.', motifs: ['holló', 'sas', 'bagoly', 'főnix', 'toll'], count: 650, glyph: 'BD' },
+  { id: 'minimal', name: 'Minimal & Fine Line', description: 'Apró, finom, egyvonalas és letisztult minták.', motifs: ['vonal', 'pont', 'szimbólum', 'botanika', 'csillag'], count: 700, glyph: 'MF' },
+  { id: 'ornamental', name: 'Ornament & Mandala', description: 'Dekoratív körök, csipkeminták és ornamentális kompozíciók.', motifs: ['mandala', 'csipke', 'ornament', 'szimmetria', 'pontozás'], count: 750, glyph: 'OR' },
+  { id: 'oldschool', name: 'Old School', description: 'Klasszikus hajó, rózsa, kígyó, tőr, szív és tradicionális flash.', motifs: ['hajó', 'tőr', 'szív', 'kígyó', 'rózsa'], count: 600, glyph: 'OS' },
+  { id: 'gothic', name: 'Gothic & Dark', description: 'Sötét ornamentika, gótikus motívumok és blackwork.', motifs: ['gótika', 'korona', 'sötét angyal', 'runa', 'tüske'], count: 700, glyph: 'GD' },
+  { id: 'symbol', name: 'Szimbólumok', description: 'Rúnák, csillagképek, szakrális jelek és személyes ikonok.', motifs: ['runa', 'nap', 'hold', 'csillag', 'szem'], count: 600, glyph: 'SY' },
 ];
 
 const STYLES: TattooStyle[] = [
@@ -204,6 +204,7 @@ function BodyPreview({
 
 export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) => void }) {
   const { lang } = useI18n();
+  const { profile, isOwner, refreshProfile } = useAuth();
   const hu = lang === 'hu';
   const [category, setCategory] = useState('all');
   const [style, setStyle] = useState<'All' | TattooStyle>('All');
@@ -218,9 +219,80 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
   const [consultationClient, setConsultationClient] = useState('');
   const [consultationNote, setConsultationNote] = useState('');
   const [consultationSelection, setConsultationSelection] = useState<number[]>([]);
+  const [aiIdea, setAiIdea] = useState('');
+  const [aiPreviewImage, setAiPreviewImage] = useState<string | null>(null);
+  const [aiPreviewId, setAiPreviewId] = useState<string | null>(null);
+  const [aiPreviewBrief, setAiPreviewBrief] = useState<Awaited<ReturnType<typeof runDesignlyMasterAgent>>['designBrief'] | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiFinalLoading, setAiFinalLoading] = useState(false);
+  const [aiFinalUrl, setAiFinalUrl] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [showCreditModal, setShowCreditModal] = useState(false);
+  const tattooFinalCost = getCreditsForType('custom');
 
   const total = CATEGORIES.reduce((sum, item) => sum + item.count, 0);
   const selectedCategory = CATEGORIES.find((item) => item.id === category);
+
+
+  const buildTattooBrief = () => [
+    'DESIGNLY TATTOO AI',
+    'Create a professional custom tattoo concept for a tattoo studio.',
+    'CLIENT IDEA: ' + aiIdea.trim(),
+    'CATEGORY: ' + (selectedCategory?.name || 'Custom'),
+    'STYLE: ' + (style === 'All' ? 'Choose the best matching tattoo style' : style),
+    'PALETTE: ' + (palette === 'All' ? 'Black / Grey with clean negative space' : palette),
+    'BODY PART: ' + (BODY_PARTS.find((item) => item.id === bodyPart)?.name || bodyPart),
+    'BODY VIEW: ' + (bodyVariant === 'feminine' ? 'feminine' : 'masculine'),
+    'Requirements: stencil-ready line hierarchy, readable silhouette, professional negative space, tattoo reference concept rather than a photo mockup.',
+  ].join('\n');
+
+  const generateTattooPreview = async () => {
+    if (aiIdea.trim().length < 8 || aiLoading || aiFinalLoading) return;
+    setAiError(null);
+    setAiPreviewImage(null);
+    setAiPreviewId(null);
+    setAiPreviewBrief(null);
+    setAiFinalUrl(null);
+    setAiLoading(true);
+    const result = await runDesignlyMasterAgent({
+      brief: buildTattooBrief(),
+      language: lang,
+      mode: 'preview',
+      requestedOutputs: ['custom'],
+    });
+    setAiLoading(false);
+    if (!result.success || !result.designBrief) {
+      setAiError(result.message || 'Az AI előnézet nem készült el.');
+      return;
+    }
+    setAiPreviewImage(result.previewImageUrl || null);
+    setAiPreviewId(result.previewId || null);
+    setAiPreviewBrief(result.designBrief);
+  };
+
+  const continueWithTattoo = async () => {
+    if (!aiPreviewId || aiFinalLoading) return;
+    if (!isOwner && (profile?.credits ?? 0) < tattooFinalCost) {
+      setShowCreditModal(true);
+      return;
+    }
+    setAiFinalLoading(true);
+    setAiError(null);
+    const result = await generateDesign({
+      mode: 'final',
+      type: 'custom',
+      brief: buildTattooBrief(),
+      previewId: aiPreviewId,
+    });
+    setAiFinalLoading(false);
+    if (!result.success) {
+      if (result.errorCode === 'INSUFFICIENT_CREDITS') setShowCreditModal(true);
+      else setAiError(result.message || 'A végleges AI tetoválás nem sikerült.');
+      return;
+    }
+    setAiFinalUrl((result.result?.imageUrl as string) || null);
+    await refreshProfile();
+  };
 
   const designs = useMemo<TattooDesign[]>(() => {
     const pool = category === 'all' ? CATEGORIES : CATEGORIES.filter((item) => item.id === category);
