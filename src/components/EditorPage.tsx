@@ -21,6 +21,7 @@ import { supabase } from '@/lib/supabase';
 import {
   runDesignlyGroqEditor,
   type DesignEditorState,
+  type DesignEditorChange,
 } from '@/lib/designly-editor-ai';
 
 interface EditorPageProps {
