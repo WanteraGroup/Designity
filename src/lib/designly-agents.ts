@@ -34,7 +34,9 @@ export type DesignlyAgentId =
   | 'builder'
   | 'reviewer'
   | 'sales'
-  | 'report';
+  | 'report'
+  | 'voice'
+  | 'translator';
 
 export interface DesignlyAgent {
   id: DesignlyAgentId;
@@ -124,6 +126,8 @@ export const VYRON_AGENT_TEAM: DesignlyAgent[] = [
   { id:'reviewer', name:'NEXORA CODE REVIEWER', purpose:'QA és megvalósíthatósági reviewer; hibák, hiányok és inkonzisztenciák feltárása.', outputs:['QA findings','risk list','revision plan'] },
   { id:'sales', name:'SALES AGENT', purpose:'Prospecting és személyre szabott értékesítési megkeresések támogatása.', outputs:['prospect brief','outreach angle','sales message'] },
   { id:'report', name:'REPORT', purpose:'Elemző és riport agent; eredmények, státuszok és következő lépések összefoglalása.', outputs:['report','status summary','next actions'] },
+  { id:'voice', name:'VOICE AGENT', purpose:'Hangalapú DESIGNLY interfész; beszéd felismerése, Huginn-kérés és hangos válasz.', outputs:['speech recognition','Huginn voice','speech synthesis'] },
+  { id:'translator', name:'REALTIME TRANSLATOR AGENT', purpose:'VEYRA-alapú hangfordító képesség; beszédfelismerés, fordítás és cél-nyelvi felolvasás.', outputs:['speech translation','language swap','spoken output'] },
 ];
 
 export const DESIGNLY_FULL_AGENT_TEAM: DesignlyAgent[] = [
