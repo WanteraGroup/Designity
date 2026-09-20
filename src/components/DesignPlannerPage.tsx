@@ -312,7 +312,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
         </section>
       )}
 
-      <CreditPurchaseModal open={showCredits} onClose={() => setShowCredits(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A végleges tervezési koncepció elkészítéséhez kredit szükséges." />
+      <CreditPurchaseModal open={showCredits} onCreditsUpdated={refreshProfile} onClose={() => setShowCredits(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A végleges tervezési koncepció elkészítéséhez kredit szükséges." />
     </div>
   );
 }
