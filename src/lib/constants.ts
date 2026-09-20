@@ -14,21 +14,21 @@ export const LANGUAGES: Language[] = [
 ];
 
 export const PUBLIC_PLANS: Plan[] = [
-  { id: 'free', name: 'Free', priceMonthly: 0, creditsMonthly: 25, projectLimit: 3, features: ['25 credits / month', '3 projects', 'PNG / JPG export', 'Community support'] },
-  { id: 'starter', name: 'Starter', priceMonthly: 2990, creditsMonthly: 100, projectLimit: 20, features: ['100 credits / month', '20 projects', 'All export formats', 'Email support', 'Commercial usage'] },
-  { id: 'pro', name: 'Pro', priceMonthly: 7990, creditsMonthly: 300, projectLimit: 75, features: ['300 credits / month', '75 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'], highlighted: true },
-  { id: 'business', name: 'Business', priceMonthly: 14990, creditsMonthly: 800, projectLimit: 250, features: ['800 credits / month', '250 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'] },
+  { id: 'free', name: 'Free', priceMonthly: 0, creditsMonthly: 10, projectLimit: 3, features: ['10 credits / month', '3 projects', 'PNG / JPG export', 'Community support'] },
+  { id: 'starter', name: 'Starter', priceMonthly: 2990, creditsMonthly: 50, projectLimit: 15, features: ['50 credits / month', '15 projects', 'All export formats', 'Email support', 'Commercial usage'] },
+  { id: 'pro', name: 'Pro', priceMonthly: 7990, creditsMonthly: 200, projectLimit: 60, features: ['200 credits / month', '60 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'], highlighted: true },
+  { id: 'business', name: 'Business', priceMonthly: 14990, creditsMonthly: 500, projectLimit: 200, features: ['500 credits / month', '200 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'] },
   { id: 'agency', name: 'Agency', priceMonthly: 29990, creditsMonthly: 2000, projectLimit: 1000, features: ['2,000 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'] },
   { id: 'ultimate', name: 'Ultimate', priceMonthly: 59990, creditsMonthly: 5000, projectLimit: 5000, features: ['5,000 credits / month', '5,000 projects', 'Unlimited projects workflow', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'] },
 ];
 
 export const CREDIT_PACKAGES: CreditPackage[] = [
   { id: 'pkg_100', credits: 100, price: 2000, label: '100 kredit' },
-  { id: 'pkg_500', credits: 500, price: 9000, label: '500 kredit' },
-  { id: 'pkg_1000', credits: 1000, price: 15500, label: '1 000 kredit' },
-  { id: 'pkg_2500', credits: 2500, price: 30500, label: '2 500 kredit' },
-  { id: 'pkg_5000', credits: 5000, price: 55500, label: '5 000 kredit' },
-  { id: 'pkg_10000', credits: 10000, price: 105000, label: '10 000 kredit' },
+  { id: 'pkg_500', credits: 500, price: 9500, label: '500 kredit' },
+  { id: 'pkg_1000', credits: 1000, price: 11000, label: '1 000 kredit' },
+  { id: 'pkg_2500', credits: 2500, price: 25000, label: '2 500 kredit' },
+  { id: 'pkg_5000', credits: 5000, price: 50000, label: '5 000 kredit' },
+  { id: 'pkg_10000', credits: 10000, price: 100000, label: '10 000 kredit' },
 ];
 
 export function getCustomCreditPrice(credits: number): number {
@@ -49,22 +49,22 @@ export function getCustomCreditPrice(credits: number): number {
 }
 
 export const GENERATION_COSTS: GenerationCost[] = [
-  { type: 'social', label: 'Social Media Post', credits: 30 },
-  { type: 'business_card', label: 'Business Card', credits: 40 },
-  { type: 'invitation', label: 'Invitation', credits: 40 },
-  { type: 'flyer', label: 'Flyer', credits: 60 },
-  { type: 'menu', label: 'Menu', credits: 60 },
-  { type: 'pricelist', label: 'Price List', credits: 60 },
-  { type: 'poster', label: 'Poster', credits: 80 },
-  { type: 'logo', label: 'Logo', credits: 120 },
-  { type: 'advertisement', label: 'Advertisement', credits: 120 },
-  { type: 'brochure', label: 'Brochure', credits: 180 },
-  { type: 'brand', label: 'Brand Identity', credits: 250 },
-  { type: 'presentation', label: 'Presentation', credits: 250 },
-  { type: 'landing', label: 'Landing Page', credits: 400 },
-  { type: 'campaign', label: 'Campaign Bundle', credits: 650 },
-  { type: 'custom', label: 'Custom Design', credits: 850 },
-  { type: 'website', label: 'Full Website + AI Team', credits: 1500 },
+  { type: 'social', label: 'Social Media Post', credits: 100 },
+  { type: 'business_card', label: 'Business Card', credits: 150 },
+  { type: 'invitation', label: 'Invitation', credits: 150 },
+  { type: 'flyer', label: 'Flyer', credits: 200 },
+  { type: 'menu', label: 'Menu', credits: 200 },
+  { type: 'pricelist', label: 'Price List', credits: 200 },
+  { type: 'poster', label: 'Poster', credits: 250 },
+  { type: 'logo', label: 'Logo', credits: 300 },
+  { type: 'advertisement', label: 'Advertisement', credits: 300 },
+  { type: 'brochure', label: 'Brochure', credits: 450 },
+  { type: 'brand', label: 'Brand Identity', credits: 600 },
+  { type: 'presentation', label: 'Presentation', credits: 600 },
+  { type: 'landing', label: 'Landing Page', credits: 1000 },
+  { type: 'campaign', label: 'Campaign Bundle', credits: 1500 },
+  { type: 'custom', label: 'Custom Design', credits: 2000 },
+  { type: 'website', label: 'Full Website + AI Team', credits: 3000 },
 ];
 
 export const AD_FORMATS: AdFormat[] = [

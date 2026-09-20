@@ -182,7 +182,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("id, role, credits")
+      .select("id, role, credits, unlimited_access")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -191,7 +191,9 @@ Deno.serve(async (req: Request) => {
     }
 
     const editCost = 1;
-    if (mode === "final" && profile.role !== "owner" && profile.credits < editCost) {
+    const unlimited = profile.role === "owner" || profile.unlimited_access === true;
+
+    if (mode === "final" && !unlimited && profile.credits < editCost) {
       return json({
         error: "INSUFFICIENT_CREDITS",
         required: editCost,
@@ -297,7 +299,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    if (profile.role !== "owner") {
+    if (!unlimited) {
       const { error: deductError } = await supabase.rpc("deduct_credits", {
         p_user_id: user.id,
         p_amount: editCost,

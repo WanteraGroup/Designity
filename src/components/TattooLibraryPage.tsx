@@ -204,7 +204,7 @@ function BodyPreview({
 
 export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) => void }) {
   const { lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const hu = lang === 'hu';
   const [category, setCategory] = useState('all');
   const [style, setStyle] = useState<'All' | TattooStyle>('All');
@@ -272,7 +272,7 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
 
   const continueWithTattoo = async () => {
     if (!aiPreviewId || aiFinalLoading) return;
-    if (!isOwner && (profile?.credits ?? 0) < tattooFinalCost) {
+    if (!isUnlimited && (profile?.credits ?? 0) < tattooFinalCost) {
       setShowCreditModal(true);
       return;
     }
@@ -459,7 +459,7 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
             <div className="mt-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
                 <div className="text-[9px] uppercase tracking-[.22em] text-gold-300/65">VÉGLEGES MINTA</div>
-                <div className="text-lg font-display text-cream-50 mt-1">{isOwner ? '∞ kredit' : tattooFinalCost + ' kredit'}</div>
+                <div className="text-lg font-display text-cream-50 mt-1">{isUnlimited ? '∞ kredit' : tattooFinalCost + ' kredit'}</div>
                 <div className="text-xs text-cream-300/45 mt-1">Az előnézet ingyenes. A végleges generálás csak a jóváhagyás után indul.</div>
               </div>
               <div className="flex gap-2 flex-wrap">

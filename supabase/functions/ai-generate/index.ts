@@ -92,7 +92,7 @@ Deno.serve(async (req: Request) => {
     // Load the user's profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("id, role, credits, plan_id")
+      .select("id, role, credits, plan_id, unlimited_access")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -130,7 +130,9 @@ Deno.serve(async (req: Request) => {
     }
 
     // Deduct credits (atomic, server-side)
-    if (profile.role !== "owner") {
+    const unlimited = profile.role === "owner" || profile.unlimited_access === true;
+
+    if (!unlimited) {
       if (profile.credits < creditCost) {
         return new Response(JSON.stringify({
           error: "INSUFFICIENT_CREDITS",
@@ -166,14 +168,14 @@ Deno.serve(async (req: Request) => {
         type,
         status: "processing",
         provider: aiProvider,
-        credits_cost: profile.role === "owner" ? 0 : creditCost,
+        credits_cost: unlimited ? 0 : creditCost,
       })
       .select()
       .single();
 
     if (jobError) {
       // Refund credits if job creation failed
-      if (profile.role !== "owner") {
+      if (!unlimited) {
         await supabase.rpc("refund_credits", {
           p_user_id: user.id,
           p_amount: creditCost,
@@ -258,7 +260,7 @@ Deno.serve(async (req: Request) => {
 
     if (generationFailed) {
       // Refund credits on failure
-      if (profile.role !== "owner") {
+      if (!unlimited) {
         await supabase.rpc("refund_credits", {
           p_user_id: user.id,
           p_amount: creditCost,
@@ -301,7 +303,7 @@ Deno.serve(async (req: Request) => {
       success: true,
       jobId: job.id,
       result: generationResult,
-      creditsUsed: profile.role === "owner" ? 0 : creditCost,
+      creditsUsed: unlimited ? 0 : creditCost,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

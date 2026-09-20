@@ -21,7 +21,7 @@ export async function askHuginn(message: string, language: string): Promise<Hugi
       body: JSON.stringify({ message: message.trim(), language }),
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) return { ok: false, error: result.error || 'HUGINN_UNAVAILABLE' };
+    if (!response.ok) return { ok: false, error: String(result.error || `HTTP_${response.status}`) };
     return result as HuginnResult;
   } catch {
     return { ok: false, error: 'NETWORK_ERROR' };

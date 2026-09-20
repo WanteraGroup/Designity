@@ -5,6 +5,7 @@ interface FreePreviewModalProps {
   title: string;
   imageUrl?: string | null;
   previewText?: string | null;
+  previewAudioUrl?: string | null;
   loading?: boolean;
   cost: number;
   balance?: number | null;
@@ -20,6 +21,7 @@ export function FreePreviewModal({
   title,
   imageUrl,
   previewText,
+  previewAudioUrl,
   loading = false,
   cost,
   balance,
@@ -59,13 +61,34 @@ export function FreePreviewModal({
                   </div>
                 </div>
               ) : imageUrl ? (
-                <img src={imageUrl} alt={title + ' AI preview'} className="block max-h-[72vh] w-full object-contain select-none" draggable={false} />
+                <div
+                  className="relative max-h-[72vh] w-full overflow-hidden"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                >
+                  <img src={imageUrl} alt={title + ' AI preview'} className="block max-h-[72vh] w-full object-contain select-none pointer-events-none" draggable={false} />
+                  <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
+                    <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
+                      DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
+                    </div>
+                  </div>
+                  <div className="pointer-events-none absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[9px] uppercase tracking-[.18em] text-white/60 backdrop-blur-sm">
+                    VÍZJELZETT ELŐNÉZET · LETÖLTÉS A JÓVÁHAGYÁS UTÁN
+                  </div>
+                </div>
               ) : (
                 <div className="min-h-[52vh] grid place-items-center text-center text-black/50 px-8">
                   <div className="max-w-2xl">
                     <Eye className="w-12 h-12 mx-auto mb-4 opacity-35" />
                     <div className="text-sm">AI előnézeti koncepció</div>
                     <div className="mt-2 text-[9px] uppercase tracking-[.18em]">0 KREDIT · PREVIEW</div>
+                    {previewAudioUrl && (
+                      <div className="mt-5 rounded-2xl border border-black/10 bg-white/70 p-4 text-left">
+                        <div className="mb-2 text-[9px] font-bold uppercase tracking-[.18em] text-black/45">INGYENES ZENEI ELŐHALLGATÁS · NINCS KREDIT</div>
+                        <audio controls controlsList="nodownload noplaybackrate" className="w-full" src={previewAudioUrl} />
+                        <div className="mt-2 text-[9px] text-black/45">Lejátszás engedélyezett. Letöltés csak a véglegesítés és kreditlevonás után.</div>
+                      </div>
+                    )}
                     {previewText && <div className="mt-5 rounded-2xl border border-black/10 bg-white/60 p-5 text-left text-sm leading-7 text-black/65">{previewText}</div>}
                   </div>
                 </div>
@@ -85,20 +108,22 @@ export function FreePreviewModal({
                 </div>
               </div>
 
-              {!enough && (
-                <div className="mt-5 rounded-xl border border-red-500/25 bg-red-500/10 p-4">
-                  <div className="text-sm font-semibold text-red-100">Nincs elegendő kredit</div>
-                  <div className="mt-1 text-xs text-red-200/70">Nem kell visszalépned. A kreditvásárlás innen azonnal elérhető.</div>
-                  <button type="button" onClick={onBuyCredits} className="btn-gold text-xs mt-4 w-full">
+              <div className="mt-5 rounded-xl border border-gold-600/20 bg-gold-500/5 p-4">
+                <div className="text-sm font-semibold text-gold-100">0 KREDIT · ELŐNÉZET</div>
+                <div className="mt-1 text-xs text-cream-300/60">
+                  A jóváhagyás ingyenes. A(z) {cost} kredit csak akkor kerül levonásra, amikor kéred a végleges változatot.
+                </div>
+                {!enough && (
+                  <button type="button" onClick={onBuyCredits} className="btn-ghost text-xs mt-3 w-full">
                     <CreditCard className="w-4 h-4" /> KREDIT VÁSÁRLÁS
                   </button>
-                </div>
-              )}
+                )}
+              </div>
 
               <div className="mt-6 space-y-2">
-                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText) || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
+                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText && !previewAudioUrl)} className="btn-gold w-full text-sm disabled:opacity-40">
                   {approvedLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  {approvedLoading ? 'VÉGLEGES GENERÁLÁS…' : 'TETSZIK · FOLYTATÁS'}
+                  {approvedLoading ? 'VÉGLEGES GENERÁLÁS…' : `KÉREM · ${cost} KREDIT`}
                 </button>
                 <button type="button" onClick={onModify} disabled={approvedLoading} className="btn-ghost w-full text-sm disabled:opacity-40">
                   MÓDOSÍTOM / ÚJ ELŐNÉZET

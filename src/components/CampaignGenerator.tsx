@@ -18,7 +18,7 @@ interface CampaignGeneratorProps {
 
 export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   const { t } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [brief, setBrief] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('premium');
@@ -35,6 +35,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewIds, setPreviewIds] = useState<Record<string,string>>({});
+  const [campaignItems, setCampaignItems] = useState<Array<{ format: string; imageUrl: string | null }>>([]);
 
   useEffect(() => {
     async function loadBrands() {
@@ -50,7 +51,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   }, [profile]);
 
   const cost = getCreditsForType('advertisement');
-  const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
+  const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const toggleFormat = (fmt: string) => {
     setSelectedFormats((prev) =>
@@ -101,7 +102,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     setProviderNotConfigured(false);
 
     const totalCost = cost * selectedFormats.length;
-    if (!isOwner && (profile.credits ?? 0) < totalCost) {
+    if (!isUnlimited && (profile.credits ?? 0) < totalCost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
@@ -145,6 +146,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     }
 
     setCampaignId(campaign.id);
+    setCampaignItems([]);
 
     // Generate each format via the AI edge function
     let allSuccess = true;
@@ -173,10 +175,18 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
 
       if (!genResult.success) {
         allSuccess = false;
+        await supabase.from('campaign_items').update({ status: 'failed' }).eq('campaign_id', campaign.id).eq('format', fmt);
         if (genResult.providerNotConfigured) {
           setProviderNotConfigured(true);
           break;
         }
+      } else {
+        const imageUrl = (genResult.result?.imageUrl as string) || null;
+        setCampaignItems((prev) => [...prev, { format: fmt, imageUrl }]);
+        await supabase.from('campaign_items').update({
+          status: 'completed',
+          preview_url: imageUrl,
+        }).eq('campaign_id', campaign.id).eq('format', fmt);
       }
     }
 
@@ -216,26 +226,43 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
 
         {/* Campaign outputs grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {selectedFormats.map((fmt) => (
-            <div key={fmt} className="card-lux p-4 group">
-              <div className="aspect-[3/4] bg-gradient-to-br from-ink-800 to-ink-900 rounded-lg border border-gold-600/20 flex flex-col items-center justify-center mb-3 group-hover:border-gold-600/40 transition-all">
-                <Layers className="w-8 h-8 text-gold-400/30 mb-2" />
-                <span className="text-xs font-medium text-cream-200 capitalize">{t(`campaign.fmt${fmt.charAt(0).toUpperCase() + fmt.slice(1).replace(/_./g, (m) => m.charAt(1).toUpperCase())}`)}</span>
+          {selectedFormats.map((fmt) => {
+            const item = campaignItems.find((entry) => entry.format === fmt);
+            const imageUrl = item?.imageUrl;
+            const label = t(`campaign.fmt${fmt.charAt(0).toUpperCase() + fmt.slice(1).replace(/_./g, (m) => m.charAt(1).toUpperCase())}`);
+            return (
+              <div key={fmt} className="card-lux p-4 group">
+                <div className="aspect-[3/4] bg-black rounded-lg border border-gold-600/20 overflow-hidden mb-3 group-hover:border-gold-600/40 transition-all">
+                  {imageUrl ? (
+                    <img src={imageUrl} alt={label} className="w-full h-full object-contain" draggable={false} />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                      <Layers className="w-8 h-8 text-gold-400/30 mb-2" />
+                      <span className="text-xs font-medium text-cream-200 capitalize">{label}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => onNavigate('editor')} className="flex-1 text-[10px] py-1.5 rounded bg-ink-700/50 text-cream-300/60 hover:text-gold-200 transition-colors">
+                    <Eye className="w-3 h-3 inline" />
+                  </button>
+                  {imageUrl ? (
+                    <a href={imageUrl} download target="_blank" rel="noreferrer" className="flex-1 text-[10px] py-1.5 rounded bg-gold-600/15 text-gold-200 hover:bg-gold-600/25 transition-colors text-center">
+                      <Download className="w-3 h-3 inline" />
+                    </a>
+                  ) : (
+                    <button disabled className="flex-1 text-[10px] py-1.5 rounded bg-ink-700/30 text-cream-500/30">
+                      <Download className="w-3 h-3 inline" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-1">
-                <button onClick={() => onNavigate('editor')} className="flex-1 text-[10px] py-1.5 rounded bg-ink-700/50 text-cream-300/60 hover:text-gold-200 transition-colors">
-                  <Eye className="w-3 h-3 inline" />
-                </button>
-                <button className="flex-1 text-[10px] py-1.5 rounded bg-ink-700/50 text-cream-300/60 hover:text-gold-200 transition-colors">
-                  <Download className="w-3 h-3 inline" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="flex justify-center gap-3">
-          <button onClick={() => { setStep(1); setBrief(''); setCampaignId(null); setSelectedFormats(['poster', 'flyer', 'facebook', 'instagram_post']); }} className="btn-ghost text-sm">
+          <button onClick={() => { setStep(1); setBrief(''); setCampaignId(null); setCampaignItems([]); setSelectedFormats(['poster', 'flyer', 'facebook', 'instagram_post']); }} className="btn-ghost text-sm">
             {t('common.createAnother')}
           </button>
         </div>
@@ -387,11 +414,11 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-sm text-cream-300/60 block">{t('cw.creditCost')}</span>
-                <span className="text-lg font-display font-bold gold-text">{isOwner ? '∞' : cost}</span>
+                <span className="text-lg font-display font-bold gold-text">{isUnlimited ? '∞' : cost}</span>
               </div>
               <div className="text-right">
                 <span className="text-sm text-cream-300/60 block">{t('cw.currentBalance')}</span>
-                <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
+                <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
               </div>
             </div>
             {!hasEnoughCredits && (

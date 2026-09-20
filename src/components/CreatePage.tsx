@@ -79,7 +79,7 @@ interface CreatePageProps {
 
 export function CreatePage({ onNavigate }: CreatePageProps) {
   const { t, lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<ProjectType | null>(null);
   const [brief, setBrief] = useState('');
@@ -178,8 +178,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, [profile]);
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
-  const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
-  const canDownloadImages = isOwner || profile?.role === 'admin';
+  const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
+  const canDownloadImages = isUnlimited || profile?.role === 'admin' || step === 4;
 
   const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
     if (!canDownloadImages) {
@@ -253,7 +253,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setOrchestration(result.orchestration || null);
     setStep(3);
     if (autoBuildMode) {
-      if (isOwner) {
+      if (isUnlimited) {
         setApproved(true);
         setAutoBuildStatus('AI BUSINESS BUILDER: előnézet jóváhagyva — végleges weboldal építése…');
         setAutoBuildFinalizeRequested(true);
@@ -281,7 +281,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!profile || !selectedType || !approved) return;
     setError(null);
 
-    if (!isOwner && (profile.credits ?? 0) < cost) {
+    if (!isUnlimited && (profile.credits ?? 0) < cost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
@@ -424,11 +424,16 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             A generálás sikerült, de a kép nem érkezett vissza. Ezt a projektben még ellenőrizhetjük.
           </div>
         )}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <button onClick={() => { if (createdProject) localStorage.setItem('designly_selected_project', createdProject); onNavigate('editor'); }} className="btn-gold text-sm">
             {t('common.open')}
           </button>
-          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); }} className="btn-ghost text-sm">
+          {generatedImageUrl && (
+            <a href={generatedImageUrl} download target="_blank" rel="noreferrer" className="btn-ghost text-sm">
+              LETÖLTÉS · VÉGLEGES
+            </a>
+          )}
+          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); setPreview(null); setPreviewImageUrl(null); setPreviewId(null); setApproved(false); }} className="btn-ghost text-sm">
             {t('common.createAnother')}
           </button>
         </div>
@@ -500,7 +505,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <Sparkles className="w-5 h-5 text-gold-400" />
                 </div>
                 <div className="text-xs font-medium text-cream-100">{item.label}</div>
-                <div className="text-[10px] text-gold-400 mt-1">{isOwner ? '∞' : `${item.credits} credits`}</div>
+                <div className="text-[10px] text-gold-400 mt-1">{isUnlimited ? '∞' : `${item.credits} credits`}</div>
               </button>
             ))}
           </div>
@@ -673,21 +678,18 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-sm text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-xl font-display font-bold gold-text">{isOwner ? '∞' : cost} credits</span>
+                  <span className="text-xl font-display font-bold gold-text">{isUnlimited ? '∞' : cost} credits</span>
                 </div>
                 <div className="text-right">
                   <span className="text-sm text-cream-300/60 block">{t('credits.currentBalance')}</span>
-                  <span className="text-xl font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
+                  <span className="text-xl font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
                 </div>
               </div>
-              {!hasEnoughCredits && (
-                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{t('gen.insufficientCredits')} <button onClick={() => setShowCreditModal(true)} className="underline">{t('credits.buyCredits')}</button>.</span>
-                </div>
-              )}
+              <div className="rounded-lg border border-gold-600/20 bg-gold-500/5 p-3 text-sm text-cream-200/70">
+                <span className="font-semibold text-gold-200">INGYENES ELŐNÉZET:</span> a jóváhagyás önmagában nem von le kreditet. Kredit csak a végleges generálás indításakor kerül levonásra.
+              </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {!isOwner && (
+                {!isUnlimited && (
                   <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
                     KREDIT VÁSÁRLÁS · 1–10 000
                   </button>
@@ -696,10 +698,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
                   <button
                     onClick={() => setApproved(true)}
-                    disabled={!preview || !previewImageUrl || !previewId || !hasEnoughCredits}
+                    disabled={!preview || !previewImageUrl || !previewId}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
-                    {t('designer.select')}
+                    KÉREM · {isUnlimited ? '∞' : cost} KREDIT
                   </button>
                 </div>
               </div>
@@ -714,15 +716,15 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <div className="flex items-center justify-between rounded-lg border border-gold-600/20 bg-ink-900/60 p-4">
                 <div>
                   <span className="text-xs text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-2xl font-display font-bold gold-text">{isOwner ? '∞' : cost} kredit</span>
+                  <span className="text-2xl font-display font-bold gold-text">{isUnlimited ? '∞' : cost} kredit</span>
                 </div>
                 <div className="text-right">
                   <span className="text-xs text-cream-300/60 block">{t('designer.remaining')}</span>
-                  <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
+                  <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {!isOwner && (
+                {!isUnlimited && (
                   <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
                     KREDIT VÁSÁRLÁS · 1–10 000
                   </button>
@@ -734,7 +736,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                     disabled={!hasEnoughCredits}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
-                    {t('designer.continue').replace('{credits}', isOwner ? '∞' : String(cost))}
+                    {t('designer.continue').replace('{credits}', isUnlimited ? '∞' : String(cost))}
                   </button>
                 </div>
               </div>

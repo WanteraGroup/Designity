@@ -17,7 +17,7 @@ interface AdvertisingStudioProps {
 
 export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const { t, lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const [brief, setBrief] = useState('');
@@ -34,6 +34,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [generationBrief, setGenerationBrief] = useState('');
 
   useEffect(() => {
     async function loadBrands() {
@@ -49,7 +50,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   }, [profile]);
 
   const cost = getCreditsForType('advertisement');
-  const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
+  const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
     if (!profile || !selectedFormat) return;
@@ -59,6 +60,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     setPreviewLoading(true);
     setPreviewImage(null);
     setPreviewId(null);
+    setGenerationBrief(brief);
     const result = await runDesignlyMasterAgent({
       brief,
       brandKitId: selectedBrand,
@@ -78,7 +80,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const handleGenerate = async () => {
     if (!profile || !selectedFormat || !previewId) return;
     setError(null);
-    if (!isOwner && (profile.credits ?? 0) < cost) {
+    if (!isUnlimited && (profile.credits ?? 0) < cost) {
       setShowCreditModal(true);
       return;
     }
@@ -104,7 +106,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
 
     const genResult = await generateDesign({
       type: 'advertisement',
-      brief,
+      brief: generationBrief || brief,
       brandKitId: selectedBrand,
       style: selectedStyle,
       format: formatInfo?.label || selectedFormat,
@@ -133,32 +135,29 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   };
 
   const handleVariation = async (command: string) => {
-    if (!brief) return;
-    if (!isOwner && (profile?.credits ?? 0) < cost) {
-      setError(t('gen.insufficientCredits'));
-      setShowCreditModal(true);
-      return;
-    }
+    if (!profile || !brief.trim() || previewLoading || generating) return;
     setError(null);
-    setGenerating(true);
-    setGenStep(0);
-
-    const genResult = await generateDesign({
-      type: 'advertisement',
-      brief: `${brief} — ${t(`var.${command}`)}`,
+    setProviderNotConfigured(false);
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewId(null);
+    const variationBrief = `${brief} — ${t(`var.${command}`)}`;
+    setGenerationBrief(variationBrief);
+    const preview = await runDesignlyMasterAgent({
+      brief: variationBrief,
       brandKitId: selectedBrand,
-      style: selectedStyle,
+      language: lang,
+      mode: 'preview',
+      requestedOutputs: ['custom'],
     });
-
-    if (!genResult.success) {
-      setError(genResult.message || t('gen.failed'));
-      setGenerating(false);
+    setPreviewLoading(false);
+    if (!preview.success) {
+      setError(preview.message || 'A módosítás ingyenes előnézete nem készült el.');
       return;
     }
-
-    await refreshProfile();
-    setResult(genResult.result || null);
-    setGenerating(false);
+    setPreviewImage(preview.previewImageUrl || null);
+    setPreviewId(preview.previewId || null);
   };
 
   if (generating) {
@@ -178,13 +177,19 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
 
         {/* Preview */}
         <div className="card-lux p-8">
-          <div className="aspect-[4/5] sm:aspect-video bg-gradient-to-br from-ink-800 to-ink-900 rounded-lg border border-gold-600/20 flex flex-col items-center justify-center p-8">
-            <Megaphone className="w-16 h-16 text-gold-400/40 mb-4" />
-            <h3 className="text-xl font-display font-bold gold-text mb-2">{t('ad.yourDesign')}</h3>
-            <p className="text-sm text-cream-300/50 text-center max-w-md">
-              {(result?.content as string)?.slice(0, 200) || t('ad.previewReady')}
-            </p>
-          </div>
+          {result?.imageUrl ? (
+            <div className="relative overflow-hidden rounded-lg border border-gold-600/20 bg-black">
+              <img src={String(result.imageUrl)} alt={t('ad.yourDesign')} className="block w-full h-auto object-contain" draggable={false} />
+            </div>
+          ) : (
+            <div className="aspect-[4/5] sm:aspect-video bg-gradient-to-br from-ink-800 to-ink-900 rounded-lg border border-gold-600/20 flex flex-col items-center justify-center p-8">
+              <Megaphone className="w-16 h-16 text-gold-400/40 mb-4" />
+              <h3 className="text-xl font-display font-bold gold-text mb-2">{t('ad.yourDesign')}</h3>
+              <p className="text-sm text-cream-300/50 text-center max-w-md">
+                {(result?.content as string)?.slice(0, 200) || t('ad.previewReady')}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Variations */}
@@ -364,11 +369,11 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-sm text-cream-300/60 block">{t('cw.creditCost')}</span>
-                <span className="text-lg font-display font-bold gold-text">{isOwner ? '∞' : cost}</span>
+                <span className="text-lg font-display font-bold gold-text">{isUnlimited ? '∞' : cost}</span>
               </div>
               <div className="text-right">
                 <span className="text-sm text-cream-300/60 block">{t('cw.currentBalance')}</span>
-                <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
+                <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
               </div>
             </div>
             {!hasEnoughCredits && (
@@ -397,21 +402,8 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         cost={cost}
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
-        onApprove={async () => { setPreviewOpen(false); setPreviewOpen(false); await handleGenerate(); }}
-        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
-        onBuyCredits={() => setShowCreditModal(true)}
-        approvedLoading={generating}
-      />
-      <FreePreviewModal
-        open={previewOpen}
-        title={AD_FORMATS.find((f) => f.id === selectedFormat)?.label || 'AI Reklám'}
-        imageUrl={previewImage}
-        loading={previewLoading}
-        cost={cost}
-        balance={profile?.credits}
-        onClose={() => setPreviewOpen(false)}
-        onApprove={() => void handleGenerate()}
-        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+        onApprove={() => void handleGenerate().then(() => setPreviewOpen(false))}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); setGenerationBrief(''); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
       />

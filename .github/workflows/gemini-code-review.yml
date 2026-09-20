@@ -1,0 +1,25 @@
+name: Gemini AI Code Reviewer
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  gemini-code-review:
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/gemini-review')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gemini AI Code Reviewer
+        uses: truongnh1992/gemini-ai-code-reviewer@v9.2.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
+          EXCLUDE: "*.md,*.txt,package-lock.json,*.yml,*.yaml"

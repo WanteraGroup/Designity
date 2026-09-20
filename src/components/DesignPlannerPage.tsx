@@ -4,6 +4,7 @@ import {
   Network, Ruler, Save, Sparkles, Triangle, Wrench, X
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import { PreviewWatermark } from './PreviewWatermark';
 import { useI18n } from '@/lib/i18n';
 import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import { generateDesign } from '@/lib/ai';
@@ -48,7 +49,7 @@ function buildPlannerPrompt(planLabel: string, userBrief: string, area: string, 
   ].join('\n');
 }
 
-function exportPlanSpec(planType: string, planLabel: string, area: string, rooms: string, constraints: string, brief: string, imageUrl: string | null) {
+function exportPlanSpec(planType: string, planLabel: string, area: string, rooms: string, constraints: string, brief: string, imageUrl: string | null, finalImage: boolean) {
   const payload = {
     product: 'DESIGNLY PLANNER & VISUALIZER',
     planType,
@@ -57,7 +58,7 @@ function exportPlanSpec(planType: string, planLabel: string, area: string, rooms
     rooms,
     constraints,
     brief,
-    previewImageUrl: imageUrl,
+    previewImageUrl: finalImage ? imageUrl : null,
     generatedAt: new Date().toISOString(),
     status: 'CONCEPT_ONLY_ENGINEERING_REVIEW_REQUIRED',
   };
@@ -72,7 +73,7 @@ function exportPlanSpec(planType: string, planLabel: string, area: string, rooms
 
 export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
   const { lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const hu = lang === 'hu';
   const [planType, setPlanType] = useState('floor-plan');
   const [area, setArea] = useState('100 m²');
@@ -91,7 +92,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
 
   const selectedPlan = useMemo(() => PLAN_TYPES.find((item) => item.id === planType) || PLAN_TYPES[0], [planType]);
   const finalCost = getCreditsForType('custom');
-  const enough = isOwner || (profile?.credits ?? 0) >= finalCost;
+  const enough = isUnlimited || (profile?.credits ?? 0) >= finalCost;
 
   const choosePreset = (presetId: string) => {
     const preset = BODY_PRESETS.find((item) => item.id === presetId);
@@ -184,7 +185,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
             <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'linear-gradient(#d8d2c8 1px, transparent 1px), linear-gradient(90deg,#d8d2c8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
             <div className="relative mx-auto mt-5 w-[88%] h-[210px] border-4 border-black/75 bg-[#fbfaf7]">
               <div className="absolute left-0 top-0 w-[42%] h-[54%] border-r-2 border-b-2 border-black/60"><span className="absolute inset-0 grid place-items-center text-xs font-semibold text-black/55">NAPPALI</span></div>
-              <div className="absolute right-0 top-0 w-[58%] h-[54%]"><div className="absolute left-0 top-0 w-[50%] h-full border-r-2 border-b-2 border-black/60" /><div className="absolute right-0 top-0 w-[50%] h-full border-bottom-2 border-black/60" /><span className="absolute inset-x-0 bottom-3 text-center text-[10px] text-black/45">HÁLÓ / HÁLÓ / FÜRDŐ</span></div>
+              <div className="absolute right-0 top-0 w-[58%] h-[54%]"><div className="absolute left-0 top-0 w-[50%] h-full border-r-2 border-b-2 border-black/60" /><div className="absolute right-0 top-0 w-[50%] h-full border-b-2 border-black/60" /><span className="absolute inset-x-0 bottom-3 text-center text-[10px] text-black/45">HÁLÓ / HÁLÓ / FÜRDŐ</span></div>
               <div className="absolute left-0 bottom-0 w-full h-[46%] border-t-2 border-black/60"><span className="absolute inset-0 grid place-items-center text-sm font-semibold text-black/45">KONYHA · ÉTKEZŐ · KÖZLEKEDÉS</span></div>
             </div>
             <div className="absolute right-4 top-4 chip text-[8px] bg-black/75 text-white border-black/10">100 m² CONCEPT</div>
@@ -239,9 +240,14 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
             {loading ? <Sparkles className="w-4 h-4 animate-pulse" /> : <Sparkles className="w-4 h-4" />}
             {loading ? 'ELŐNÉZET KÉSZÜL…' : 'INGYENES AI ELŐNÉZET'}
           </button>
-          <button type="button" onClick={() => exportPlanSpec(planType, selectedPlan.label, area, rooms, constraints, brief, finalImage || preview)} className="btn-ghost">
-            <Download className="w-4 h-4" /> TERVSPEC EXPORT
+          <button type="button" onClick={() => exportPlanSpec(planType, selectedPlan.label, area, rooms, constraints, brief, finalImage, Boolean(finalImage))} disabled={!finalImage} className="btn-ghost disabled:opacity-30">
+            <Download className="w-4 h-4" /> {finalImage ? 'VÉGLEGES TERVSPEC EXPORT' : 'TERVSPEC · JÓVÁHAGYÁS UTÁN'}
           </button>
+          {finalImage && (
+            <a href={finalImage} download target="_blank" rel="noreferrer" className="btn-ghost">
+              <Download className="w-4 h-4" /> VÉGLEGES KÉP LETÖLTÉSE
+            </a>
+          )}
           <button type="button" onClick={() => onNavigate('projects')} className="btn-ghost">
             <Save className="w-4 h-4" /> PROJEKTEK
           </button>
@@ -265,7 +271,10 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
                   <div className="text-center"><Sparkles className="w-10 h-10 mx-auto mb-3 animate-pulse" /><div className="text-xs uppercase tracking-[.22em]">AI PLANNER · GENERÁLÁS</div></div>
                 </div>
               ) : (finalImage || preview) ? (
-                <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} />
+                <div className="relative w-full max-h-[850px] overflow-hidden">
+                  <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                  {!finalImage && <PreviewWatermark projectName="DESIGNLY PLANNER" />}
+                </div>
               ) : null}
             </div>
           </div>
@@ -287,7 +296,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
               <div className="mt-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                   <div className="text-[9px] uppercase tracking-[.2em] text-gold-300/65">KÖVETKEZŐ LÉPÉS</div>
-                  <div className="text-lg font-display text-cream-50 mt-1">{isOwner ? '∞ kredit' : finalCost + ' kredit'}</div>
+                  <div className="text-lg font-display text-cream-50 mt-1">{isUnlimited ? '∞ kredit' : finalCost + ' kredit'}</div>
                   <div className="text-xs text-cream-300/45 mt-1">A koncepció előnézete ingyenes. A végleges változat csak jóváhagyás után készül.</div>
                 </div>
                 <div className="flex gap-2 flex-wrap">

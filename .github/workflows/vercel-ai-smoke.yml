@@ -1,0 +1,29 @@
+name: Vercel AI Gateway
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  generate-text:
+    runs-on: ubuntu-latest
+    env:
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+    steps:
+      - name: Vercel AI smoke test
+        if: ${{ env.AI_GATEWAY_API_KEY != '' }}
+        continue-on-error: true
+        uses: vercel/ai-action@v2.2.0
+        id: prompt
+        with:
+          prompt: "Run a concise DESIGNLY engineering smoke review. Check architecture, reliability, and the next validation step. Return three bullet points only."
+          model: "openai/gpt-5"
+          api-key: ${{ env.AI_GATEWAY_API_KEY }}
+
+      - name: Show AI result
+        if: ${{ steps.prompt.outputs.text != '' }}
+        env:
+          AI_RESULT: ${{ steps.prompt.outputs.text }}
+        run: |
+          printf '%s\n' "$AI_RESULT"

@@ -61,7 +61,7 @@ function clampHistory<T>(items: T[], limit = 30) {
 
 export function EditorPage({ onNavigate }: EditorPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [selectedElement, setSelectedElement] = useState<string | null>('hero');
   const [aiCommand, setAiCommand] = useState('');
@@ -181,7 +181,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const approveAiCommand = async () => {
     if (!pendingAiDesign || aiLoading) return;
 
-    if (!isOwner && (profile?.credits ?? 0) < 1) {
+    if (!isUnlimited && (profile?.credits ?? 0) < 1) {
       setAiError('Ehhez az AI szerkesztéshez 1 kredit szükséges.');
       setShowCreditModal(true);
       return;
@@ -416,9 +416,9 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
               {t('editor.tools')}
             </div>
             <div className="space-y-1">
-              <ToolButton icon={Type} label={t('editor.editText')} />
-              <ToolButton icon={Palette} label={t('editor.changeColors')} />
-              <ToolButton icon={Layout} label={t('editor.changeLayout')} />
+              <ToolButton icon={Type} label={t('editor.editText')} command="Make the typography and text hierarchy stronger" onRun={applyAiCommand} />
+              <ToolButton icon={Palette} label={t('editor.changeColors')} command="Refine the color palette while preserving the premium DESIGNLY identity" onRun={applyAiCommand} />
+              <ToolButton icon={Layout} label={t('editor.changeLayout')} command="Improve the selected section layout and spacing for a polished responsive composition" onRun={applyAiCommand} />
             </div>
           </div>
 
@@ -573,10 +573,10 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
               <div>
                 <div className="text-xs text-cream-300/40 mb-2">{t('editor.costPerEdit')}</div>
                 <div className="text-sm font-medium text-gold-200">
-                  {isOwner ? '∞' : `1 ${t('misc.creditsShort')}`}
+                  {isUnlimited ? '∞' : `1 ${t('misc.creditsShort')}`}
                 </div>
               </div>
-              {!isOwner && (
+              {!isUnlimited && (
                 <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-[10px] px-3 py-2">
                   KREDIT VÁSÁRLÁS
                 </button>
@@ -627,12 +627,20 @@ function buildBusinessPreviewSpec(spec: any, projectName: string, design: Design
 function ToolButton({
   icon: Icon,
   label,
+  command,
+  onRun,
 }: {
   icon: ComponentType<{ className?: string }>;
   label: string;
+  command: string;
+  onRun: (command: string) => void;
 }) {
   return (
-    <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-cream-300/60 hover:text-gold-200 hover:bg-ink-700/40 transition-all">
+    <button
+      type="button"
+      onClick={() => onRun(command)}
+      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-cream-300/60 hover:text-gold-200 hover:bg-ink-700/40 transition-all border border-transparent hover:border-gold-600/15"
+    >
       <Icon className="w-3.5 h-3.5" />
       {label}
     </button>

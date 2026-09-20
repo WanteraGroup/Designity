@@ -8,6 +8,7 @@ import { CelticEmblem } from './CelticEmblem';
 import { Logo } from './Logo';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
+import { PUBLIC_PLANS } from '@/lib/constants';
 
 interface LandingPageProps {
   onNavigate: (page: string) => void;
@@ -38,7 +39,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   const hu = lang === 'hu';
 
   const copy = hu ? {
-    badge: 'AI ALAPÚ KREATÍV PLATFORM',
+    badge: 'AI ALAPÚ CREATIVE OS',
     title: 'ÖTLETBŐL',
     emphasis: 'VALÓSÁG.',
     desc: 'DESIGNLY STUDIO — egyetlen kreatív rendszer weboldalakhoz, márkákhoz, streamer/gamer grafikákhoz, kampányokhoz és mindenhez, amit létre szeretnél hozni.',
@@ -56,13 +57,13 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     testimonial: 'A DESIGNLY egy helyre hozza a teljes kreatív folyamatot.',
     pricingTitle: 'PRICING / ÁRAZÁS',
     pricingSub: 'Válassz a számodra megfelelő csomagot.',
-    finalTitle: 'KÉSZÍTS VALAMI EMLÉKEZETES DE KÍVÁNSZ',
+    finalTitle: 'KÉSZÍTS VALAMI EMLÉKEZETESET, AMIRE BÜSZKE LESZEL.',
     finalSub: 'Egy ötlet. Egy rendszer. Végtelen lehetőség.',
     join: 'Belépek a DESIGNLY-be',
     back: 'Vissza a tetejére',
     all: 'Összes kategória',
   } : {
-    badge: 'AI-POWERED CREATIVE PLATFORM',
+    badge: 'AI-POWERED CREATIVE OS',
     title: 'IDEAS INTO',
     emphasis: 'REALITY.',
     desc: 'DESIGNLY STUDIO — one creative system for websites, brands, streamer/gamer graphics, campaigns, and everything you want to make.',
@@ -137,7 +138,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           <div className="dl-home-crest"><CelticEmblem size={168} animate showD /></div>
           <span className="dl-home-kicker">{copy.badge}</span>
           <h1>DESIGNLY <em>STUDIO</em></h1>
-          <div className="dl-home-tagline">CREATE · DESIGN · STREAM · DOMINATE</div>
+          <div className="dl-home-tagline">CREATE · SHAPE · SHIP</div>
           <p>{copy.desc}</p>
           <div className="dl-home-actions">
             <button className="dl-home-btn dl-home-btn-primary" onClick={() => onNavigate('signup')}>{copy.start}<ArrowRight className="w-4 h-4" /></button>
@@ -185,11 +186,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="dl-home-stats">
-          <div><strong>138 240+</strong><span>{hu ? 'sablonvariáció' : 'template variations'}</span></div>
-          <div><strong>44</strong><span>{hu ? 'asset típus' : 'asset types'}</span></div>
-          <div><strong>AI POWERED</strong><span>{hu ? 'egyedi generálás' : 'custom generation'}</span></div>
-          <div><strong>300 DPI</strong><span>PRINT READY</span></div>
-          <div><strong>0 Ft</strong><span>{hu ? 'belépési szint' : 'entry access'}</span></div>
+          <div><strong>0 KREDIT</strong><span>{hu ? 'előnézetek' : 'previews'}</span></div>
+          <div><strong>AI</strong><span>{hu ? 'kreatív partner' : 'creative partner'}</span></div>
+          <div><strong>01</strong><span>{hu ? 'egységes workflow' : 'unified workflow'}</span></div>
+          <div><strong>∞</strong><span>{hu ? 'kreatív irány' : 'creative directions'}</span></div>
+          <div><strong>24/7</strong><span>{hu ? 'alkotási rendszer' : 'creation system'}</span></div>
         </div>
       </section>
 
@@ -274,14 +275,14 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
 function PricingPreview({ onNavigate }: { onNavigate: (p: string) => void }) {
   const { t } = useI18n();
-  const fallbackPlans = [
-    { id: 'free', name: t('plan.free'), price: 0, credits: 25, features: [t('plan.freeF1'), t('plan.freeF2')], highlight: false },
-    { id: 'starter', name: t('plan.starter'), price: 2990, credits: 100, features: [t('plan.starterF1'), t('plan.starterF2'), t('plan.starterF3')], highlight: false },
-    { id: 'pro', name: t('plan.pro'), price: 7990, credits: 300, features: [t('plan.proF1'), t('plan.proF2'), t('plan.proF3')], highlight: true },
-    { id: 'business', name: t('plan.business'), price: 14990, credits: 800, features: [t('plan.businessF1'), t('plan.businessF2')], highlight: false },
-    { id: 'agency', name: t('plan.agency'), price: 29990, credits: 2000, features: [t('plan.agencyF1'), t('plan.agencyF2')], highlight: false },
-    { id: 'ultimate', name: 'Ultimate', price: 59990, credits: 5000, features: [t('plan.agencyF1'), t('plan.agencyF2'), '5000 AI kredit / hó'], highlight: false },
-  ];
+  const fallbackPlans = PUBLIC_PLANS.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.priceMonthly,
+    credits: plan.creditsMonthly,
+    features: plan.features.slice(0, 4),
+    highlight: plan.highlighted === true,
+  }));
   const [plans, setPlans] = useState(fallbackPlans);
   useEffect(() => {
     let mounted = true;

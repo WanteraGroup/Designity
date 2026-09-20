@@ -27,7 +27,7 @@ const STYLE_OPTIONS = ['gaming','streamer','esports','cyberpunk','tech_noir','no
 
 export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
   const { lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [productId, setProductId] = useState<(typeof PRODUCTS)[number]['id']>('tshirt');
   const [creator, setCreator] = useState('');
   const [channel, setChannel] = useState('');
@@ -50,7 +50,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
   const product = PRODUCTS.find((item) => item.id === productId) || PRODUCTS[0];
   const Icon = product.icon;
   const cost = getCreditsForType('custom');
-  const enough = isOwner || (profile?.credits ?? 0) >= cost;
+  const enough = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
     if (!profile || previewLoading) return;
@@ -197,7 +197,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
               <textarea value={brief} onChange={e=>setBrief(e.target.value)} rows={5} className='input-lux md:col-span-2 resize-none' placeholder='Írd le a grafikát: logó, karakter, fegyver, állat, rúnák, esports jel, neon, stb.' />
             </div>
             <div className='mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-gold-600/10 bg-black/20 p-4'>
-              <div><div className='text-[9px] uppercase tracking-[.2em] text-gold-300/60'>AI CREATION</div><div className='mt-1 text-sm text-cream-100'>Master artwork · {isOwner ? '∞' : cost + ' kredit'}</div></div>
+              <div><div className='text-[9px] uppercase tracking-[.2em] text-gold-300/60'>AI CREATION</div><div className='mt-1 text-sm text-cream-100'>Master artwork · {isUnlimited ? '∞' : cost + ' kredit'}</div></div>
               <button onClick={() => void buildPreview()} disabled={generating || previewLoading} className='btn-gold text-sm'><Sparkles className='h-4 w-4'/>{previewLoading ? 'ELŐNÉZET KÉSZÜL…' : 'INGYENES ELŐNÉZET'}</button>
             </div>
             {error && <div className='mt-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-200'>{error}</div>}
@@ -217,11 +217,11 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
           <div className='card-lux overflow-hidden border-gold-600/30 bg-black'>
             <div className='flex flex-wrap items-center justify-between gap-3 border-b border-gold-600/15 bg-ink-900/90 px-5 py-4'>
               <div><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/65'>KÉSZ MŰ · NAGY ELŐNÉZET</div><div className='mt-1 text-lg font-display text-cream-50'>{creator || 'CREATOR'} · {product.label}</div></div>
-              <div className='flex gap-2'><button onClick={downloadSpec} className='btn-ghost text-xs'><Download className='h-4 w-4'/> Production spec</button><button onClick={()=>onNavigate('projects')} className='btn-gold text-xs'>Projekt megnyitása</button></div>
+              <div className='flex gap-2'><button onClick={downloadSpec} className='btn-ghost text-xs'><Download className='h-4 w-4'/> Production spec</button><a href={imageUrl || undefined} download target='_blank' rel='noreferrer' className='btn-ghost text-xs'><Download className='h-4 w-4'/> Végleges PNG</a><button onClick={()=>onNavigate('projects')} className='btn-gold text-xs'>Projekt megnyitása</button></div>
             </div>
             <div className='relative min-h-[70vh] overflow-auto bg-[#020303] p-2 sm:p-5 lg:p-8'>
               {imageUrl && <img src={imageUrl} alt='Creator merch master artwork' className='mx-auto block w-full max-w-[1500px] h-auto object-contain rounded-xl' draggable={false} />}
-              <PreviewWatermark hidden={isOwner} projectName={creator || 'CREATOR'} label='DESIGNLY · CREATOR PREVIEW' />
+              <PreviewWatermark hidden={true} projectName={creator || 'CREATOR'} label='DESIGNLY · CREATOR FINAL' />
             </div>
           </div>
           <div className='grid gap-5 lg:grid-cols-[1fr_auto]'>
