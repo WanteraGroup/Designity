@@ -4,6 +4,8 @@ import { useI18n } from '@/lib/i18n';
 import { CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
 import { createCheckout, getPaymentStatus } from '@/lib/ai';
 
+const PENDING_EDITOR_KEY = 'designly_pending_editor_state';
+
 interface CreditPurchaseModalProps {
   open: boolean;
   onClose: () => void;
@@ -30,8 +32,22 @@ export function CreditPurchaseModal({
   const [paymentState, setPaymentState] = useState<'idle' | 'opening' | 'waiting' | 'success' | 'failed'>('idle');
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
+  const saveEditorState = (itemId: string) => {
+    try {
+      const state = {
+        itemId,
+        path: window.location.pathname,
+        hash: window.location.hash,
+        search: window.location.search,
+        savedAt: Date.now(),
+      };
+      window.localStorage.setItem(PENDING_EDITOR_KEY, JSON.stringify(state));
+    } catch {}
+  };
+
   const startCheckout = async (itemId: string) => {
     setPaymentError(null);
+    saveEditorState(itemId);
     setPaymentState('opening');
     const popup = window.open('about:blank', '_blank');
     const result = await createCheckout({ itemType: 'credit_package', itemId });
@@ -103,7 +119,7 @@ export function CreditPurchaseModal({
             <div className="mt-6 rounded-xl border border-emerald-400/25 bg-emerald-400/10 p-4 text-center">
               <div className="text-sm font-semibold text-emerald-200">Kredit jóváírva</div>
               <div className="mt-1 text-xs text-emerald-200/70">A vásárlás ellenőrzése sikeres. Folytathatod a megkezdett munkát.</div>
-              <button type="button" onClick={onClose} className="btn-gold text-sm mt-4">FOLYTATOM A SZERKESZTÉST</button>
+              <button type="button" onClick={() => { onClose(); onCreditsUpdated?.(); }} className="btn-gold text-sm mt-4">FOLYTATOM A SZERKESZTÉST</button>
             </div>
           )}
           {paymentState !== 'success' && paymentState === 'waiting' && (
