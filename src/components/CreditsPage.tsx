@@ -4,7 +4,10 @@ import { useI18n } from '@/lib/i18n';
 import { CREDIT_PACKAGES, formatPrice, GENERATION_COSTS } from '@/lib/constants';
 
 interface CreditsPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (
+    page: string,
+    item?: { type: 'subscription' | 'credit_package'; itemId: string }
+  ) => void;
 }
 
 export function CreditsPage({ onNavigate }: CreditsPageProps) {
