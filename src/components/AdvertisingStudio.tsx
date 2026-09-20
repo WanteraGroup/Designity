@@ -48,7 +48,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     loadBrands();
   }, [profile]);
 
-  const cost = 3; // advertisement/poster = 3 credits
+  const cost = getCreditsForType('advertisement');
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
