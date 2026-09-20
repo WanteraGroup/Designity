@@ -14,10 +14,10 @@ export const LANGUAGES: Language[] = [
 ];
 
 export const PUBLIC_PLANS: Plan[] = [
-  { id: 'free', name: 'Free', priceMonthly: 0, creditsMonthly: 10, projectLimit: 3, features: ['25 credits / month', '3 projects', 'PNG / JPG export', 'Community support'] },
-  { id: 'starter', name: 'Starter', priceMonthly: 2990, creditsMonthly: 50, projectLimit: 15, features: ['100 credits / month', '20 projects', 'All export formats', 'Email support', 'Commercial usage'] },
-  { id: 'pro', name: 'Pro', priceMonthly: 7990, creditsMonthly: 200, projectLimit: 60, features: ['300 credits / month', '75 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'], highlighted: true },
-  { id: 'business', name: 'Business', priceMonthly: 14990, creditsMonthly: 500, projectLimit: 200, features: ['800 credits / month', '250 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'] },
+  { id: 'free', name: 'Free', priceMonthly: 0, creditsMonthly: 10, projectLimit: 3, features: ['10 credits / month', '3 projects', 'PNG / JPG export', 'Community support'] },
+  { id: 'starter', name: 'Starter', priceMonthly: 2990, creditsMonthly: 50, projectLimit: 15, features: ['50 credits / month', '15 projects', 'All export formats', 'Email support', 'Commercial usage'] },
+  { id: 'pro', name: 'Pro', priceMonthly: 7990, creditsMonthly: 200, projectLimit: 60, features: ['200 credits / month', '60 projects', 'All export formats', 'Brand Kits', 'Priority support', 'Commercial usage'], highlighted: true },
+  { id: 'business', name: 'Business', priceMonthly: 14990, creditsMonthly: 500, projectLimit: 200, features: ['500 credits / month', '200 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support'] },
   { id: 'agency', name: 'Agency', priceMonthly: 29990, creditsMonthly: 2000, projectLimit: 1000, features: ['2,000 credits / month', '1,000 projects', 'All export formats', 'Unlimited Brand Kits', 'Team collaboration', 'Dedicated manager', 'API access'] },
   { id: 'ultimate', name: 'Ultimate', priceMonthly: 59990, creditsMonthly: 5000, projectLimit: 5000, features: ['5,000 credits / month', '5,000 projects', 'Unlimited projects workflow', 'Unlimited Brand Kits', 'Team collaboration', 'Priority support', 'API access', 'All premium features'] },
 ];
