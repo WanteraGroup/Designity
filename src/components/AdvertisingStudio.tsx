@@ -357,8 +357,9 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
           </div>
         </div>
       )}
-    </div>
-    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az Ad Studio-ból, visszalépés nélkül." />
+      </div>
+      <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az Ad Studio-ból, visszalépés nélkül." />
+    </>
   );
 }
 
