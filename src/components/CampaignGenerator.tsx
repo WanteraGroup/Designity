@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { generateDesign } from '@/lib/ai';
 import { CAMPAIGN_FORMATS, DESIGN_STYLES } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
+import { CreditPurchaseModal } from './CreditPurchaseModal';
 import type { BrandKit } from '@/types';
 
 interface CampaignGeneratorProps {
@@ -26,6 +27,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   const [error, setError] = useState<string | null>(null);
   const [providerNotConfigured, setProviderNotConfigured] = useState(false);
   const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   useEffect(() => {
     async function loadBrands() {
@@ -354,6 +356,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
           {error && <div className="text-sm text-red-300 text-center">{error}</div>}
           <div className="flex justify-between items-center">
             <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
+            <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">KREDIT VÁSÁRLÁS</button>
             <button onClick={handleGenerate} disabled={!hasEnoughCredits} className="btn-gold text-sm disabled:opacity-40">
               <Sparkles className="w-4 h-4" />
               {t('campaign.generate')}
@@ -362,6 +365,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
         </div>
       )}
     </div>
+    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül a Campaign Engine-ből, visszalépés nélkül." />
   );
 }
 
