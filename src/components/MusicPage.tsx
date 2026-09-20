@@ -28,6 +28,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewBrief, setPreviewBrief] = useState<string | null>(null);
+  const [previewAudioUrl, setPreviewAudioUrl] = useState<string | null>(null);
   const cost = useMemo(() => Math.ceil(duration / 60) * 100, [duration]);
 
   const generateLyricsLocally = () => {
@@ -117,6 +118,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
     setPreviewOpen(true);
     setPreviewLoading(true);
     setPreviewBrief(null);
+    setPreviewAudioUrl(null);
     const result = await runDesignlyMasterAgent({
       brief: [
         'DESIGNLY AI MUSIC PREVIEW',
@@ -145,6 +147,23 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       'Szerkezet: intro → verze → refrén → bridge → befejezés',
     ].filter(Boolean).join(' · ');
     setPreviewBrief(direction || 'Kész zenei koncepció előnézet.');
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!token || !baseUrl) throw new Error('Nincs aktív munkamenet.');
+      const response = await fetch(baseUrl + '/functions/v1/music-generate', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'preview', title, lyrics, genre, mood, vocal, duration }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || data.error || 'A zenei előhallgatás nem készült el.');
+      setPreviewAudioUrl(data.audioUrl || null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'A zenei előhallgatás nem készült el.');
+    }
   };
 
   const generate = async () => {
@@ -257,12 +276,13 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       title={title + ' · Zenei előnézet'}
       imageUrl={null}
       previewText={previewBrief}
+      previewAudioUrl={previewAudioUrl}
       loading={previewLoading}
       cost={cost}
       balance={profile?.credits}
       onClose={() => setPreviewOpen(false)}
       onApprove={() => { setPreviewOpen(false); void generate(); }}
-      onModify={() => { setPreviewOpen(false); setPreviewBrief(null); }}
+      onModify={() => { setPreviewOpen(false); setPreviewBrief(null); setPreviewAudioUrl(null); }}
       onBuyCredits={() => setShowCreditModal(true)}
     />
     <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A zene generálásához szükséges kredit nincs teljes egészében az egyenlegeden." />
