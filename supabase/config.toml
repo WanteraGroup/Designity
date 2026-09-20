@@ -29,3 +29,15 @@ entrypoint = "./functions/music-library/index.ts"
 [functions.payment-webhook]
 verify_jwt = false
 entrypoint = "./functions/payment-webhook/index.ts"
+
+[functions.designly-editor-ai]
+verify_jwt = true
+entrypoint = "./functions/designly-editor-ai/index.ts"
+
+[functions.designly-vision]
+verify_jwt = true
+entrypoint = "./functions/designly-vision/index.ts"
+
+[functions.designly-voice]
+verify_jwt = true
+entrypoint = "./functions/designly-voice/index.ts"
