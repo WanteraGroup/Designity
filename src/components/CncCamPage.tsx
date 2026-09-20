@@ -55,7 +55,7 @@ const rect = (x: number, y: number, w: number, h: number) => [
   [x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y],
 ] as number[][];
 
-function buildGcode(operation: Operation, p: Params, controller: Controller) {
+export function buildGcode(operation: Operation, p: Params, controller: Controller) {
   const invalid = [
     p.stockW <= 0 ? 'Anyag X mérete legyen pozitív.' : '',
     p.stockH <= 0 ? 'Anyag Y mérete legyen pozitív.' : '',
