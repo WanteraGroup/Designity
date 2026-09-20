@@ -8,6 +8,7 @@ import { DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate } from '@/lib/designly-t
 import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput, type MasterAgentResult as AgentDesignResult } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
+import { PreviewWatermark } from './PreviewWatermark';
 import type { ProjectType, BrandKit } from '@/types';
 
 
@@ -401,7 +402,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         <h2 className="text-2xl font-display font-bold text-cream-50 mb-2">{t('gen.success')}</h2>
         <p className="text-sm text-cream-300/60 mb-6">{t('gen.successDesc')}</p>
         {generatedImageUrl ? (
-          <div className="w-full max-w-[1500px] mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-black shadow-2xl">
+          <div className="relative w-full max-w-[1500px] mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-black shadow-2xl">
             <img
               src={generatedImageUrl}
               alt="DESIGNLY AI generated design"
@@ -409,6 +410,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               onContextMenu={protectImage}
               onDragStart={protectImage}
               className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
+            />
+            <PreviewWatermark
+              hidden={canDownloadImages}
+              projectName={vyronBlueprint?.businessName || projectName}
+              label="DESIGNLY · FINAL PREVIEW"
             />
           </div>
         ) : (
@@ -592,7 +598,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                 <span className="chip border-gold-600/20 bg-black/30 text-cream-300/50 text-[10px]">0 kredit</span>
               </div>
               <div className="bg-[#020303] p-2 sm:p-4 lg:p-6">
-                <div className="mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-gold-600/15 bg-black shadow-[0_0_80px_rgba(0,0,0,.6)]">
+                <div className="relative mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-gold-600/15 bg-black shadow-[0_0_80px_rgba(0,0,0,.6)]">
                   <img
                     src={previewImageUrl}
                     alt="DESIGNLY AI preview"
@@ -600,6 +606,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                     onContextMenu={protectImage}
                     onDragStart={protectImage}
                     className={`block w-full h-auto object-contain ${canDownloadImages ? '' : 'select-none'}`}
+                  />
+                  <PreviewWatermark
+                    hidden={canDownloadImages}
+                    projectName={vyronBlueprint?.businessName || undefined}
                   />
                 </div>
               </div>
