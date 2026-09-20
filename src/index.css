@@ -2854,3 +2854,78 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
   .dl-home-footer{padding:20px 18px;flex-direction:column;text-align:center}
   .dl-home-footer-brand{min-width:auto}
 }
+
+
+/* DESIGNLY DASHBOARD — shared Viking command center */
+.dl-dashboard-hero {
+  position:relative;
+  min-height:340px;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid rgba(229,201,107,.18);
+  border-radius:18px;
+  background:#040607;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 24px 70px rgba(0,0,0,.34);
+}
+.dl-dashboard-hero-bg {
+  position:absolute;
+  inset:-4%;
+  background:
+    linear-gradient(90deg,rgba(3,5,6,.93) 0%,rgba(3,5,6,.72) 44%,rgba(3,5,6,.38) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.58)),
+    url('/stilus.png') center 22% / cover no-repeat;
+  filter:saturate(.86) contrast(1.06) brightness(.78);
+  transform:scale(1.04);
+  z-index:0;
+}
+.dl-dashboard-hero-shade {
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    radial-gradient(circle at 75% 45%,rgba(44,119,161,.15),transparent 25%),
+    radial-gradient(circle at 50% 0%,rgba(229,201,107,.06),transparent 38%);
+  pointer-events:none;
+}
+.dl-dashboard-hero-content {
+  position:relative;
+  z-index:3;
+  min-height:340px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+  padding:38px 42px;
+}
+.dl-dashboard-hero::after {
+  content:'';
+  position:absolute;
+  inset:13px;
+  z-index:4;
+  border:1px solid rgba(229,201,107,.07);
+  border-radius:12px;
+  pointer-events:none;
+}
+.dl-dashboard-sigil {
+  width:210px;
+  height:210px;
+  flex:none;
+  display:grid;
+  place-items:center;
+  opacity:.68;
+  filter:drop-shadow(0 0 35px rgba(229,201,107,.14));
+}
+.dl-dashboard-hero-runes {
+  position:absolute;
+  right:28px;
+  bottom:16px;
+  z-index:3;
+  font:500 10px/1 'Cinzel',serif;
+  letter-spacing:.6em;
+  color:rgba(229,201,107,.28);
+}
+@media (max-width:720px){
+  .dl-dashboard-hero-content{padding:30px 24px;min-height:380px}
+  .dl-dashboard-sigil{display:none}
+  .dl-dashboard-hero-runes{right:18px;font-size:8px;letter-spacing:.35em}
+}
