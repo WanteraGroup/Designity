@@ -507,15 +507,23 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
                 </div>
                 {aiReply}
                 {pendingAiDesign && (
-                  <div className="mt-3 rounded-lg border border-gold-500/20 bg-black/25 p-3">
-                    <div className="text-[10px] uppercase tracking-[.17em] text-gold-300/65">0 KREDIT · NINCS MÉG ALKALMAZVA</div>
-                    <div className="mt-1 text-xs text-cream-300/50">A vizuális módosítást csak jóváhagyás után alkalmazzuk és csak akkor vonunk le 1 kreditet.</div>
-                    <div className="mt-3 flex gap-2 flex-wrap">
-                      <button type="button" onClick={approveAiCommand} disabled={aiLoading} className="btn-gold text-xs">
-                        {aiLoading ? <Sparkles className="w-3.5 h-3.5 animate-pulse" /> : <Check className="w-3.5 h-3.5" />}
-                        TETSZIK · ALKALMAZÁS · 1 KREDIT
-                      </button>
-                      <button type="button" onClick={() => { setPendingAiDesign(null); setPendingAiChanges([]); }} disabled={aiLoading} className="btn-ghost text-xs">MÓDOSÍTOM</button>
+                  <div className="mt-3 rounded-lg border border-gold-500/20 bg-black/25 overflow-hidden">
+                    <div className="px-3 py-2 border-b border-gold-500/15 text-[10px] uppercase tracking-[.17em] text-gold-300/65">AI VIZUÁLIS ELŐNÉZET · 0 KREDIT</div>
+                    <div className="p-3">
+                      <div className="rounded-lg p-4 min-h-32 flex flex-col justify-center" style={{ background: pendingAiDesign.surface, color: pendingAiDesign.text }}>
+                        <div className="w-10 h-10 rounded-full grid place-items-center font-bold mb-3" style={{ background: pendingAiDesign.accent, color: '#08090b' }}>D</div>
+                        <div className="font-display text-base font-semibold">{pendingAiDesign.heroTitle}</div>
+                        <div className="mt-1 text-[10px] opacity-70 line-clamp-2">{pendingAiDesign.heroDescription}</div>
+                        <div className="mt-3 inline-flex w-fit rounded-md px-3 py-1.5 text-[9px] font-semibold" style={{ background: pendingAiDesign.accent, color: '#08090b' }}>{pendingAiDesign.heroButton}</div>
+                      </div>
+                      <div className="mt-2 text-[10px] text-cream-300/50">A vizuális módosítást csak jóváhagyás után alkalmazzuk, és csak akkor vonunk le 1 kreditet.</div>
+                      <div className="mt-3 flex gap-2 flex-wrap">
+                        <button type="button" onClick={approveAiCommand} disabled={aiLoading} className="btn-gold text-xs">
+                          {aiLoading ? <Sparkles className="w-3.5 h-3.5 animate-pulse" /> : <Check className="w-3.5 h-3.5" />}
+                          TETSZIK · ALKALMAZÁS · 1 KREDIT
+                        </button>
+                        <button type="button" onClick={() => { setPendingAiDesign(null); setPendingAiChanges([]); }} disabled={aiLoading} className="btn-ghost text-xs">MÓDOSÍTOM</button>
+                      </div>
                     </div>
                   </div>
                 )}
