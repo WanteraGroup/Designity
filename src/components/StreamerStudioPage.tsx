@@ -9,6 +9,8 @@ import { getCreditsForType } from '@/lib/constants';
 import { supabase } from '@/lib/supabase';
 import { PreviewWatermark } from './PreviewWatermark';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { FreePreviewModal } from './FreePreviewModal';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import { buildStreamerTemplatePrompt, getStreamerTemplate, STREAMER_TEMPLATE_COUNT } from '@/lib/streamer-template-catalog';
 
 type Asset = { id:string; label:string; group:string; platform:string; icon:any; size:string; mode:'static'|'motion-ready'; description:string };
@@ -79,6 +81,10 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
   const [error, setError] = useState('');
   const [showCredits, setShowCredits] = useState(false);
   const [templateIndex, setTemplateIndex] = useState(0);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const templateCatalogSize = STREAMER_TEMPLATE_COUNT;
   const assetCombinationCount = ASSETS.length * templateCatalogSize;
 
@@ -88,8 +94,41 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
   const cost = getCreditsForType('custom');
   const enough = isOwner || (profile?.credits ?? 0) >= cost;
 
+  const buildPreview = async () => {
+    if (!profile || previewLoading) return;
+    const creatorName = creator.trim() || 'CREATOR';
+    const creatorHandle = handle.trim() || creatorName;
+    const prompt = buildStreamerTemplatePrompt(
+      { ...templateSeed, style, palette: colors || templateSeed.palette },
+      selected.label,
+      selected.platform,
+      selected.size,
+      creatorName,
+      creatorHandle,
+      brief.trim(),
+    );
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewId(null);
+    setError('');
+    const preview = await runDesignlyMasterAgent({
+      brief: prompt,
+      language: 'hu',
+      mode: 'preview',
+      requestedOutputs: ['custom'],
+    });
+    setPreviewLoading(false);
+    if (!preview.success) {
+      setError(preview.message || 'Az ingyenes streamer előnézet nem készült el.');
+      return;
+    }
+    setPreviewImage(preview.previewImageUrl || null);
+    setPreviewId(preview.previewId || null);
+  };
+
   const generate = async () => {
-    if (!profile) return;
+    if (!profile || !previewId) return;
     if (!enough) { setShowCredits(true); return; }
     const creatorName = creator.trim() || 'CREATOR';
     const creatorHandle = handle.trim() || creatorName;
@@ -104,7 +143,7 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
     );
     setGenerating(true);
     setError('');
-    const result = await generateDesign({ type:'custom', brief:prompt, style, format:`creator-stream:${selected.id}:${selected.size}` });
+    const result = await generateDesign({ type:'custom', brief:prompt, style, format:`creator-stream:${selected.id}:${selected.size}`, previewId });
     if (!result.success) { setError(result.message || 'A creator asset generálása nem sikerült.'); setGenerating(false); return; }
     const imageUrl = (result.result?.imageUrl as string) || null;
     const save = await supabase.from('projects').insert({
@@ -154,9 +193,22 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
         </div>
       </section>
       <section className='grid gap-3 md:grid-cols-2 xl:grid-cols-4'>{filtered.map((asset)=>{const I=asset.icon; const active=asset.id===assetId; return <button key={asset.id} onClick={()=>{setAssetId(asset.id); setTemplateIndex((v) => (v + asset.id.length) % STREAMER_TEMPLATE_COUNT);}} className={'card-lux p-4 text-left transition-all ' + (active ? 'border-gold-400/45 bg-gold-400/8' : 'hover:-translate-y-1')}><div className='flex items-start justify-between'><div className='grid h-10 w-10 place-items-center rounded-xl border border-gold-500/15 bg-black/20 text-gold-300'><I className='h-5 w-5'/></div><span className='text-[8px] uppercase tracking-[.18em] text-gold-300/45'>{asset.mode}</span></div><div className='mt-4 text-sm font-semibold text-cream-100'>{asset.label}</div><div className='mt-1 text-[10px] text-cream-300/40'>{asset.group} · {asset.platform}</div><div className='mt-3 text-[9px] text-gold-200/70'>{asset.size}</div><p className='mt-2 text-xs leading-5 text-cream-300/45'>{asset.description}</p></button>;})}</section>
-      <section className='grid gap-6 xl:grid-cols-[1.1fr_.9fr]'><div className='card-lux p-6'><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/60'>CREATOR BRIEF</div><h2 className='mt-1 text-2xl font-display text-cream-50'>{selected.label}</h2><div className='mt-5 grid gap-3 md:grid-cols-2'><input value={creator} onChange={(e)=>setCreator(e.target.value)} className='input-lux' placeholder='Streamer / gamer neve'/><input value={handle} onChange={(e)=>setHandle(e.target.value)} className='input-lux' placeholder='@handle / gamertag'/><select value={style} onChange={(e)=>setStyle(e.target.value)} className='input-lux'>{['tech_noir','gaming','esports','cyberpunk','neon','minimal','premium','celtic','nordic','retro'].map((s)=><option key={s}>{s}</option>)}</select><input value={colors} onChange={(e)=>setColors(e.target.value)} className='input-lux' placeholder='Színek'/><textarea value={brief} onChange={(e)=>setBrief(e.target.value)} rows={6} className='input-lux md:col-span-2 resize-none' placeholder='Pl.: két holló, farkas, rúnák, neon kék, arany, erős gamer tipográfia…'/></div><div className='mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-gold-600/10 bg-black/20 p-4'><div><div className='text-[9px] uppercase tracking-[.2em] text-gold-300/60'>AI CREATION</div><div className='mt-1 text-sm text-cream-100'>{isOwner ? '∞' : cost + ' kredit'} · {selected.size}</div></div><button onClick={generate} className='btn-gold text-sm'><Sparkles className='h-4 w-4'/> KREATÍV GYÁRTÁSA</button></div>{error && <div className='mt-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-200'><AlertTriangle className='mr-2 inline h-3.5 w-3.5'/>{error}</div>}</div>
+      <section className='grid gap-6 xl:grid-cols-[1.1fr_.9fr]'><div className='card-lux p-6'><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/60'>CREATOR BRIEF</div><h2 className='mt-1 text-2xl font-display text-cream-50'>{selected.label}</h2><div className='mt-5 grid gap-3 md:grid-cols-2'><input value={creator} onChange={(e)=>setCreator(e.target.value)} className='input-lux' placeholder='Streamer / gamer neve'/><input value={handle} onChange={(e)=>setHandle(e.target.value)} className='input-lux' placeholder='@handle / gamertag'/><select value={style} onChange={(e)=>setStyle(e.target.value)} className='input-lux'>{['tech_noir','gaming','esports','cyberpunk','neon','minimal','premium','celtic','nordic','retro'].map((s)=><option key={s}>{s}</option>)}</select><input value={colors} onChange={(e)=>setColors(e.target.value)} className='input-lux' placeholder='Színek'/><textarea value={brief} onChange={(e)=>setBrief(e.target.value)} rows={6} className='input-lux md:col-span-2 resize-none' placeholder='Pl.: két holló, farkas, rúnák, neon kék, arany, erős gamer tipográfia…'/></div><div className='mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-gold-600/10 bg-black/20 p-4'><div><div className='text-[9px] uppercase tracking-[.2em] text-gold-300/60'>AI CREATION</div><div className='mt-1 text-sm text-cream-100'>{isOwner ? '∞' : cost + ' kredit'} · {selected.size}</div></div><button onClick={() => void buildPreview()} disabled={previewLoading} className='btn-gold text-sm'><Sparkles className='h-4 w-4'/> INGYENES ELŐNÉZET</button></div>{error && <div className='mt-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-200'><AlertTriangle className='mr-2 inline h-3.5 w-3.5'/>{error}</div>}</div>
         <div className='card-lux p-6'><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/60'>ASSET PROFILE</div><h2 className='mt-1 text-2xl font-display text-cream-50'>{selected.group}</h2><div className='mt-5 space-y-2'>{[['Platform',selected.platform],['Méret',selected.size],['Típus',selected.mode],['Safe zone','Briefben rögzítve'],['Export','PNG / platform-specific']].map(([k,v])=><div key={k} className='flex items-center justify-between gap-4 rounded-lg border border-gold-600/10 bg-black/15 p-3'><span className='text-xs text-cream-300/45'>{k}</span><span className='text-xs text-gold-200'>{v}</span></div>)}</div></div></section>
     </> : <section className='space-y-5'><div className='card-lux overflow-hidden border-gold-600/30 bg-black'><div className='flex flex-wrap items-center justify-between gap-3 border-b border-gold-600/15 bg-ink-900/90 px-5 py-4'><div><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/65'>KÉSZ MŰ · NAGY ELŐNÉZET</div><div className='mt-1 text-xl font-display text-cream-50'>{creator || 'CREATOR'} · {selected.label}</div></div><div className='flex gap-2'><button onClick={downloadSpec} className='btn-ghost text-xs'><Download className='h-4 w-4'/> Spec</button><button onClick={()=>onNavigate('projects')} className='btn-gold text-xs'>Projekt</button></div></div><div className='relative min-h-[72vh] overflow-auto bg-[#020303] p-2 sm:p-5 lg:p-8'><img src={resultUrl} alt={selected.label} className='mx-auto block w-full max-w-[1500px] h-auto object-contain rounded-xl' draggable={false}/><PreviewWatermark hidden={isOwner} projectName={creator || 'CREATOR'} label='DESIGNLY · STREAMER PREVIEW'/></div></div><div className='grid gap-4 md:grid-cols-3'><div className='card-lux p-5'><Check className='h-5 w-5 text-gold-300'/><div className='mt-3 text-sm font-semibold text-cream-100'>Design ready</div><div className='mt-1 text-[9px] text-cream-300/40'>Projektbe mentve</div></div><div className='card-lux p-5'><Radio className='h-5 w-5 text-gold-300'/><div className='mt-3 text-sm font-semibold text-cream-100'>{selected.platform}</div><div className='mt-1 text-[9px] text-cream-300/40'>Platform</div></div><div className='card-lux p-5'><Download className='h-5 w-5 text-gold-300'/><div className='mt-3 text-sm font-semibold text-cream-100'>{selected.size}</div><div className='mt-1 text-[9px] text-cream-300/40'>Export méret</div></div></div><div className='flex justify-center'><button onClick={()=>setResultUrl(null)} className='btn-ghost text-sm'><ArrowLeft className='h-4 w-4'/> Új kreatív</button></div></section>}
+    <FreePreviewModal
+      open={previewOpen}
+      title={selected.label + ' · Streamer előnézet'}
+      imageUrl={previewImage}
+      loading={previewLoading}
+      cost={cost}
+      balance={profile?.credits}
+      onClose={() => setPreviewOpen(false)}
+      onApprove={() => void generate().then(() => setPreviewOpen(false))}
+      onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+      onBuyCredits={() => setShowCredits(true)}
+      approvedLoading={generating}
+    />
     <CreditPurchaseModal open={showCredits} onCreditsUpdated={refreshProfile} onClose={()=>setShowCredits(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason='Vásárolj kreditet a Streamer Studio kreatívokhoz.' />
   </div>;
 }
