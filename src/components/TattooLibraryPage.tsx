@@ -391,6 +391,98 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
         </div>
       </section>
 
+      <section className="card-lux p-5 lg:p-7 border-gold-500/20 bg-[radial-gradient(circle_at_82%_18%,rgba(214,170,74,.13),transparent_34%),#080a0b]">
+        <div className="grid lg:grid-cols-[1.05fr_.95fr] gap-6 items-start">
+          <div>
+            <div className="flex items-center gap-2 text-gold-300 text-[10px] uppercase tracking-[.25em]">
+              <Wand2 className="w-4 h-4" /> AI TETOVÁLÁS STUDIO
+            </div>
+            <h2 className="mt-2 text-2xl lg:text-3xl font-display text-cream-50">Írd le az elképzelésedet</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-cream-300/55">Az AI először egy ingyenes látványtervet készít. Megnézed, változtatsz rajta, majd a „Tetszik · Folytatás” gombbal indíthatod a végleges mintát.</p>
+            <textarea
+              value={aiIdea}
+              onChange={(event) => {
+                setAiIdea(event.target.value);
+                setAiError(null);
+                setAiFinalUrl(null);
+                setAiPreviewImage(null);
+                setAiPreviewId(null);
+                setAiPreviewBrief(null);
+              }}
+              rows={6}
+              className="input-lux resize-none mt-5"
+              placeholder="Példa: nagy, részletes kelta sárkány az alkar külső oldalára, fekete-szürke blackwork, rúnákkal, erős körvonallal, tiszta negatív térrel..."
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="chip border-gold-600/15">Stílus: {style}</span>
+              <span className="chip border-gold-600/15">Paletta: {palette}</span>
+              <span className="chip border-gold-600/15">Testrész: {BODY_PARTS.find((item) => item.id === bodyPart)?.name}</span>
+            </div>
+            <button type="button" onClick={generateTattooPreview} disabled={aiIdea.trim().length < 8 || aiLoading} className="btn-gold mt-5">
+              {aiLoading ? <Sparkles className="w-4 h-4 animate-pulse" /> : <Wand2 className="w-4 h-4" />}
+              {aiLoading ? 'AI ELŐNÉZET KÉSZÜL…' : 'INGYENES AI ELŐNÉZET'}
+            </button>
+            {aiError && <div className="mt-3 rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs text-red-200">{aiError}</div>}
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-[#f2ede5] min-h-[360px] overflow-hidden">
+            {aiLoading ? (
+              <div className="min-h-[360px] grid place-items-center text-black/45">
+                <div className="text-center"><Sparkles className="w-9 h-9 mx-auto mb-3 animate-pulse" /><div className="text-xs uppercase tracking-[.22em]">TATTOO AI · TERVEZÉS</div></div>
+              </div>
+            ) : aiPreviewImage ? (
+              <div className="relative min-h-[360px] flex items-center justify-center p-4">
+                <img src={aiPreviewImage} alt="AI tattoo preview" className="max-h-[560px] w-full object-contain select-none" draggable={false} />
+                <div className="absolute top-3 left-3 chip text-[8px] border-black/10 bg-white/80 text-black/60">AI ELŐNÉZET · 0 KREDIT</div>
+              </div>
+            ) : (
+              <div className="min-h-[360px] grid place-items-center text-center px-7">
+                <div className="text-black/42"><LayoutTemplate className="w-11 h-11 mx-auto mb-3 opacity-35" /><div className="text-sm">Az AI által készített előnézet itt jelenik meg.</div><div className="mt-2 text-[9px] uppercase tracking-[.2em]">ÖTLET → AI → ELŐNÉZET</div></div>
+              </div>
+            )}
+          </div>
+        </div>
+        {aiPreviewBrief && (
+          <div className="mt-5 rounded-2xl border border-gold-600/15 bg-black/25 p-5">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                ['Visual direction', aiPreviewBrief.visualStyle || 'Tattoo concept'],
+                ['Mood', aiPreviewBrief.mood || 'Refined'],
+                ['Imagery', aiPreviewBrief.imageryDirection || 'Linework'],
+                ['Colors', [...aiPreviewBrief.primaryColors, ...aiPreviewBrief.secondaryColors].slice(0, 4).join(', ') || 'Black / Grey'],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-xl border border-gold-600/10 bg-ink-900/50 p-3">
+                  <div className="text-[9px] uppercase tracking-[.16em] text-gold-300/65">{label}</div>
+                  <div className="mt-1 text-xs text-cream-100">{value}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div>
+                <div className="text-[9px] uppercase tracking-[.22em] text-gold-300/65">VÉGLEGES MINTA</div>
+                <div className="text-lg font-display text-cream-50 mt-1">{isOwner ? '∞ kredit' : tattooFinalCost + ' kredit'}</div>
+                <div className="text-xs text-cream-300/45 mt-1">Az előnézet ingyenes. A végleges generálás csak a jóváhagyás után indul.</div>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <button type="button" onClick={() => { setAiPreviewImage(null); setAiPreviewId(null); setAiPreviewBrief(null); setAiFinalUrl(null); }} className="btn-ghost">MÓDOSÍTOM</button>
+                {!aiFinalUrl ? (
+                  <button type="button" onClick={continueWithTattoo} disabled={aiFinalLoading || !aiPreviewId} className="btn-gold">
+                    {aiFinalLoading ? <Sparkles className="w-4 h-4 animate-pulse" /> : <Check className="w-4 h-4" />}
+                    {aiFinalLoading ? 'VÉGLEGES MINTA KÉSZÜL…' : 'TETSZIK · FOLYTATÁS'}
+                  </button>
+                ) : (
+                  <span className="chip border-emerald-400/30 bg-emerald-400/10 text-emerald-200"><Check className="w-3.5 h-3.5" /> VÉGLEGES MINTA ELKÉSZÜLT</span>
+                )}
+              </div>
+            </div>
+            {aiFinalUrl && (
+              <div className="mt-5 overflow-hidden rounded-xl border border-gold-600/20 bg-[#f2ede5]">
+                <img src={aiFinalUrl} alt="Végleges AI tattoo design" className="block w-full max-h-[820px] object-contain select-none" draggable={false} />
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
       <section className="card-lux p-4 lg:p-5">
         <div className="flex flex-col xl:flex-row gap-3">
           <div className="relative flex-1">
@@ -620,6 +712,8 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
           </div>
         </div>
       )}
+
+      <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A végleges AI tetoválás elkészítéséhez kredit szükséges." />
 
       <style>{`
         .tattoo-art-wrap{position:absolute;inset:0;display:grid;place-items:center;background:#f3eee4}
