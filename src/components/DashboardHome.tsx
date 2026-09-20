@@ -45,21 +45,32 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
 
   return (
     <div className="space-y-8">
-      {/* Welcome */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl lg:text-3xl font-display font-bold text-cream-50">
-            {t('dash.welcome')}, {profile?.full_name || profile?.email?.split('@')[0]}
-          </h1>
-          <p className="text-sm text-cream-300/50 mt-1">
-            {isUnlimited ? (isOwner ? t('dash.ownerBadge') : 'FULL UNLOCK — Unlimited access') : t('dash.readyCreate')}
-          </p>
+      {/* Welcome / Creative Command Center */}
+      <section className="dl-dashboard-hero">
+        <div className="dl-dashboard-hero-bg" aria-hidden="true" />
+        <div className="dl-dashboard-hero-shade" aria-hidden="true" />
+        <div className="dl-dashboard-hero-content">
+          <div>
+            <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.3em] text-gold-300/75">
+              <CelticEmblem size={24} animate showD={false} />
+              DESIGNLY CREATIVE COMMAND CENTER
+            </div>
+            <h1 className="mt-3 text-3xl lg:text-5xl font-display font-semibold text-cream-50">
+              {t('dash.welcome')}, {profile?.full_name || profile?.email?.split('@')[0]}
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-cream-200/60 mt-3">
+              {isUnlimited ? (isOwner ? t('dash.ownerBadge') : 'FULL UNLOCK — Unlimited access') : t('dash.readyCreate')}
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0"><Plus className="w-4 h-4" /> {t('dash.quickCreate')}</button>
+              <button onClick={() => onNavigate('streamer')} className="btn-ghost text-sm"><Gamepad2 className="w-4 h-4" /> Streamer Studio</button>
+              <button onClick={() => onNavigate('creator')} className="btn-ghost text-sm"><Radio className="w-4 h-4" /> Merch Studio</button>
+            </div>
+          </div>
+          <div className="dl-dashboard-sigil"><CelticEmblem size={180} animate showD /></div>
         </div>
-        <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0">
-          <Plus className="w-4 h-4" />
-          {t('dash.quickCreate')}
-        </button>
-      </div>
+        <div className="dl-dashboard-hero-runes">ᛉ · ᚨ · ᛟ · ᚱ · ᚦ · ᚷ · ᛏ · ᚹ · ᛒ</div>
+      </section>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
