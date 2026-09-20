@@ -31,6 +31,7 @@ export function CreditPurchaseModal({
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paymentState, setPaymentState] = useState<'idle' | 'opening' | 'waiting' | 'success' | 'failed'>('idle');
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [continueReady, setContinueReady] = useState(false);
 
   const saveEditorState = (itemId: string) => {
     try {
@@ -85,6 +86,7 @@ export function CreditPurchaseModal({
       if (result.success && result.status === 'succeeded') {
         setPaymentState('success');
         await onCreditsUpdated?.();
+        setContinueReady(true);
       } else if (result.success && result.status === 'failed') {
         setPaymentState('failed');
         setPaymentError('A fizetés nem teljesült.');
