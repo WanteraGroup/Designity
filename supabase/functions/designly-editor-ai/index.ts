@@ -163,6 +163,8 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json().catch(() => ({}));
     const command = String(body.command || "").trim();
+    const mode = body.mode === "preview" ? "preview" : "final";
+    const approvedChanges = sanitizeChanges(body.approvedChanges);
     if (!command) return json({ error: "INVALID_REQUEST", message: "AI edit command is required." }, 400);
 
     const current: DesignState = {
@@ -178,14 +180,6 @@ Deno.serve(async (req: Request) => {
       atmosphere: ["clean", "mist", "glow"].includes(body.design?.atmosphere) ? body.design.atmosphere : "glow",
     };
 
-    const groqKey = Deno.env.get("GROQ_API_KEY") || Deno.env.get("AI_API_KEY");
-    if (!groqKey) {
-      return json({
-        error: "GROQ_NOT_CONFIGURED",
-        providerNotConfigured: true,
-        message: "A Groq API kulcs nincs beállítva a DESIGNLY backendben. Az AI szerkesztéshez GROQ_API_KEY szükséges.",
-      }, 503);
-    }
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("id, role, credits")
@@ -197,7 +191,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const editCost = 1;
-    if (profile.role !== "owner" && profile.credits < editCost) {
+    if (mode === "final" && profile.role !== "owner" && profile.credits < editCost) {
       return json({
         error: "INSUFFICIENT_CREDITS",
         required: editCost,
@@ -206,8 +200,8 @@ Deno.serve(async (req: Request) => {
       }, 402);
     }
 
-
     const model = Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
+    const groqKey = Deno.env.get("GROQ_API_KEY") || Deno.env.get("AI_API_KEY");
 
     const system = [
       "You are DESIGNLY STUDIO AI Editor.",
@@ -225,53 +219,85 @@ Deno.serve(async (req: Request) => {
       "Keep the final reply concise and describe only the edits you applied."
     ].join("\n");
 
-    const user = JSON.stringify({
-      command,
-      selectedElement: body.selectedElement || null,
-      device: (body.device || "desktop") as Device,
-      currentDesign: current,
-    });
+    let reply = "A módosítás előnézete elkészült.";
+    let changes = approvedChanges;
+    let nextDesign = applyChanges(current, changes);
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${groqKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        reasoning_effort: "low",
-        response_format: {
-          type: "json_schema",
-          json_schema: {
-            name: "designly_editor_changes",
-            strict: true,
-            schema: designSchema,
-          },
+    if (mode !== "final" || changes.length === 0) {
+      if (!groqKey) {
+        return json({
+          error: "GROQ_NOT_CONFIGURED",
+          providerNotConfigured: true,
+          message: "A Groq API kulcs nincs beállítva a DESIGNLY backendben. Az AI szerkesztéshez GROQ_API_KEY szükséges.",
+        }, 503);
+      }
+
+      const userPayload = JSON.stringify({
+        command,
+        selectedElement: body.selectedElement || null,
+        device: (body.device || "desktop") as Device,
+        currentDesign: current,
+      });
+
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: userPayload },
+          ],
+          reasoning_effort: "low",
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "designly_editor_changes",
+              strict: true,
+              schema: designSchema,
+            },
+          },
+        }),
+      });
 
-    if (!response.ok) {
-      const providerBody = await response.text().catch(() => "");
-      console.error("Groq editor error:", response.status, providerBody);
+      if (!response.ok) {
+        const providerBody = await response.text().catch(() => "");
+        console.error("Groq editor error:", response.status, providerBody);
+        return json({
+          error: "GROQ_REQUEST_FAILED",
+          message: `A Groq AI-kérés sikertelen volt (${response.status}).`,
+        }, 502);
+      }
+
+      const data = await response.json();
+      const raw = data.choices?.[0]?.message?.content;
+      if (typeof raw !== "string" || !raw.trim()) {
+        return json({ error: "EMPTY_AI_RESULT", message: "A Groq nem adott értelmezhető szerkesztési eredményt." }, 502);
+      }
+
+      const parsed = JSON.parse(raw);
+      changes = sanitizeChanges(parsed.changes);
+      nextDesign = applyChanges(current, changes);
+      reply = typeof parsed.reply === "string" ? parsed.reply : reply;
+    }
+
+    if (mode === "preview") {
       return json({
-        error: "GROQ_REQUEST_FAILED",
-        message: `A Groq AI-kérés sikertelen volt (${response.status}).`,
-      }, 502);
+        ok: true,
+        mode,
+        provider: "groq",
+        model,
+        reply,
+        changes,
+        design: nextDesign,
+        usage: null,
+      });
     }
 
-    const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content;
-    if (typeof raw !== "string" || !raw.trim()) {
-      return json({ error: "EMPTY_AI_RESULT", message: "A Groq nem adott értelmezhető szerkesztési eredményt." }, 502);
-    }
-
-    const parsed = JSON.parse(raw);
+    if (profile.role !== "owner") {    const parsed = JSON.parse(raw);
     const changes = sanitizeChanges(parsed.changes);
     const nextDesign = applyChanges(current, changes);
 
