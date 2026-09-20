@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer, FlaskConical,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -43,6 +43,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
   if (isAdmin) {
     navItems.push({ id: 'admin', label: t('nav.admin'), icon: Shield });
+    navItems.push({ id: 'diagnostics', label: 'QA Center', icon: FlaskConical });
   }
 
   const handleNav = (page: string) => {
