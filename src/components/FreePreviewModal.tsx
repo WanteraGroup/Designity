@@ -108,18 +108,20 @@ export function FreePreviewModal({
                 </div>
               </div>
 
-              {!enough && (
-                <div className="mt-5 rounded-xl border border-red-500/25 bg-red-500/10 p-4">
-                  <div className="text-sm font-semibold text-red-100">Nincs elegendő kredit</div>
-                  <div className="mt-1 text-xs text-red-200/70">Nem kell visszalépned. A kreditvásárlás innen azonnal elérhető.</div>
-                  <button type="button" onClick={onBuyCredits} className="btn-gold text-xs mt-4 w-full">
+              <div className="mt-5 rounded-xl border border-gold-600/20 bg-gold-500/5 p-4">
+                <div className="text-sm font-semibold text-gold-100">0 KREDIT · ELŐNÉZET</div>
+                <div className="mt-1 text-xs text-cream-300/60">
+                  A jóváhagyás ingyenes. A(z) {cost} kredit csak akkor kerül levonásra, amikor kéred a végleges változatot.
+                </div>
+                {!enough && (
+                  <button type="button" onClick={onBuyCredits} className="btn-ghost text-xs mt-3 w-full">
                     <CreditCard className="w-4 h-4" /> KREDIT VÁSÁRLÁS
                   </button>
-                </div>
-              )}
+                )}
+              </div>
 
               <div className="mt-6 space-y-2">
-                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText && !previewAudioUrl) || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
+                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText && !previewAudioUrl)} className="btn-gold w-full text-sm disabled:opacity-40">
                   {approvedLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   {approvedLoading ? 'VÉGLEGES GENERÁLÁS…' : `KÉREM · ${cost} KREDIT`}
                 </button>
