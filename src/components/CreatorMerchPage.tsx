@@ -7,6 +7,8 @@ import { generateDesign } from '@/lib/ai';
 import { getCreditsForType } from '@/lib/constants';
 import { PreviewWatermark } from './PreviewWatermark';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { FreePreviewModal } from './FreePreviewModal';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 
 interface CreatorMerchPageProps { onNavigate: (page: string) => void; }
 
@@ -40,15 +42,18 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [showSpec, setShowSpec] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   const product = PRODUCTS.find((item) => item.id === productId) || PRODUCTS[0];
   const Icon = product.icon;
   const cost = getCreditsForType('custom');
   const enough = isOwner || (profile?.credits ?? 0) >= cost;
 
-  const generate = async () => {
-    if (!profile) return;
-    if (!enough) { setShowCreditModal(true); return; }
+  const buildPreview = async () => {
+    if (!profile || previewLoading) return;
     const creatorName = creator.trim() || 'CREATOR';
     const channelName = channel.trim() || creatorName;
     const customBrief = [
@@ -62,6 +67,43 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
       `USER BRIEF: ${brief.trim() || 'Create a commercially usable creator/gamer merch identity with a strong central emblem and production-friendly composition.'}`,
       'OUTPUT: a clean production-oriented master artwork, strong silhouette, readable at small size, transparent-background-friendly composition, no mockup text baked into the artwork, editable brand placeholders where information is unknown.',
     ].join('\n');
+
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewId(null);
+    setError('');
+    const preview = await runDesignlyMasterAgent({
+      brief: customBrief,
+      language: lang,
+      mode: 'preview',
+      requestedOutputs: ['custom'],
+    });
+    setPreviewLoading(false);
+    if (!preview.success) {
+      setError(preview.message || 'Az ingyenes merch előnézet nem készült el.');
+      return;
+    }
+    setPreviewImage(preview.previewImageUrl || null);
+    setPreviewId(preview.previewId || null);
+  };
+
+  const generate = async () => {
+    if (!profile || !previewId) return;
+    if (!enough) { setShowCreditModal(true); return; }
+    const creatorName = creator.trim() || 'CREATOR';
+    const channelName = channel.trim() || creatorName;
+    const customBrief = [
+      'DESIGNLY CREATOR MERCH MASTER ARTWORK',
+      `PRODUCT: ${product.label} — ${product.desc}`,
+      `CREATOR: ${creatorName}`,
+      `CHANNEL / GAMERTAG: ${channelName}`,
+      `SLOGAN: ${slogan.trim() || 'editable creator slogan'}`,
+      `STYLE: ${style}`,
+      `COLORS: ${colors.trim() || 'black, gold, silver'}`,
+      `USER BRIEF: ${brief.trim() || 'Create a commercially usable creator/gamer merch identity with a strong central emblem and production-friendly composition.'}`,
+      'OUTPUT: a clean production-oriented master artwork, strong silhouette, readable at small size, transparent-background-friendly composition, no mockup text baked into the artwork, editable brand placeholders where information is unknown.',
+    ].join('\\n');
 
     setGenerating(true);
     setError('');
@@ -155,7 +197,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
             </div>
             <div className='mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-gold-600/10 bg-black/20 p-4'>
               <div><div className='text-[9px] uppercase tracking-[.2em] text-gold-300/60'>AI CREATION</div><div className='mt-1 text-sm text-cream-100'>Master artwork · {isOwner ? '∞' : cost + ' kredit'}</div></div>
-              <button onClick={()=>!enough ? setShowCreditModal(true) : generate()} disabled={generating} className='btn-gold text-sm'><Sparkles className='h-4 w-4'/>{generating ? 'GENERÁLÁS…' : 'TERMÉK GRAFIKA KÉSZÍTÉSE'}</button>
+              <button onClick={() => void buildPreview()} disabled={generating || previewLoading} className='btn-gold text-sm'><Sparkles className='h-4 w-4'/>{previewLoading ? 'ELŐNÉZET KÉSZÜL…' : 'INGYENES ELŐNÉZET'}</button>
             </div>
             {error && <div className='mt-3 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-200'>{error}</div>}
           </div>
@@ -189,6 +231,19 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
         </section>
       )}
 
+      <FreePreviewModal
+        open={previewOpen}
+        title={product.label + ' · Merch előnézet'}
+        imageUrl={previewImage}
+        loading={previewLoading}
+        cost={cost}
+        balance={profile?.credits}
+        onClose={() => setPreviewOpen(false)}
+        onApprove={() => void generate().then(() => setPreviewOpen(false))}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+        onBuyCredits={() => setShowCreditModal(true)}
+        approvedLoading={generating}
+      />
       <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={()=>setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason='Vásárolj kreditet közvetlenül a Creator / Gamer Product Studio-ból.' />
     </div>
   );
