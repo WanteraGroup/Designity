@@ -272,6 +272,15 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
       });
     }
 
+    // Custom credit purchases are valid from 1 to 10,000 credits.
+    const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\d+)$/) : null;
+    const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
+    const customCreditPrice = (credits: number) => {
+      const tier = Math.floor(credits / 100);
+      const unitPrice = Math.max(10, 21 - tier);
+      return credits * unitPrice;
+    };
+
     // Look up the item price
     let amount = 0;
     let currency = "HUF";
@@ -309,15 +318,6 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
         description = `Credit package: ${pkg.label}`;
       }
     }
-
-    // Custom credit purchases: 1-10000 credits.
-    const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\d+)$/) : null;
-    const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
-    const customCreditPrice = (credits: number) => {
-      const tier = Math.floor(credits / 100);
-      const unitPrice = Math.max(10, 21 - tier);
-      return credits * unitPrice;
-    };
 
     // Record a pending payment
     const { data: payment, error: paymentError } = await supabase
