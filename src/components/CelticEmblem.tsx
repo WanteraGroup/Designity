@@ -37,10 +37,10 @@ export function CelticEmblem({ size = 200, className = '', animate = false, show
         <div
           className="absolute flex items-center justify-center overflow-hidden rounded-full"
           style={{
-            width: size * 0.52,
-            height: size * 0.52,
-            background: 'rgba(5,6,7,.72)',
-            boxShadow: 'inset 0 0 28px rgba(0,0,0,.85), 0 0 0 1px rgba(211,170,76,.28)',
+            width: size * 0.82,
+            height: size * 0.82,
+            background: 'rgba(5,6,7,.78)',
+            boxShadow: 'inset 0 0 22px rgba(0,0,0,.78), 0 0 0 1px rgba(211,170,76,.24)',
             pointerEvents: 'none',
           }}
         >
@@ -48,7 +48,7 @@ export function CelticEmblem({ size = 200, className = '', animate = false, show
             src="/designly-logo.webp"
             alt="DESIGNLY"
             className="w-full h-full object-contain"
-            style={{ pointerEvents: 'none' }}
+            style={{ width: '116%', height: '116%', maxWidth: 'none', maxHeight: 'none', objectFit: 'contain', pointerEvents: 'none' }}
           />
         </div>
       )}
