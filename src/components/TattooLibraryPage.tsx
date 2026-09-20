@@ -1,7 +1,7 @@
 import { useMemo, useState, type CSSProperties } from 'react';
 import {
   Bookmark, ChevronDown, Crown, Filter, Heart, LayoutTemplate, Search,
-  Sparkles, Star, Tattoo, Users, X
+  PenTool, Sparkles, Users
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 
