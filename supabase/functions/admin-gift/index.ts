@@ -9,7 +9,8 @@ const corsHeaders = {
 type GiftType = "full_unlock" | "plan";
 
 interface GiftRequest {
-  action: "gift" | "revoke";
+  action: "gift" | "revoke" | "grant_credits";
+  credits?: number;
   email?: string;
   giftType?: GiftType;
   planId?: "free" | "starter" | "pro" | "business" | "agency";
@@ -65,6 +66,55 @@ try {
     }
 
     const body = (await req.json()) as GiftRequest;
+
+    if (body.action === "grant_credits") {
+      const email = body.email?.trim().toLowerCase();
+      const amount = Math.floor(Number(body.credits));
+      if (!email || !email.includes("@")) return json({ error: "INVALID_EMAIL" }, 400);
+      if (!Number.isSafeInteger(amount) || amount < 1 || amount > 100000000) {
+        return json({ error: "INVALID_CREDIT_AMOUNT", message: "Credit amount must be between 1 and 100,000,000." }, 400);
+      }
+
+      const { data: target, error: targetError } = await admin
+        .from("profiles")
+        .select("id,email,role,credits,unlimited_access")
+        .ilike("email", email)
+        .maybeSingle();
+
+      if (targetError) return json({ error: "PROFILE_LOOKUP_FAILED" }, 500);
+      if (!target) return json({ error: "USER_NOT_FOUND", message: "No DESIGNLY profile exists for this email." }, 404);
+
+      const nextCredits = Math.min(2147483647, Math.max(0, (target.credits ?? 0) + amount));
+      const { error: updateError } = await admin
+        .from("profiles")
+        .update({ credits: nextCredits, updated_at: new Date().toISOString() })
+        .eq("id", target.id);
+
+      if (updateError) return json({ error: "CREDIT_UPDATE_FAILED", message: updateError.message }, 500);
+
+      await admin.from("credit_transactions").insert({
+        user_id: target.id,
+        amount,
+        type: "admin_grant",
+        description: "Admin credit gift",
+        balance_after: nextCredits,
+      });
+
+      await admin.from("admin_audit_log").insert({
+        actor_user_id: user.id,
+        action: "credits_granted",
+        target_email: target.email,
+        target_user_id: target.id,
+        metadata: { amount, balance_after: nextCredits },
+      });
+
+      return json({
+        success: true,
+        creditsAdded: amount,
+        balance: nextCredits,
+        message: amount.toLocaleString("hu-HU") + " kredit jóváírva.",
+      });
+    }
 
     if (body.action === "revoke") {
       if (!body.giftId) return json({ error: "MISSING_GIFT_ID" }, 400);
@@ -159,7 +209,7 @@ try {
           .from("profiles")
           .update({
             plan_id: "owner",
-            credits: 999999,
+            credits: 100000000,
             unlimited_access: true,
             updated_at: new Date().toISOString(),
           })
