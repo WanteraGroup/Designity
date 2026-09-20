@@ -243,6 +243,11 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
           <button type="button" onClick={() => exportPlanSpec(planType, selectedPlan.label, area, rooms, constraints, brief, finalImage || preview)} className="btn-ghost">
             <Download className="w-4 h-4" /> TERVSPEC EXPORT
           </button>
+          {finalImage && (
+            <a href={finalImage} download target="_blank" rel="noreferrer" className="btn-ghost">
+              <Download className="w-4 h-4" /> VÉGLEGES KÉP LETÖLTÉSE
+            </a>
+          )}
           <button type="button" onClick={() => onNavigate('projects')} className="btn-ghost">
             <Save className="w-4 h-4" /> PROJEKTEK
           </button>
