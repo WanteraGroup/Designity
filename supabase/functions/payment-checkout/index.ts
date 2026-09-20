@@ -337,6 +337,11 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
         type: itemType,
         status: "pending",
         provider: provider.name,
+        metadata: {
+          itemType,
+          itemId,
+          credits: customCreditCount !== null ? customCreditCount : null,
+        },
       })
       .select()
       .single();
