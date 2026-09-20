@@ -115,6 +115,17 @@ function AppInner() {
     };
   }, []);
 
+  // Global content protection: non-admin users cannot open the browser context menu.
+  // Admin users keep normal right-click access across the entire application.
+  useEffect(() => {
+    if (isAdmin) return;
+    const preventContextMenu = (event: MouseEvent) => {
+      event.preventDefault();
+    };
+    document.addEventListener('contextmenu', preventContextMenu, true);
+    return () => document.removeEventListener('contextmenu', preventContextMenu, true);
+  }, [isAdmin]);
+
   useEffect(() => {
     if (!authKnown) return;
     if (user && PUBLIC_PAGES.includes(page) && page !== 'landing' && page !== 'reset') {
