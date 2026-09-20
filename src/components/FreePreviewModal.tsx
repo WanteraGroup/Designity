@@ -96,7 +96,7 @@ export function FreePreviewModal({
               )}
 
               <div className="mt-6 space-y-2">
-                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || !imageUrl || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
+                <button type="button" onClick={onApprove} disabled={loading || approvedLoading || (!imageUrl && !previewText) || !enough} className="btn-gold w-full text-sm disabled:opacity-40">
                   {approvedLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   {approvedLoading ? 'VÉGLEGES GENERÁLÁS…' : 'TETSZIK · FOLYTATÁS'}
                 </button>
