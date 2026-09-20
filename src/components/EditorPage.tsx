@@ -234,6 +234,53 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     recognition.start();
   };
 
+  const buildExportHtml = () => {
+    const title = projectName || 'DESIGNLY STUDIO';
+    const description = design.heroDescription || 'Premium website created with DESIGNLY STUDIO AI.';
+    return `<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title}</title>
+<meta name="description" content="${description.replace(/"/g, '&quot;')}">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#08090b;color:#f5f0e6;font-family:Inter,Arial,sans-serif}
+main{min-height:100vh;background:radial-gradient(circle at 50% 15%,rgba(214,170,74,.16),transparent 35%),linear-gradient(180deg,#15171c,#08090b)}
+.hero{min-height:70vh;display:flex;flex-direction:column;align-items:${design.heroAlign==='left'?'flex-start':design.heroAlign==='right'?'flex-end':'center'};justify-content:center;text-align:${design.heroAlign};padding:64px 8%;gap:18px}
+.badge{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:${design.accent};color:#08090b;font-weight:800;font-size:24px}
+h1{font-size:clamp(42px,7vw,88px);margin:0;font-family:Georgia,serif}p{max-width:720px;line-height:1.7;opacity:.72}
+button{border:0;border-radius:10px;padding:14px 24px;background:${design.accent};color:#08090b;font-weight:800}
+footer{padding:28px 8%;border-top:1px solid rgba(214,170,74,.2);opacity:.55}
+</style></head>
+<body><main><section class="hero"><div class="badge">D</div><h1>${title}</h1><p>${description}</p><button>${design.heroButton || 'GET STARTED'}</button></section><footer>Created with DESIGNLY STUDIO</footer></main></body></html>`;
+  };
+
+  const downloadFile = (filename: string, content: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportWebsite = () => {
+    downloadFile(`${(projectName || 'designly-site').replace(/[^a-z0-9-_]+/gi, '-').toLowerCase()}.html`, buildExportHtml(), 'text/html;charset=utf-8');
+  };
+
+  const exportCss = () => {
+    const css = `/* DESIGNLY STUDIO export — ${projectName} */\nbody{background:${design.surface};color:${design.text};}\nbutton{background:${design.accent};}\n`;
+    downloadFile('designly-style.css', css, 'text/css;charset=utf-8');
+  };
+
+  const exportSvg = () => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630"><rect width="1200" height="630" fill="${design.surface}"/><circle cx="600" cy="220" r="58" fill="${design.accent}"/><text x="600" y="235" text-anchor="middle" font-size="42" font-family="Arial" font-weight="700" fill="#08090b">D</text><text x="600" y="390" text-anchor="middle" font-size="64" font-family="Georgia" fill="${design.text}">${title}</text></svg>`;
+    downloadFile('designly-logo-preview.svg', svg, 'image/svg+xml;charset=utf-8');
+  };
+
   const exportSettings = () => {
     const payload = JSON.stringify(
       {
@@ -246,13 +293,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
       2,
     );
 
-    const blob = new Blob([payload], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = 'designly-editor-settings.json';
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadFile('designly-project.json', payload, 'application/json;charset=utf-8');
   };
 
   const galleryItems = Array.from({ length: design.galleryColumns * 2 }, (_, i) => i + 1);
@@ -325,13 +366,18 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
           >
             <Redo2 className="w-4 h-4" />
           </button>
-          <button
-            onClick={exportSettings}
-            className="btn-gold text-xs px-4 py-2"
-          >
-            <Download className="w-3.5 h-3.5" />
-            {t('editor.export')}
-          </button>
+          <div className="relative group">
+            <button className="btn-gold text-xs px-4 py-2">
+              <Download className="w-3.5 h-3.5" />
+              EXPORT / MENTÉS
+            </button>
+            <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block w-52 rounded-xl border border-gold-600/20 bg-ink-900/95 p-2 shadow-2xl backdrop-blur-xl">
+              <button onClick={exportWebsite} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">WEBOLDAL · HTML</button>
+              <button onClick={exportCss} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">STÍLUS · CSS</button>
+              <button onClick={exportSettings} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">PROJEKT · JSON</button>
+              <button onClick={exportSvg} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">LOGÓ / GRAFIKA · SVG</button>
+            </div>
+          </div>
         </div>
       </div>
 
