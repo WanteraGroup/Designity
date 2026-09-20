@@ -1984,6 +1984,13 @@ button{font-family:inherit}
 @keyframes huginnIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
 .huginn-header{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid rgba(211,170,76,.16);background:linear-gradient(90deg,rgba(211,170,76,.08),transparent)}
 .huginn-avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(211,170,76,.45);background:radial-gradient(circle,rgba(211,170,76,.18),rgba(0,0,0,.7));color:#e8c66c}.huginn-avatar svg{width:22px}
+.huginn-dual-avatar{position:relative;width:54px;height:40px;flex:none;display:flex;align-items:center;justify-content:center}
+.huginn-dual-raven,.muninn-dual-raven{position:absolute;top:9px;width:34px;height:24px;transition:transform .35s ease}
+.huginn-dual-raven{left:0;transform:translateX(0) scale(.95)}
+.muninn-dual-raven{right:0;transform:translateX(0) scale(.82)}
+.huginn-dual-avatar .muninn-dual-raven{opacity:.72;filter:drop-shadow(0 0 8px rgba(211,170,76,.18))}
+.huginn-header:hover .huginn-dual-raven{transform:translateX(-2px) scale(.99)}
+.huginn-header:hover .muninn-dual-raven{transform:translateX(2px) scale(.86)}
 .huginn-header>div:nth-child(2){display:flex;flex-direction:column;flex:1}.huginn-header strong{font:700 13px/1 Inter,sans-serif;letter-spacing:.24em;color:#f2d58d}.huginn-header span{font-size:8px;letter-spacing:.13em;color:rgba(245,239,224,.42);margin-top:5px}.huginn-header>button{border:0;background:transparent;color:rgba(245,239,224,.5);cursor:pointer}.huginn-header>button svg{width:18px}
 .huginn-messages{flex:1;overflow:auto;padding:15px;display:flex;flex-direction:column;gap:10px}.huginn-bubble{max-width:88%;padding:10px 12px;border-radius:12px;font-size:13px;line-height:1.5}.huginn-bubble--huginn{align-self:flex-start;border:1px solid rgba(211,170,76,.16);background:rgba(255,255,255,.045);color:#e9e2d5}.huginn-bubble--user{align-self:flex-end;background:rgba(211,170,76,.13);border:1px solid rgba(211,170,76,.25);color:#f5e7bf}.huginn-typing{display:flex;gap:4px;padding:10px}.huginn-typing i{width:5px;height:5px;border-radius:50%;background:#d9b45c;animation:huginnDot 1s infinite}.huginn-typing i:nth-child(2){animation-delay:.15s}.huginn-typing i:nth-child(3){animation-delay:.3s}@keyframes huginnDot{50%{opacity:.2;transform:translateY(-3px)}}
 .huginn-suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}.huginn-suggestions button{font-size:10px;color:#ddc27e;background:rgba(211,170,76,.06);border:1px solid rgba(211,170,76,.2);border-radius:999px;padding:7px 9px;cursor:pointer}.huginn-suggestions button:hover{background:rgba(211,170,76,.14)}
@@ -2003,8 +2010,12 @@ button{font-family:inherit}
 .dl-hero-reference .dl-atmosphere{opacity:.48;mix-blend-mode:screen}
 .dl-hero-reference .dl-fog{opacity:.34!important}.dl-hero-reference .dl-smoke{opacity:.22!important}
 @media (prefers-reduced-motion:reduce){.dl-hero-reference *,.huginn-agent *{animation-duration:.01ms!important;animation-iteration-count:1!important}}
-.huginn-raven{width:31px;height:24px;display:block;filter:drop-shadow(0 0 7px rgba(222,177,72,.25))}.huginn-wing{transform-origin:42px 38px;animation:huginnWing 1.9s ease-in-out infinite}.huginn-eye{animation:huginnEye 2.8s ease-in-out infinite}
-.huginn-avatar .huginn-raven{width:31px;height:24px}.huginn-orb>.huginn-raven{width:27px;height:21px}
+.huginn-raven{width:31px;height:24px;display:block;filter:drop-shadow(0 0 7px rgba(222,177,72,.25))}.huginn-wing{transform-origin:42px 38px;animation:huginnWing 1.9s ease-in-out infinite}.huginn-eye,.muninn-eye{animation:huginnEye 2.8s ease-in-out infinite}
+.huginn-avatar .huginn-raven{width:31px;height:24px}
+.huginn-orb-ravens{position:relative;width:55px;height:27px;display:block;flex:none}
+.huginn-orb-ravens .huginn-raven{position:absolute;width:29px;height:22px;top:2px}
+.huginn-orb-ravens .huginn-raven:first-child{left:0}
+.huginn-orb-ravens .huginn-raven:last-child{right:0;transform:scaleX(-1) scale(.88);opacity:.72}
 @keyframes huginnWing{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-8deg) translateY(-2px)}}
 @keyframes huginnEye{0%,70%,100%{opacity:.35}76%,84%{opacity:1}80%{opacity:.2}}
 
