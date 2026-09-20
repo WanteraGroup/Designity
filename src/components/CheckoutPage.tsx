@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { createCheckout, getPaymentStatus } from '@/lib/ai';
 import { PUBLIC_PLANS, CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
+import { supabase } from '@/lib/supabase';
 
 interface CheckoutPageProps {
   onNavigate: (page: string) => void;
@@ -14,12 +15,14 @@ type CheckoutState = 'idle' | 'processing' | 'initiated' | 'success' | 'failed' 
 
 export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
   const { t, lang } = useI18n();
-  const { isOwner, isUnlimited } = useAuth();
+  const { profile, isOwner, isUnlimited, refreshProfile } = useAuth();
   const [status, setStatus] = useState<CheckoutState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [item, setItem] = useState(checkoutItem || null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
+  const pendingEditorKey = 'designly_pending_editor_state';
+  const pendingReturnRef = window.localStorage.getItem(pendingEditorKey);
 
   // Check URL params for redirect status from payment link
   useEffect(() => {
@@ -31,6 +34,11 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     else if (urlStatus === 'success') setStatus('initiated'); // link success = user completed form, still needs server confirmation
     else if (urlStatus === 'failed') setStatus('failed');
     else if (urlStatus === 'cancelled') setStatus('cancelled');
+
+    const pendingRaw = window.localStorage.getItem(pendingEditorKey);
+    if (pendingRaw && (urlStatus === 'success' || urlStatus === 'initiated')) {
+      try { const pending = JSON.parse(pendingRaw); if (pending?.itemId) setItem({ type: 'credit_package', itemId: pending.itemId }); } catch {}
+    }
   }, []);
 
   // Poll payment status when initiated
@@ -41,11 +49,12 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     setPolling(false);
     if (result.success && result.status === 'succeeded') {
       setStatus('success');
+      await refreshProfile();
     } else if (result.success && result.status === 'failed') {
       setStatus('failed');
     }
     // pending stays in initiated state
-  }, [paymentId]);
+  }, [paymentId, refreshProfile]);
 
   useEffect(() => {
     if (status !== 'initiated' || !paymentId) return;
@@ -110,6 +119,15 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     );
   }
 
+  const returnToEditor = () => {
+    try {
+      const raw = window.localStorage.getItem(pendingEditorKey);
+      const pending = raw ? JSON.parse(raw) : null;
+      window.localStorage.removeItem(pendingEditorKey);
+      onNavigate('editor');
+    } catch { onNavigate('editor'); }
+  };
+
   if (status === 'success') {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
@@ -118,7 +136,10 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
         </div>
         <h2 className="text-2xl font-display font-bold text-cream-50 mb-3">{t('checkout.successTitle')}</h2>
         <p className="text-sm text-cream-300/60 mb-8">{t('checkout.successDesc')}</p>
-        <button onClick={() => onNavigate('dashboard')} className="btn-gold text-sm">
+        <button onClick={returnToEditor} className="btn-gold text-sm">
+          FOLYTATOM A SZERKESZTÉST
+        </button>
+        <button onClick={() => onNavigate('dashboard')} className="btn-ghost text-sm mt-3">
           {t('nav.dashboard')}
         </button>
       </div>
