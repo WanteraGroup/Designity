@@ -11,6 +11,26 @@ import { FreePreviewModal } from './FreePreviewModal';
 import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import type { BrandKit } from '@/types';
 
+
+function buildLocalAdvertisingPreview(brief: string, formatLabel: string, style: string): string {
+  const esc = (value: string) => value.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch] || ch));
+  const safeBrief = esc(brief.trim().slice(0, 180));
+  const safeFormat = esc(formatLabel);
+  const safeStyle = esc(style);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#080808"/><stop offset="0.55" stop-color="#17130a"/><stop offset="1" stop-color="#c89b3c"/></linearGradient></defs>
+    <rect width="1200" height="900" fill="#080808"/><rect x="42" y="42" width="1116" height="816" rx="34" fill="url(#g)" opacity=".92"/>
+    <circle cx="1030" cy="170" r="150" fill="#f3d37a" opacity=".12"/><circle cx="170" cy="760" r="190" fill="#fff" opacity=".05"/>
+    <text x="100" y="150" fill="#f5df9b" font-family="Georgia,serif" font-size="28" letter-spacing="7">DESIGNLY · FREE PREVIEW</text>
+    <text x="100" y="270" fill="#fff8e8" font-family="Georgia,serif" font-size="72" font-weight="700">AI AD CONCEPT</text>
+    <text x="100" y="335" fill="#e9d8ad" font-family="Arial,sans-serif" font-size="25">${safeFormat} · ${safeStyle}</text>
+    <foreignObject x="100" y="410" width="900" height="170"><div xmlns="http://www.w3.org/1999/xhtml" style="font: 34px Arial,sans-serif;color:#fff8e8;line-height:1.35">${safeBrief}</div></foreignObject>
+    <rect x="100" y="690" width="330" height="70" rx="35" fill="#e2bc63"/><text x="265" y="735" text-anchor="middle" fill="#111" font-family="Arial,sans-serif" font-size="22" font-weight="700">PREVIEW · 0 KREDIT</text>
+    <text x="100" y="815" fill="#fff" opacity=".48" font-family="Arial,sans-serif" font-size="18" letter-spacing="3">FINAL AI GENERATION AFTER APPROVAL</text>
+  </svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 interface AdvertisingStudioProps {
   onNavigate: (page: string) => void;
 }
@@ -70,7 +90,12 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     });
     setPreviewLoading(false);
     if (!result.success) {
-      setError(result.message || 'Az ingyenes előnézet nem készült el.');
+      // Keep the free preview usable when the preview Edge Function/provider
+      // is temporarily unavailable. This local concept costs 0 credits.
+      const formatLabel = AD_FORMATS.find((f) => f.id === selectedFormat)?.label || selectedFormat;
+      setPreviewImage(buildLocalAdvertisingPreview(brief, formatLabel || 'Ad', selectedStyle));
+      setPreviewId(null);
+      setError(result.message || 'Az AI előnézeti szolgáltatás jelenleg nem érhető el. Helyi, 0 kredites koncepció-előnézetet mutatunk.');
       return;
     }
     setPreviewImage(result.previewImageUrl || null);
@@ -376,14 +401,9 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
                 <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
               </div>
             </div>
-            {!hasEnoughCredits && (
-              <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{t('gen.insufficientCredits')}</span>
-              </div>
-            )}
+            {/* Credit balance does not block the free preview. It is checked only for final generation. */}
           </div>
-          {error && <div className="text-sm text-red-300 text-center">{error}</div>}
+          {error && <div className="text-sm text-amber-200/80 text-center">{error}</div>}
           <div className="flex justify-between items-center">
             <button onClick={() => setStep(3)} className="btn-ghost text-sm">{t('common.back')}</button>
             <button onClick={() => void buildPreview()} disabled={previewLoading || !brief.trim()} className="btn-gold text-sm disabled:opacity-40">
