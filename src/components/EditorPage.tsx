@@ -271,6 +271,10 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
         ? 'text-right items-end'
         : 'text-center items-center';
 
+  const businessPreview = buildSpec?.pages?.length || buildSpec?.sections?.length
+    ? buildBusinessPreviewSpec(buildSpec, projectName, design)
+    : null;
+
   return (
     <div className="flex flex-col h-[calc(100vh-0px)] -mt-6 -mx-5 lg:-mx-8 bg-ink-950">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gold-600/10 bg-ink-900/90 backdrop-blur-xl gap-3">
@@ -379,80 +383,17 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
         </div>
 
         <div className="flex-1 overflow-auto bg-ink-950 flex justify-center p-4 lg:p-8">
-          <div
-            className="rounded-xl border border-ink-600/40 shadow-2xl overflow-hidden transition-all duration-500"
-            style={{ width: deviceWidths[device], maxWidth: '100%' }}
-          >
-            <div
-              className={`min-h-[800px] p-8 ${atmosphereClass} relative overflow-hidden`}
-              style={{
-                color: design.text,
-                border: design.celticBorder ? `1px solid ${design.accent}66` : undefined,
-              }}
-            >
-              <div
-                className="absolute inset-0 pointer-events-none opacity-20"
-                style={{
-                  background:
-                    design.celticBorder
-                      ? `repeating-linear-gradient(45deg, transparent 0 18px, ${design.accent}22 18px 19px, transparent 19px 36px)`
-                      : undefined,
-                }}
-              />
-
-              <section className={`relative py-16 min-h-[420px] flex flex-col justify-center ${heroAlignClass} px-4`}>
-                <div
-                  className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
-                  style={{
-                    background: `linear-gradient(135deg,${design.accent},#fff1b8,${design.accent})`,
-                    boxShadow: `0 0 50px ${design.accent}33`,
-                  }}
-                >
-                  <span className="font-display font-bold text-ink-950 text-2xl">D</span>
-                </div>
-                <h2 className="text-3xl lg:text-5xl font-display font-bold mb-4 tracking-tight max-w-4xl">
-                  {design.heroTitle}
-                </h2>
-                <p className="text-sm lg:text-base max-w-2xl mb-7 leading-7 opacity-70">
-                  {design.heroDescription}
-                </p>
-                <button
-                  className="px-5 py-3 rounded-xl font-semibold text-sm transition-transform hover:-translate-y-0.5"
-                  style={{
-                    background: design.accent,
-                    color: '#08090b',
-                    boxShadow: `0 15px 35px ${design.accent}22`,
-                  }}
-                >
-                  {design.heroButton}
-                </button>
-              </section>
-
-              <section className="relative py-8">
-                <div
-                  className="grid gap-3"
-                  style={{ gridTemplateColumns: `repeat(${design.galleryColumns},minmax(0,1fr))` }}
-                >
-                  {galleryItems.map((item) => (
-                    <div
-                      key={item}
-                      className="aspect-square rounded-xl border border-white/8"
-                      style={{
-                        background: `linear-gradient(145deg,${design.surface},${design.accent}12)`,
-                      }}
-                    />
-                  ))}
-                </div>
-              </section>
-
-              <section className="relative mt-8 rounded-2xl border border-white/8 p-6" style={{ background: design.surface }}>
-                <div className="grid grid-cols-3 gap-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-20 rounded-lg border border-white/7 bg-black/10" />
-                  ))}
-                </div>
-              </section>
-            </div>
+          <div className="rounded-xl border border-ink-600/40 shadow-2xl overflow-hidden bg-black" style={{ width: deviceWidths[device], maxWidth: '100%' }}>
+            {businessPreview || (
+              <div className={`min-h-[800px] p-8 ${atmosphereClass}`}>
+                <section className={`py-16 min-h-[420px] flex flex-col justify-center ${heroAlignClass} px-4`}>
+                  <div className="w-16 h-16 rounded-full mb-6 flex items-center justify-center" style={{ background: `linear-gradient(135deg,${design.accent},#fff1b8,${design.accent})` }}><span className="font-display font-bold text-ink-950 text-2xl">D</span></div>
+                  <h2 className="text-3xl lg:text-5xl font-display font-bold mb-4">{design.heroTitle}</h2>
+                  <p className="text-sm max-w-2xl mb-7 opacity-70">{design.heroDescription}</p>
+                  <button className="px-5 py-3 rounded-xl font-semibold text-sm" style={{ background: design.accent, color: '#08090b' }}>{design.heroButton}</button>
+                </section>
+              </div>
+            )}
           </div>
         </div>
 
@@ -567,6 +508,39 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+
+function buildBusinessPreviewSpec(spec: any, projectName: string, design: DesignEditorState) {
+  const sections = Array.isArray(spec?.sections) ? spec.sections : [];
+  const content = Array.isArray(spec?.content) ? spec.content : [];
+  const text = [...sections, ...content].filter((v) => typeof v === 'string') as string[];
+  const joined = text.join(' · ');
+  const pick = (pattern: RegExp, fallback: string) => text.find((v) => pattern.test(v)) || fallback;
+  const cards = [
+    pick(/service|szolgált|solution|megold/i, 'Business Foundation'),
+    pick(/lead|marketing|sales|értékes/i, 'Lead Generation Systems'),
+    pick(/crm|automat|automation/i, 'Sales & CRM Automation'),
+    pick(/scale|növek|growth/i, 'Scale & Optimize'),
+  ];
+  return (
+    <div className="min-h-[1100px] bg-[#070707] text-[#f5f0e6]">
+      <header className="h-16 px-7 flex items-center justify-between border-b border-[#d6aa4a33] bg-black">
+        <div className="flex items-center gap-3"><div className="w-9 h-9 rounded-full border border-[#d6aa4a88] flex items-center justify-center text-[#d6aa4a]">ᛟ</div><div className="font-display tracking-[.18em] text-sm">{projectName.toUpperCase()}</div></div>
+        <nav className="hidden sm:flex gap-5 text-[10px] text-[#cfc7b5aa] uppercase"><span>Home</span><span>Services</span><span>Solutions</span><span>Pricing</span><span>About</span></nav>
+        <button className="px-3 py-2 rounded-md text-[10px] font-semibold bg-[#d6aa4a] text-black">GET STARTED</button>
+      </header>
+      <section className="relative px-8 py-20 min-h-[430px] flex items-center overflow-hidden" style={{ background:'radial-gradient(circle at 72% 35%,rgba(214,170,74,.25),transparent 28%),linear-gradient(120deg,#050505,#17130b,#050505)' }}>
+        <div className="absolute right-[8%] top-10 w-64 h-64 rounded-full border-[18px] border-[#d6aa4a55] flex items-center justify-center"><div className="w-40 h-40 rounded-full border border-[#d6aa4a99] flex items-center justify-center text-7xl text-[#d6aa4a]">ᛟ</div></div>
+        <div className="relative z-[1] max-w-xl"><div className="text-[10px] uppercase tracking-[.3em] text-[#d6aa4a] mb-4">AUTOMATE. BUILD. SCALE.</div><h1 className="text-4xl lg:text-6xl font-display font-bold leading-[.95] mb-5">{design.heroTitle || projectName}</h1><p className="text-sm leading-6 text-[#f5f0e699] max-w-lg mb-7">{design.heroDescription || 'Prémium, AI-alapú üzleti rendszer automatikus felépítéssel.'}</p><button className="px-6 py-3 rounded-md font-semibold text-xs bg-[#d6aa4a] text-black">{design.heroButton || 'EXPLORE SOLUTIONS →'}</button></div>
+      </section>
+      <section className="grid grid-cols-4 border-y border-[#d6aa4a33] bg-[#0b0b0b]">{['500+','98%','24/7','AI'].map((s)=><div key={s} className="py-5 text-center border-r border-[#d6aa4a22]"><div className="text-xl font-display text-[#d6aa4a]">{s}</div><div className="text-[9px] text-[#aaa38f88] mt-1">BUSINESS METRIC</div></div>)}</section>
+      <section className="px-7 py-12 border-b border-[#d6aa4a22]"><div className="text-center mb-7"><div className="text-[9px] uppercase tracking-[.25em] text-[#d6aa4a]">OUR SOLUTIONS</div><h2 className="text-2xl font-display font-bold mt-2">Everything You Need to Build, Automate & Scale</h2></div><div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{cards.map((card,i)=><div key={i} className="rounded-xl border border-[#d6aa4a33] bg-[#0d0d0d] p-4 min-h-[135px]"><div className="text-[#d6aa4a] text-xl mb-3">✦</div><div className="text-sm font-semibold mb-2">{card}</div><div className="text-[10px] leading-4 text-[#aaa38f88]">AI-powered business system with editable content.</div></div>)}</div></section>
+      <section className="grid lg:grid-cols-2 border-b border-[#d6aa4a22]"><div className="p-7"><div className="text-[9px] text-[#d6aa4a]">DASHBOARD</div><h2 className="text-2xl font-display font-bold mt-2 mb-5">Business Growth Overview</h2><div className="grid grid-cols-2 gap-3">{['Revenue','Active Leads','Deals Closed','Conversion'].map((x,i)=><div key={x} className="rounded-lg border border-white/10 bg-[#0d0d0d] p-4"><div className="text-[9px] text-[#aaa38f88]">{x}</div><div className="text-lg text-[#d6aa4a] mt-2">{['$245,750','1,250','320','25.6%'][i]}</div></div>)}</div><div className="mt-3 h-32 rounded-lg border border-white/10 bg-[#0d0d0d] p-4"><div className="text-[9px] text-[#aaa38f88]">REVENUE GROWTH</div><div className="mt-5 h-px bg-[#d6aa4a] rotate-[-4deg]" /></div></div><div className="p-7 bg-[#0a0a0a]"><div className="text-[9px] text-[#d6aa4a]">AI ASSISTANT</div><h2 className="text-2xl font-display font-bold mt-2 mb-4">Your 24/7 Growth Partner</h2><div className="rounded-xl border border-[#d6aa4a33] p-5 bg-black/40"><div className="text-xs text-[#d6aa4a] mb-3">DESIGNLY AI</div><p className="text-xs text-[#f5f0e688] leading-5">AI asszisztens a látogatók és az üzlet támogatására.</p><div className="mt-4 space-y-2"><div className="rounded-md border border-white/10 px-3 py-2 text-[10px]">Hogyan szerezhetek több ügyfelet?</div><div className="rounded-md border border-white/10 px-3 py-2 text-[10px]">Mutasd az üzleti teljesítményt</div></div></div></div></section>
+      <section className="px-7 py-12"><div className="text-[9px] text-[#d6aa4a]">PRICING PLANS</div><h2 className="text-2xl font-display font-bold mt-2 mb-6">Simple, Transparent Pricing</h2><div className="grid md:grid-cols-3 gap-3">{['Starter','Professional','Enterprise'].map((p,i)=><div key={p} className={`rounded-xl border ${i===1?'border-[#d6aa4a]':'border-[#d6aa4a33]'} bg-[#0d0d0d] p-5`}><div className="text-xs text-[#aaa38f99]">{p}</div><div className="text-2xl text-[#d6aa4a] font-display mt-2">{['$497','$997','$2,497'][i]}</div><div className="text-[10px] text-[#aaa38f88] mt-3">Szerkeszthető árhelyőrző</div><button className="mt-5 w-full py-2 rounded-md text-[10px] bg-[#d6aa4a] text-black">GET STARTED</button></div>)}</div></section>
+      <section className="px-7 py-10 border-t border-[#d6aa4a22] flex items-center justify-between gap-5"><div><div className="text-xl font-display font-bold">Ready to Build Your Automatic Business?</div><div className="text-[10px] text-[#aaa38f88] mt-1">{joined.slice(0,160)}</div></div><button className="px-5 py-3 rounded-md text-xs font-semibold bg-[#d6aa4a] text-black">START BUILDING →</button></section>
     </div>
   );
 }
