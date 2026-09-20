@@ -30,6 +30,7 @@ import { CreatorMerchPage } from '@/components/CreatorMerchPage';
 import { StreamerStudioPage } from '@/components/StreamerStudioPage';
 import { ShopifyStudioPage } from '@/components/ShopifyStudioPage';
 import { DesignPlannerPage } from '@/components/DesignPlannerPage';
+import { CncCamPage } from '@/components/CncCamPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
@@ -37,14 +38,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify',
+  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify', 'cnc',
 ];
 
 function pageFromHash(): Page {
@@ -182,6 +183,7 @@ function AppInner() {
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
       case 'shopify': return <ShopifyStudioPage onNavigate={navigate} />;
+      case 'cnc': return <CncCamPage />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
