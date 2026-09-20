@@ -25,19 +25,20 @@ import { VoiceAgentPage } from '@/components/VoiceAgentPage';
 import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
 import { CreatorMerchPage } from '@/components/CreatorMerchPage';
 import { StreamerStudioPage } from '@/components/StreamerStudioPage';
+import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
-  | 'templates' | 'assets' | 'credits' | 'billing'
+  | 'templates' | 'tattoo' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
-  'templates', 'assets', 'credits', 'billing',
+  'templates', 'tattoo', 'assets', 'credits', 'billing',
   'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer',
 ];
 
@@ -161,6 +162,7 @@ function AppInner() {
       case 'projects': return <ProjectsPage onNavigate={navigate} />;
       case 'brands': return <BrandsPage onNavigate={navigate} />;
       case 'templates': return <TemplatesPage onNavigate={navigate} />;
+      case 'tattoo': return <TattooLibraryPage onNavigate={navigate} />;
       case 'assets': return <AssetsPage onNavigate={navigate} />;
       case 'credits': return <CreditsPage onNavigate={navigate} />;
       case 'billing': return <BillingPage onNavigate={navigate} />;
