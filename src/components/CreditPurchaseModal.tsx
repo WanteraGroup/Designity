@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CreditCard, X, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
+import { createCheckout, getPaymentStatus } from '@/lib/ai';
 
 interface CreditPurchaseModalProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface CreditPurchaseModalProps {
   ) => void;
   currentCredits?: number | null;
   reason?: string;
+  onCreditsUpdated?: () => Promise<void> | void;
 }
 
 export function CreditPurchaseModal({
@@ -20,16 +22,56 @@ export function CreditPurchaseModal({
   onNavigate,
   currentCredits,
   reason = 'A művelethez további kredit szükséges.',
+  onCreditsUpdated,
 }: CreditPurchaseModalProps) {
   const { lang } = useI18n();
   const [minCredits, setMinCredits] = useState(100);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [paymentState, setPaymentState] = useState<'idle' | 'opening' | 'waiting' | 'success' | 'failed'>('idle');
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   if (!open) return null;
 
-  const goCheckout = (itemId: string) => {
-    onClose();
-    onNavigate('checkout', { type: 'credit_package', itemId });
+  const startCheckout = async (itemId: string) => {
+    setPaymentError(null);
+    setPaymentState('opening');
+    const popup = window.open('about:blank', '_blank');
+    const result = await createCheckout({ itemType: 'credit_package', itemId });
+    if (!result.success || !result.checkoutUrl) {
+      popup?.close();
+      setPaymentState('failed');
+      setPaymentError(result.message || 'Az online fizetés indítása nem sikerült.');
+      return;
+    }
+    if (popup) {
+      popup.opener = null;
+      popup.location.href = result.checkoutUrl;
+    } else {
+      window.location.href = result.checkoutUrl;
+      return;
+    }
+    setPaymentId(result.paymentId || null);
+    setPaymentState(result.paymentId ? 'waiting' : 'idle');
   };
+
+  useEffect(() => {
+    if (!open || !paymentId || paymentState !== 'waiting') return;
+    let active = true;
+    const check = async () => {
+      const result = await getPaymentStatus(paymentId);
+      if (!active) return;
+      if (result.success && result.status === 'succeeded') {
+        setPaymentState('success');
+        await onCreditsUpdated?.();
+      } else if (result.success && result.status === 'failed') {
+        setPaymentState('failed');
+        setPaymentError('A fizetés nem teljesült.');
+      }
+    };
+    void check();
+    const timer = window.setInterval(() => { void check(); }, 5000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [open, paymentId, paymentState, onCreditsUpdated]);
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -49,17 +91,34 @@ export function CreditPurchaseModal({
             <div className="mt-3 text-xs text-cream-400/50">Jelenlegi egyenleg: {currentCredits == null ? '—' : currentCredits}</div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-7">
+          {paymentState === 'success' && (
+            <div className="mt-6 rounded-xl border border-emerald-400/25 bg-emerald-400/10 p-4 text-center">
+              <div className="text-sm font-semibold text-emerald-200">Kredit jóváírva</div>
+              <div className="mt-1 text-xs text-emerald-200/70">A vásárlás ellenőrzése sikeres. Folytathatod a megkezdett munkát.</div>
+              <button type="button" onClick={onClose} className="btn-gold text-sm mt-4">FOLYTATOM A SZERKESZTÉST</button>
+            </div>
+          )}
+          {paymentState !== 'success' && paymentState === 'waiting' && (
+            <div className="mt-6 rounded-xl border border-gold-500/20 bg-gold-500/5 p-4 text-center">
+              <div className="text-sm font-semibold text-gold-100">Fizetés folyamatban</div>
+              <div className="mt-1 text-xs text-cream-300/55">A fizetési oldal új lapon megnyílt. Ez az ablak automatikusan ellenőrzi a jóváírást.</div>
+            </div>
+          )}
+          {paymentState === 'failed' && paymentError && (
+            <div className="mt-6 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-200">{paymentError}</div>
+          )}
+
+          {paymentState !== 'success' && <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-7">
             {CREDIT_PACKAGES.map((pkg) => (
-              <button key={pkg.id} type="button" onClick={() => goCheckout(pkg.id)} className="rounded-xl border border-gold-600/15 bg-ink-900/70 p-4 text-left hover:border-gold-500/45 hover:bg-gold-500/5 transition-all">
+              <button key={pkg.id} type="button" onClick={() => void startCheckout(pkg.id)} className="rounded-xl border border-gold-600/15 bg-ink-900/70 p-4 text-left hover:border-gold-500/45 hover:bg-gold-500/5 transition-all">
                 <div className="text-xl font-display font-bold gold-text">{pkg.credits.toLocaleString('hu-HU')}</div>
                 <div className="text-[10px] uppercase tracking-wider text-cream-400/50 mt-1">kredit</div>
                 <div className="text-sm text-cream-100 mt-3">{formatPrice(pkg.price, lang)}</div>
               </button>
             ))}
-          </div>
+          </div>}
 
-          <div className="mt-5 rounded-xl border border-gold-600/15 bg-ink-900/60 p-5">
+          {paymentState !== 'success' && <div className="mt-5 rounded-xl border border-gold-600/15 bg-ink-900/60 p-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <div className="text-sm font-semibold text-cream-100">Egyedi kreditmennyiség</div>
@@ -76,7 +135,7 @@ export function CreditPurchaseModal({
                   className="input-lux w-36"
                   aria-label="Egyedi kreditmennyiség"
                 />
-                <button type="button" onClick={() => goCheckout('custom_' + minCredits)} className="btn-gold text-sm whitespace-nowrap">
+                <button type="button" onClick={() => void startCheckout('custom_' + minCredits)} className="btn-gold text-sm whitespace-nowrap">
                   <Sparkles className="w-4 h-4" />
                   Vásárlás · {formatPrice(getCustomCreditPrice(minCredits), lang)}
                 </button>
