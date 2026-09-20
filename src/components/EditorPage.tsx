@@ -13,6 +13,8 @@ import {
   Mic,
   Send,
   Check,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
@@ -76,6 +78,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [projectLoading, setProjectLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<string>('MENTVE');
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [focusPreview, setFocusPreview] = useState(false);
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
@@ -526,6 +529,13 @@ ${script}
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             GROQ AI
           </div>
+          <button
+            onClick={() => setFocusPreview((value) => !value)}
+            className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-lg border border-gold-600/20 bg-ink-800/50 text-[10px] uppercase tracking-wider text-gold-200 hover:bg-gold-600/10"
+          >
+            {focusPreview ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {focusPreview ? 'Szerkesztő vissza' : 'Nagy előnézet'}
+          </button>
         </div>
 
         <div className="flex items-center gap-1 p-1 rounded-lg bg-ink-800/50 border border-ink-600/40">
@@ -586,7 +596,7 @@ ${script}
 </div>
 
 <div className="flex flex-1 overflow-hidden">
-        <div className="hidden md:flex w-56 flex-col border-r border-gold-600/10 bg-ink-900/50 overflow-y-auto">
+        {!focusPreview && <div className="hidden md:flex w-48 xl:w-56 flex-col border-r border-gold-600/10 bg-ink-900/50 overflow-y-auto">
           <div className="p-3">
             <div className="text-xs text-cream-300/40 uppercase tracking-wider mb-3 px-2">
               {t('editor.sections')}
@@ -625,10 +635,17 @@ ${script}
             <div className="text-xs text-gold-200 mt-1">Groq · GPT-OSS 120B</div>
             <div className="text-[10px] text-cream-300/30 mt-1">Structured safe edits</div>
           </div>
-        </div>
+        </div>}
 
-        <div className="flex-1 overflow-auto bg-ink-950 flex justify-center p-4 lg:p-8">
-          <div className="rounded-xl border border-ink-600/40 shadow-2xl overflow-hidden bg-black" style={{ width: deviceWidths[device], maxWidth: '100%' }}>
+        <div className="flex-1 min-w-0 overflow-auto bg-ink-950 flex justify-center p-2 sm:p-4 lg:p-6 xl:p-8">
+          <div
+            className="rounded-xl border border-gold-600/20 shadow-2xl overflow-hidden bg-black transition-all duration-300"
+            style={{
+              width: deviceWidths[device],
+              maxWidth: '100%',
+              minHeight: focusPreview ? 'calc(100vh - 150px)' : 'calc(100vh - 220px)',
+            }}
+          >
             {businessPreview || (
               <div className={`min-h-[800px] p-8 ${atmosphereClass}`}>
                 <section className={`py-16 min-h-[420px] flex flex-col justify-center ${heroAlignClass} px-4`}>
@@ -642,7 +659,7 @@ ${script}
           </div>
         </div>
 
-        <div className="hidden lg:flex w-80 flex-col border-l border-gold-600/10 bg-ink-900/60">
+        {!focusPreview && <div className="hidden lg:flex w-72 xl:w-80 flex-col border-l border-gold-600/10 bg-ink-900/60">
           <div className="p-4 border-b border-gold-600/10">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
