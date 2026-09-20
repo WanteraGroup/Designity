@@ -66,7 +66,7 @@ const GROUPS = ['All','Stream Screens','Overlays','Alerts','Panels','Branding','
 const PLATFORMS = ['All','Twitch','YouTube','TikTok','Kick','OBS','Streamlabs','Discord'];
 
 export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) => void }) {
-  const { profile, isOwner } = useAuth();
+  const { profile, isOwner, refreshProfile } = useAuth();
   const [group, setGroup] = useState('All');
   const [platform, setPlatform] = useState('All');
   const [assetId, setAssetId] = useState('full-overlay');
