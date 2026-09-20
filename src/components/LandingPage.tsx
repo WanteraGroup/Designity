@@ -32,45 +32,45 @@ function Raven({ flip = false }: { flip?: boolean }) {
         </linearGradient>
       </defs>
 
-      <!-- Tail and rear body -->
+      {/* Tail and rear body */}
       <path d="M82 112C57 125 31 139 5 153c34 3 65-3 91-18Z"
         fill="#050607" stroke={`url(#ravenMetal${uid})`} strokeWidth="2.2" />
       <path d="M92 109C65 119 43 133 20 151"
         fill="none" stroke="#4b4f51" strokeOpacity=".35" strokeWidth="2" />
 
-      <!-- Body -->
+      {/* Body */}
       <path d="M61 87C66 58 98 42 133 50c27 6 48 28 46 55-2 27-28 40-61 38-35-2-62-24-57-56Z"
         fill={`url(#ravenFeather${uid})`} stroke={`url(#ravenMetal${uid})`} strokeWidth="2.4" />
 
-      <!-- Folded wing with feather structure -->
+      {/* Folded wing with feather structure */}
       <path d="M72 79C92 59 126 58 154 75c-8 28-29 48-59 52-18-7-29-24-23-48Z"
         fill="#0a0c0d" stroke="#7e632b" strokeOpacity=".75" strokeWidth="1.6" />
       <path d="M82 82c19 4 39 17 55 36M92 72c19 8 37 22 48 38M104 68c18 9 31 21 40 34"
         fill="none" stroke="#5f4b25" strokeOpacity=".55" strokeWidth="1.8" strokeLinecap="round" />
 
-      <!-- Neck -->
+      {/* Neck */}
       <path d="M128 68C120 51 127 28 146 20c18-7 35 2 42 16 7 15 0 29-15 36-12 6-27 5-45-4Z"
         fill="#07090a" stroke={`url(#ravenMetal${uid})`} strokeWidth="2.3" />
 
-      <!-- Head -->
+      {/* Head */}
       <path d="M143 23C150 9 168 5 184 11c12 4 21 13 23 24 2 12-4 22-14 28-12 7-29 5-39-5-9-9-14-22-11-35Z"
         fill="#080a0b" stroke={`url(#ravenMetal${uid})`} strokeWidth="2.4" />
 
-      <!-- Beak -->
+      {/* Beak */}
       <path d="M198 31 237 43 198 54c6-8 6-15 0-23Z"
         fill="#15110a" stroke="#c69b3b" strokeWidth="2" />
       <path d="M204 43h28" stroke="#f0d37e" strokeOpacity=".35" strokeWidth="1" />
 
-      <!-- Eye -->
+      {/* Eye */}
       <circle cx="184" cy="30" r="7" fill="#020303" stroke="#d6af52" strokeWidth="1.7" />
       <circle cx="184" cy="30" r="2.6" fill="#ffe39a" />
       <circle cx="185" cy="29" r="1" fill="#fff7dc" />
 
-      <!-- Crown / neck feather accents -->
+      {/* Crown / neck feather accents */}
       <path d="M153 14l-5-10 12 7 3-11 6 12 9-8-1 12"
         fill="none" stroke="#9e7930" strokeOpacity=".8" strokeWidth="1.5" strokeLinecap="round" />
 
-      <!-- Lower feather sheen -->
+      {/* Lower feather sheen */}
       <path d="M76 112c25 16 55 19 80 8"
         fill="none" stroke="#2d3032" strokeWidth="5" strokeLinecap="round" opacity=".55" />
     </svg>
