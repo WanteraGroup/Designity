@@ -19,6 +19,12 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
   const { profile, isOwner, isUnlimited } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clientModal, setClientModal] = useState(false);
+  const [clientName, setClientName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [goal, setGoal] = useState('');
+  const [packageName, setPackageName] = useState('Prémium weboldal');
 
   useEffect(() => {
     async function loadProjects() {
@@ -102,15 +108,51 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
             <h2 className="text-2xl lg:text-3xl font-display font-bold text-cream-50">Ötletből kész projekt.</h2>
             <p className="text-sm text-cream-300/60 mt-2 max-w-2xl">A DESIGNLY létrehozza a projekt alapját, az AI ügynökök pedig a briefből felépítik a struktúrát, tartalmat és vizuális irányt. VYRON riportból is közvetlenül indítható.</p>
           </div>
-          <button onClick={() => {
-            localStorage.setItem('designly_auto_build', JSON.stringify({
-              type: 'website',
-              brief: 'AUTOMATIC BUSINESS BUILD: Create a complete production-oriented responsive business website/app from the user\'s next idea. Include a premium hero, clear value proposition, services/products, pricing, CTA, contact flow, mobile navigation, AI assistant concept, admin/dashboard structure, customer/order flow where relevant, and a coherent brand system. Make all unsupported business details editable placeholders. Use DESIGNLY\'s premium black, gold, metallic and Celtic visual language.'
-            }));
-            onNavigate('create');
-          }} className="btn-gold text-sm shrink-0">◆ AUTOMATIC BUILD INDÍTÁSA</button>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <button onClick={() => {
+              localStorage.setItem('designly_auto_build', JSON.stringify({
+                type: 'website',
+                brief: 'AUTOMATIC BUSINESS BUILD: Create a complete production-oriented responsive business website/app from the user\'s next idea. Include a premium hero, clear value proposition, services/products, pricing, CTA, contact flow, mobile navigation, AI assistant concept, admin/dashboard structure, customer/order flow where relevant, and a coherent brand system. Make all unsupported business details editable placeholders. Use DESIGNLY\'s premium black, gold, metallic and Celtic visual language.'
+              }));
+              onNavigate('create');
+            }} className="btn-gold text-sm">◆ AUTOMATIC BUILD</button>
+            <button onClick={() => setClientModal(true)} className="px-4 py-2 rounded-lg border border-gold-500/30 text-gold-200 text-sm hover:bg-gold-500/10 transition-all">
+              ÜGYFÉLPROJEKT
+            </button>
+          </div>
         </div>
       </section>
+
+      {clientModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-xl rounded-2xl border border-gold-500/25 bg-[#0b0b0b] shadow-2xl p-6">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div><div className="text-[10px] uppercase tracking-[.25em] text-gold-300">DESIGNLY CLIENT BUILDER</div><h3 className="text-2xl font-display font-bold text-cream-50 mt-1">Új ügyfélprojekt</h3><p className="text-xs text-cream-300/50 mt-1">Add meg az alapadatokat. A DESIGNLY AI a többit felépíti.</p></div>
+              <button onClick={() => setClientModal(false)} className="text-cream-300/50 hover:text-cream-50 text-xl">×</button>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <input value={clientName} onChange={e=>setClientName(e.target.value)} className="input-lux" placeholder="Ügyfél neve" />
+              <input value={companyName} onChange={e=>setCompanyName(e.target.value)} className="input-lux" placeholder="Cégnév" />
+              <input value={industry} onChange={e=>setIndustry(e.target.value)} className="input-lux" placeholder="Iparág / tevékenység" />
+              <select value={packageName} onChange={e=>setPackageName(e.target.value)} className="input-lux"><option>Bemutatkozó weboldal</option><option>Prémium weboldal</option><option>Webshop</option><option>AI üzleti rendszer</option></select>
+              <textarea value={goal} onChange={e=>setGoal(e.target.value)} className="input-lux sm:col-span-2 resize-none" rows={4} placeholder="Mit szeretne az ügyfél? Pl. több érdeklődő, online foglalás, értékesítés, márkaépítés…" />
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <button onClick={() => setClientModal(false)} className="btn-ghost text-sm">Mégse</button>
+              <button
+                disabled={!companyName.trim() || !industry.trim() || !goal.trim()}
+                onClick={() => {
+                  const brief = `ÜGYFÉLPROJEKT — ${companyName.trim()} — ${industry.trim()}. Ügyfél kapcsolattartó: ${clientName.trim() || 'nincs megadva'}. Cél: ${goal.trim()}. Megrendelt csomag: ${packageName}. Build a complete production-oriented responsive business website/app. Include premium hero, value proposition, services/products, pricing, CTA, contact flow, mobile navigation, AI assistant concept, admin/dashboard structure, customer/order flow where relevant, coherent brand system, editable placeholders for unknown details. Use DESIGNLY premium black, gold, metallic and Celtic visual language. Treat all client-specific details as editable content.`;
+                  localStorage.setItem('designly_auto_build', JSON.stringify({ type:'website', brief }));
+                  setClientModal(false);
+                  onNavigate('create');
+                }}
+                className="btn-gold text-sm disabled:opacity-40"
+              >AI ÜGYFÉLPROJEKT INDÍTÁSA →</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick create */}
       <div>
