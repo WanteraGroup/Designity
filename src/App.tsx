@@ -25,6 +25,7 @@ import { HuginnAgent } from '@/components/HuginnAgent';
 import { AgentHubPage } from '@/components/AgentHubPage';
 import { VoiceAgentPage } from '@/components/VoiceAgentPage';
 import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
+import { AppErrorBoundary } from '@/components/AppErrorBoundary';
 import { CreatorMerchPage } from '@/components/CreatorMerchPage';
 import { StreamerStudioPage } from '@/components/StreamerStudioPage';
 import { DesignPlannerPage } from '@/components/DesignPlannerPage';
@@ -238,10 +239,12 @@ function AppInner() {
 
 export default function App() {
   return (
-    <I18nProvider>
-      <AuthProvider>
-        <AppInner />
-      </AuthProvider>
-    </I18nProvider>
+    <AppErrorBoundary>
+      <I18nProvider>
+        <AuthProvider>
+          <AppInner />
+        </AuthProvider>
+      </I18nProvider>
+    </AppErrorBoundary>
   );
 }
