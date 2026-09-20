@@ -101,7 +101,7 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
         <div className="relative grid lg:grid-cols-[1.2fr_.8fr] gap-8 items-center">
           <div>
             <div className="flex items-center gap-2 text-gold-300 text-[10px] uppercase tracking-[.28em]">
-              <Tattoo className="w-4 h-4" />
+              <PenTool className="w-4 h-4" />
               DESIGNLY TATTOO LIBRARY
             </div>
             <h1 className="mt-3 text-3xl lg:text-5xl font-display font-semibold text-cream-50">
