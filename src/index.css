@@ -2198,8 +2198,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 }
 
 .dl-home-crest {
-  width:108px;
-  height:108px;
+  width:180px;
+  height:180px;
   margin:0 auto 12px;
   display:grid;
   place-items:center;
@@ -2823,6 +2823,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media (max-width:560px) {
   .dl-home-hero{min-height:760px;height:820px}
   .dl-home-hero-center{width:92vw;margin-top:10px}
+  .dl-home-crest{width:136px;height:136px}
   .dl-home-hero h1{font-size:3.3rem}
   .dl-home-tagline{letter-spacing:.28em;font-size:9px}
   .dl-home-hero-center p{font-size:11px}
