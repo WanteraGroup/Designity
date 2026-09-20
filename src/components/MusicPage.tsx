@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3, Wand2, RefreshCw } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { FreePreviewModal } from './FreePreviewModal';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
@@ -23,6 +25,9 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string; created_at: string }>>([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewBrief, setPreviewBrief] = useState<string | null>(null);
   const cost = useMemo(() => Math.ceil(duration / 60) * 100, [duration]);
 
   const generateLyricsLocally = () => {
@@ -104,6 +109,43 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       });
     return () => { active = false; };
   }, [user?.id]);
+
+  const buildMusicPreview = async () => {
+    if (!user) { onNavigate('login'); return; }
+    if (!lyrics.trim()) { setError('Írd be a dalszöveget.'); return; }
+    if (previewLoading || loading) return;
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewBrief(null);
+    const result = await runDesignlyMasterAgent({
+      brief: [
+        'DESIGNLY AI MUSIC PREVIEW',
+        'Create a production concept preview for the song below.',
+        'TITLE: ' + title,
+        'GENRE: ' + genre,
+        'MOOD: ' + mood,
+        'VOCAL: ' + vocal,
+        'DURATION: ' + duration + ' seconds',
+        'LYRICS: ' + lyrics,
+        'Return a concise creative direction for arrangement, instrumentation, vocal character and structure.'
+      ].join('\n'),
+      language: 'hu',
+      mode: 'preview',
+      requestedOutputs: ['custom'],
+    });
+    setPreviewLoading(false);
+    if (!result.success || !result.designBrief) {
+      setError(result.message || 'A zenei előnézet nem készült el.');
+      return;
+    }
+    const direction = [
+      result.designBrief.visualStyle ? 'Hangzás: ' + result.designBrief.visualStyle : '',
+      result.designBrief.mood ? 'Hangulat: ' + result.designBrief.mood : '',
+      result.designBrief.imageryDirection ? 'Koncepció: ' + result.designBrief.imageryDirection : '',
+      'Szerkezet: intro → verze → refrén → bridge → befejezés',
+    ].filter(Boolean).join(' · ');
+    setPreviewBrief(direction || 'Kész zenei koncepció előnézet.');
+  };
 
   const generate = async () => {
     if (!user) { onNavigate('login'); return; }
@@ -205,11 +247,23 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
         <div><label className="text-sm text-cream-200">Hangulat</label><input value={mood} onChange={e => setMood(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Énekhang</label><input value={vocal} onChange={e => setVocal(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Hossz</label><div className="grid grid-cols-5 gap-2 mt-2">{DURATIONS.map(d => <button key={d} onClick={() => setDuration(d)} className={'rounded-lg py-2 text-xs border transition ' + (duration === d ? 'border-gold-500/50 bg-gold-600/15 text-gold-200' : 'border-gold-600/10 text-cream-400/70 hover:border-gold-600/30')}>{d / 60}p</button>)}</div></div>
-        <button onClick={generate} disabled={loading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'DAL GENERÁLÁSA · ' + cost + ' KREDIT'}</button>
+        <button onClick={() => void buildMusicPreview()} disabled={loading || previewLoading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'DAL GENERÁLÁSA · ' + cost + ' KREDIT'}</button>
         {error && <div className="rounded-xl border border-red-500/20 bg-red-500/5 text-red-200 text-sm p-3">{error}</div>}
       </section>
     </div>
     {audioUrl && <section className="card-premium p-5 lg:p-7"><div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.2em] text-gold-300">Elkészült mű</div><h2 className="font-display text-2xl text-cream-100 mt-1">{title}</h2></div><div className="flex flex-wrap gap-2"><button onClick={togglePlay} className="btn-gold flex items-center gap-2">{playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />} Lejátszás</button><a href={audioUrl} download target="_blank" rel="noreferrer" className="btn-ghost flex items-center gap-2"><Download className="w-4 h-4" /> WAV letöltése</a><button onClick={() => sendEmail()} className="btn-ghost flex items-center gap-2"><Mail className="w-4 h-4" /> Küldés e-mailben</button></div></div><div className="mt-5 rounded-xl border border-gold-600/10 bg-ink-950/70 p-4"><audio id="designly-audio" src={audioUrl} controls className="w-full music-audio" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} /></div><div className="mt-3 flex items-center gap-2 text-xs text-cream-500/60"><Clock3 className="w-3.5 h-3.5" /> A dal a DESIGNLY kredit-egyenlegből készült.</div></section>}
+    <FreePreviewModal
+      open={previewOpen}
+      title={title + ' · Zenei előnézet'}
+      imageUrl={null}
+      loading={previewLoading}
+      cost={cost}
+      balance={profile?.credits}
+      onClose={() => setPreviewOpen(false)}
+      onApprove={() => { setPreviewOpen(false); void generate(); }}
+      onModify={() => { setPreviewOpen(false); setPreviewBrief(null); }}
+      onBuyCredits={() => setShowCreditModal(true)}
+    />
     <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A zene generálásához szükséges kredit nincs teljes egészében az egyenlegeden." />
     {library.length > 0 && <section className="card-premium p-5 lg:p-7">
       <div className="flex items-center gap-2 mb-5">
