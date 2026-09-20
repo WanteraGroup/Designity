@@ -145,11 +145,12 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     try {
       const raw = localStorage.getItem('designly_auto_build');
       if (!raw) return;
-      const build = JSON.parse(raw) as { type?: ProjectType; brief?: string };
+      const build = JSON.parse(raw) as { type?: ProjectType; brief?: string; projectName?: string; clientName?: string; companyName?: string; packageName?: string };
       localStorage.removeItem('designly_auto_build');
       if (build.type && build.brief) {
         setSelectedType(build.type);
         setBrief(build.brief);
+        if (build.projectName) setProjectName(build.projectName);
         setStep(2);
         setAutoBuildMode(true);
         setAutoBuildStatus('AI BUSINESS BUILDER: előkészítés…');
