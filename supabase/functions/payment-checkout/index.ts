@@ -285,6 +285,7 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
     let amount = 0;
     let currency = "HUF";
     let description = "";
+    let creditAmount: number | null = null;
 
     if (itemType === "subscription") {
       const { data: plan } = await supabase
@@ -301,6 +302,7 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
       description = `Subscription: ${plan.name}`;
     } else if (itemType === "credit_package") {
       if (customCreditCount !== null) {
+        creditAmount = customCreditCount;
         amount = customCreditPrice(customCreditCount);
         description = `Custom credit package: ${customCreditCount} credits`;
       } else {
@@ -314,6 +316,7 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
             status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
+        creditAmount = pkg.credits;
         amount = pkg.price;
         description = `Credit package: ${pkg.label}`;
       }
