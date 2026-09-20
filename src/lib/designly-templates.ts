@@ -72,6 +72,48 @@ export const DESIGNLY_PALETTES = [
   ['#4c1d95','#6d28d9','#f5f3ff'], ['#7c2d12','#9a3412','#fff7ed'],
 ];
 
+
+export interface DesignlyMaterial {
+  id: string;
+  name: string;
+  category: 'Metal' | 'Wood' | 'Stone' | 'Glass' | 'Leather' | 'Fabric' | 'Paper' | 'Concrete' | 'Carbon' | 'Ceramic' | 'Liquid' | 'Nature' | 'Special';
+  colors: string[];
+  finish: string;
+  texture: string;
+  css: string;
+  textCompatible: boolean;
+  surfaceCompatible: boolean;
+}
+
+export const DESIGNLY_MATERIAL_LIBRARY: DesignlyMaterial[] = [
+  { id:'metal-gold', name:'Arany fém', category:'Metal', colors:['#6f4d16','#c9a45c','#f7e7ad'], finish:'polished', texture:'brushed-metal', css:'linear-gradient(135deg,#5b3d0d,#c9a45c 45%,#fff0ad 58%,#8a641d)', textCompatible:true, surfaceCompatible:true },
+  { id:'metal-silver', name:'Ezüst / króm', category:'Metal', colors:['#565b61','#cfd4d8','#ffffff'], finish:'chrome', texture:'chrome', css:'linear-gradient(110deg,#4a4f55,#ffffff 42%,#9aa1a8 58%,#f7f7f7)', textCompatible:true, surfaceCompatible:true },
+  { id:'metal-copper', name:'Réz', category:'Metal', colors:['#6e2f18','#b87333','#f2b07b'], finish:'satin', texture:'copper', css:'linear-gradient(135deg,#572311,#b87333,#ffd0a8,#7a351b)', textCompatible:true, surfaceCompatible:true },
+  { id:'metal-black', name:'Fekete fém', category:'Metal', colors:['#050505','#242424','#737373'], finish:'matte', texture:'black-metal', css:'linear-gradient(135deg,#050505,#3b3b3b,#0b0b0b)', textCompatible:true, surfaceCompatible:true },
+  { id:'wood-oak', name:'Tölgyfa', category:'Wood', colors:['#6b3e1e','#b9783b','#e1b77b'], finish:'natural', texture:'oak-grain', css:'linear-gradient(90deg,#6b3e1e,#b9783b,#7d481f,#d6a66d)', textCompatible:true, surfaceCompatible:true },
+  { id:'wood-walnut', name:'Diófa', category:'Wood', colors:['#24140c','#60351d','#a56b3f'], finish:'polished', texture:'walnut-grain', css:'linear-gradient(90deg,#24140c,#6b3b20,#3a1d11,#9a6238)', textCompatible:true, surfaceCompatible:true },
+  { id:'wood-black', name:'Fekete fa', category:'Wood', colors:['#090705','#241c17','#4a372b'], finish:'charred', texture:'charred-wood', css:'linear-gradient(90deg,#090705,#3a2b21,#110d0a)', textCompatible:true, surfaceCompatible:true },
+  { id:'stone-marble', name:'Márvány', category:'Stone', colors:['#e8e4dc','#a9a39a','#34312d'], finish:'polished', texture:'marble-vein', css:'linear-gradient(135deg,#f2eee6,#c9c2b7 45%,#eee8dc 58%,#aaa39a)', textCompatible:true, surfaceCompatible:true },
+  { id:'stone-granite', name:'Gránit', category:'Stone', colors:['#171717','#555555','#a7a7a7'], finish:'polished', texture:'granite', css:'radial-gradient(circle,#777 0 1px,transparent 1px),linear-gradient(135deg,#111,#555,#222)', textCompatible:true, surfaceCompatible:true },
+  { id:'stone-slate', name:'Palakő', category:'Stone', colors:['#171b1e','#3c454a','#788188'], finish:'split', texture:'slate', css:'linear-gradient(135deg,#11171a,#455057,#171b1e)', textCompatible:true, surfaceCompatible:true },
+  { id:'glass-clear', name:'Átlátszó üveg', category:'Glass', colors:['#dff8ff','#8dd8e8','#ffffff'], finish:'clear', texture:'glass', css:'linear-gradient(135deg,rgba(255,255,255,.25),rgba(90,210,240,.12),rgba(255,255,255,.32))', textCompatible:true, surfaceCompatible:true },
+  { id:'glass-smoked', name:'Füstüveg', category:'Glass', colors:['#11161a','#4d5960','#b7c2c7'], finish:'smoked', texture:'smoked-glass', css:'linear-gradient(135deg,rgba(10,15,18,.92),rgba(100,120,130,.38),rgba(255,255,255,.12))', textCompatible:true, surfaceCompatible:true },
+  { id:'leather-black', name:'Fekete bőr', category:'Leather', colors:['#050505','#171717','#3c3029'], finish:'matte', texture:'leather-grain', css:'linear-gradient(135deg,#050505,#211a16,#080808)', textCompatible:true, surfaceCompatible:true },
+  { id:'leather-brown', name:'Barna bőr', category:'Leather', colors:['#2b1409','#713b1f','#b56d3d'], finish:'aged', texture:'leather', css:'linear-gradient(135deg,#2b1409,#814522,#3a1b0e)', textCompatible:true, surfaceCompatible:true },
+  { id:'fabric-velvet', name:'Bársony', category:'Fabric', colors:['#13050c','#4d0d2d','#a83b68'], finish:'soft', texture:'velvet', css:'linear-gradient(120deg,#10040a,#741642 48%,#210711)', textCompatible:true, surfaceCompatible:true },
+  { id:'fabric-silk', name:'Selyem', category:'Fabric', colors:['#ded4c0','#f7eee0','#9b8d79'], finish:'satin', texture:'silk', css:'linear-gradient(110deg,#9f927e,#fffaf0 35%,#c9bda8 58%,#f7eee0)', textCompatible:true, surfaceCompatible:true },
+  { id:'paper-luxury', name:'Prémium papír', category:'Paper', colors:['#eee9dd','#c9c0af','#ffffff'], finish:'uncoated', texture:'paper', css:'linear-gradient(135deg,#eee9dd,#fffdf7,#d6cdbc)', textCompatible:true, surfaceCompatible:true },
+  { id:'concrete-dark', name:'Sötét beton', category:'Concrete', colors:['#242424','#555555','#888888'], finish:'raw', texture:'concrete', css:'linear-gradient(135deg,#202020,#5a5a5a,#303030)', textCompatible:true, surfaceCompatible:true },
+  { id:'carbon-fiber', name:'Karbon', category:'Carbon', colors:['#020202','#151515','#383838'], finish:'woven', texture:'carbon-fiber', css:'repeating-linear-gradient(45deg,#090909 0 3px,#1d1d1d 3px 6px)', textCompatible:true, surfaceCompatible:true },
+  { id:'ceramic-white', name:'Fehér kerámia', category:'Ceramic', colors:['#eeeeea','#ffffff','#aaa9a2'], finish:'glossy', texture:'ceramic', css:'linear-gradient(135deg,#d8d8d1,#ffffff 50%,#aaa9a2)', textCompatible:true, surfaceCompatible:true },
+  { id:'liquid-gold', name:'Folyékony arany', category:'Liquid', colors:['#5c3c08','#d6aa4a','#fff1a8'], finish:'liquid', texture:'liquid-metal', css:'linear-gradient(115deg,#4c3005,#d6aa4a 30%,#fff4ad 48%,#9c6b12 68%,#f1d275)', textCompatible:true, surfaceCompatible:true },
+  { id:'liquid-chrome', name:'Folyékony króm', category:'Liquid', colors:['#31363b','#dce3e7','#ffffff'], finish:'liquid', texture:'liquid-chrome', css:'linear-gradient(115deg,#20252a,#fff 30%,#7e878e 48%,#f7f7f7 65%,#30353a)', textCompatible:true, surfaceCompatible:true },
+  { id:'nature-moss', name:'Moha / természet', category:'Nature', colors:['#142615','#496b31','#9aa86a'], finish:'organic', texture:'moss', css:'linear-gradient(135deg,#101d10,#56733a,#1e321b)', textCompatible:true, surfaceCompatible:true },
+  { id:'special-celtic', name:'Kelta patina', category:'Special', colors:['#17231d','#5e765e','#c2a75c'], finish:'aged', texture:'celtic-patina', css:'linear-gradient(135deg,#152019,#6b805f 48%,#b69a51)', textCompatible:true, surfaceCompatible:true },
+];
+
+export const DESIGNLY_MATERIAL_CATEGORIES = ['Metal','Wood','Stone','Glass','Leather','Fabric','Paper','Concrete','Carbon','Ceramic','Liquid','Nature','Special'] as const;
+
 export const DESIGNLY_FONT_PAIRS = [
   'Cinzel + Inter','Playfair Display + Manrope','Cormorant Garamond + Montserrat',
   'DM Serif Display + DM Sans','Libre Baskerville + Source Sans 3','Bodoni Moda + Inter',
