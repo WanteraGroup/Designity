@@ -7,6 +7,8 @@ import { generateDesign } from '@/lib/ai';
 import { AD_FORMATS, DESIGN_STYLES, getCreditsForType } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { FreePreviewModal } from './FreePreviewModal';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import type { BrandKit } from '@/types';
 
 interface AdvertisingStudioProps {
@@ -28,6 +30,10 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const [providerNotConfigured, setProviderNotConfigured] = useState(false);
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadBrands() {
@@ -45,15 +51,36 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const cost = 3; // advertisement/poster = 3 credits
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
 
-  const handleGenerate = async () => {
+  const buildPreview = async () => {
     if (!profile || !selectedFormat) return;
     setError(null);
     setProviderNotConfigured(false);
-
-    if (!isOwner && (profile.credits ?? 0) < cost) {
-      setError(t('gen.insufficientCredits'));
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewId(null);
+    const formatInfo = AD_FORMATS.find((f) => f.id === selectedFormat);
+    const result = await runDesignlyMasterAgent({
+      brief,
+      brandKitId: selectedBrand,
+      style: selectedStyle,
+      language: 'hu',
+      mode: 'preview',
+      requestedOutputs: ['custom'],
+    });
+    setPreviewLoading(false);
+    if (!result.success) {
+      setError(result.message || 'Az ingyenes előnézet nem készült el.');
       return;
     }
+    setPreviewImage(result.previewImageUrl || null);
+    setPreviewId(result.previewId || null);
+  };
+
+  const handleGenerate = async () => {
+    if (!profile || !selectedFormat || !previewId) return;
+    setError(null);
+    setProviderNotConfigured(false);
 
     setGenerating(true);
     setGenStep(0);
@@ -79,6 +106,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
       brandKitId: selectedBrand,
       style: selectedStyle,
       format: formatInfo?.label || selectedFormat,
+      previewId,
     });
 
     if (!genResult.success) {
@@ -351,14 +379,27 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
           {error && <div className="text-sm text-red-300 text-center">{error}</div>}
           <div className="flex justify-between items-center">
             <button onClick={() => setStep(3)} className="btn-ghost text-sm">{t('common.back')}</button>
-            <button onClick={handleGenerate} disabled={!hasEnoughCredits} className="btn-gold text-sm disabled:opacity-40">
+            <button onClick={() => void buildPreview()} disabled={previewLoading || !brief.trim()} className="btn-gold text-sm disabled:opacity-40">
               <Sparkles className="w-4 h-4" />
-              {t('common.generate')}
+              INGYENES ELŐNÉZET
             </button>
           </div>
         </div>
       )}
       </div>
+      <FreePreviewModal
+        open={previewOpen}
+        title={AD_FORMATS.find((f) => f.id === selectedFormat)?.label || 'AI Reklám'}
+        imageUrl={previewImage}
+        loading={previewLoading}
+        cost={cost}
+        balance={profile?.credits}
+        onClose={() => setPreviewOpen(false)}
+        onApprove={async () => { setPreviewOpen(false); setPreviewOpen(false); await handleGenerate(); }}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+        onBuyCredits={() => setShowCreditModal(true)}
+        approvedLoading={generating}
+      />
       <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az Ad Studio-ból, visszalépés nélkül." />
     </>
   );
