@@ -13,7 +13,7 @@ interface AuthPageProps {
 
 export function AuthPage({ mode, onNavigate }: AuthPageProps) {
   const { t } = useI18n();
-  const { user, signIn, signUp, resetPassword, updatePassword } = useAuth();
+  const { user, authKnown, signIn, signUp, resetPassword, updatePassword } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,13 +23,15 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const recoveryLink = mode === 'reset' && typeof window !== 'undefined' && window.location.hash.includes('type=recovery');
+  const recoveryFlow = mode === 'reset' && (!!user || recoveryLink);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (mode === 'reset' && user) {
+    if (recoveryFlow && user) {
       if (newPassword.length < 6) {
         setError(t('auth.passwordTooShort'));
         return;
@@ -130,7 +132,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
           <h1 className="text-2xl font-display font-bold text-cream-50 text-center mb-2">
             {mode === 'login' && t('auth.login')}
             {mode === 'signup' && t('auth.signup')}
-            {mode === 'reset' && (user ? t('auth.setNewPassword') : t('auth.forgotPassword'))}
+            {mode === 'reset' && (recoveryFlow ? t('auth.setNewPassword') : t('auth.forgotPassword'))}
           </h1>
 
           <div className="h-px w-12 bg-gold-gradient mx-auto mb-8" />
@@ -166,7 +168,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
               </div>
             )}
 
-            <div>
+            {!recoveryFlow && (<div>
               <label className="label-lux">{t('auth.email')}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cream-400/40" />
@@ -179,7 +181,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
                   placeholder="you@example.com"
                 />
               </div>
-            </div>
+            </div>)}
 
             {mode !== 'reset' && !user && (
               <div>
@@ -198,7 +200,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
               </div>
             )}
 
-            {mode === 'reset' && user && (
+            {recoveryFlow && (
               <>
                 <div>
                   <label className="label-lux">{t('auth.newPassword')}</label>
@@ -264,13 +266,13 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (recoveryFlow && !authKnown)}
               className="btn-gold w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? t('common.loading') : (
                 mode === 'login' ? t('auth.loginCta') :
                 mode === 'signup' ? t('auth.signupCta') :
-                (user ? t('auth.updatePassword') : t('auth.resetPassword'))
+                (recoveryFlow ? t('auth.updatePassword') : t('auth.resetPassword'))
               )}
             </button>
           </form>
@@ -292,7 +294,7 @@ export function AuthPage({ mode, onNavigate }: AuthPageProps) {
                 </button>
               </>
             )}
-            {mode === 'reset' && !user && (
+            {mode === 'reset' && !recoveryFlow && (
               <button onClick={() => onNavigate('login')} className="text-gold-400 hover:text-gold-200 transition-colors font-medium">
                 {t('auth.backToLogin')}
               </button>
