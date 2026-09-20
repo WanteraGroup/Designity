@@ -517,7 +517,8 @@ ${script}
     : null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-0px)] -mt-6 -mx-5 lg:-mx-8 bg-ink-950">
+    <>
+      <div className="flex flex-col h-[calc(100vh-0px)] -mt-6 -mx-5 lg:-mx-8 bg-ink-950">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gold-600/10 bg-ink-900/90 backdrop-blur-xl gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <button
@@ -781,8 +782,9 @@ ${script}
           </div>
         </div>
       </div>
-    </div>
-    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
+      </div>
+      <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül az AI Editorból, visszalépés nélkül." />
+    </>
   );
 }
 
