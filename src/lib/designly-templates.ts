@@ -76,7 +76,7 @@ export const DESIGNLY_PALETTES = [
 export interface DesignlyMaterial {
   id: string;
   name: string;
-  category: 'Metal' | 'Wood' | 'Stone' | 'Glass' | 'Leather' | 'Fabric' | 'Paper' | 'Concrete' | 'Carbon' | 'Ceramic' | 'Liquid' | 'Nature' | 'Special';
+  category: 'Metal' | 'Wood' | 'Stone' | 'Glass' | 'Leather' | 'Fabric' | 'Paper' | 'Concrete' | 'Carbon' | 'Ceramic' | 'Liquid' | 'Nature' | 'Animal' | 'Organic' | 'Special';
   colors: string[];
   finish: string;
   texture: string;
@@ -110,9 +110,30 @@ export const DESIGNLY_MATERIAL_LIBRARY: DesignlyMaterial[] = [
   { id:'liquid-chrome', name:'Folyékony króm', category:'Liquid', colors:['#31363b','#dce3e7','#ffffff'], finish:'liquid', texture:'liquid-chrome', css:'linear-gradient(115deg,#20252a,#fff 30%,#7e878e 48%,#f7f7f7 65%,#30353a)', textCompatible:true, surfaceCompatible:true },
   { id:'nature-moss', name:'Moha / természet', category:'Nature', colors:['#142615','#496b31','#9aa86a'], finish:'organic', texture:'moss', css:'linear-gradient(135deg,#101d10,#56733a,#1e321b)', textCompatible:true, surfaceCompatible:true },
   { id:'special-celtic', name:'Kelta patina', category:'Special', colors:['#17231d','#5e765e','#c2a75c'], finish:'aged', texture:'celtic-patina', css:'linear-gradient(135deg,#152019,#6b805f 48%,#b69a51)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-wolf-fur', name:'Farkasszőr', category:'Animal', colors:['#252525','#6f6f6f','#cfcfcf'], finish:'natural', texture:'wolf-fur', css:'repeating-linear-gradient(110deg,#181818 0 5px,#777 5px 9px,#292929 9px 14px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-fox-fur', name:'Rókaszőr', category:'Animal', colors:['#4b160b','#c65a24','#f2c49a'], finish:'natural', texture:'fox-fur', css:'linear-gradient(125deg,#5b1c0c,#d66a2c 45%,#f2c49a 62%,#6b210f)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-bear-fur', name:'Medveszőr', category:'Animal', colors:['#100b08','#3b2418','#765039'], finish:'natural', texture:'bear-fur', css:'repeating-linear-gradient(100deg,#100b08 0 6px,#5a3826 6px 11px,#24160f 11px 16px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-tiger-fur', name:'Tigrisszőr', category:'Animal', colors:['#d58b24','#f3c35d','#17100a'], finish:'natural', texture:'tiger-fur', css:'repeating-linear-gradient(115deg,#e0a13a 0 12px,#17100a 12px 17px,#f0c35a 17px 30px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-leopard', name:'Leopárdminta', category:'Animal', colors:['#c48b3a','#20150c','#f0d18b'], finish:'pattern', texture:'leopard', css:'radial-gradient(circle at 20% 30%,#17100a 0 5px,transparent 6px),radial-gradient(circle at 65% 65%,#21150c 0 6px,transparent 7px),linear-gradient(135deg,#a96f24,#e6bd68)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-zebra', name:'Zebraminta', category:'Animal', colors:['#050505','#f4f4f4','#777777'], finish:'pattern', texture:'zebra', css:'repeating-linear-gradient(120deg,#050505 0 8px,#f4f4f4 8px 19px,#111 19px 27px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-snake', name:'Kígyóbőr', category:'Animal', colors:['#263327','#71805d','#c6b77b'], finish:'scaled', texture:'snake-scales', css:'radial-gradient(ellipse at 50% 0,#9ca879 0 8px,#34442f 9px 13px,transparent 14px),linear-gradient(135deg,#172119,#87966e)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-crocodile', name:'Krokodilbőr', category:'Animal', colors:['#142015','#43583d','#7b8056'], finish:'scaled', texture:'crocodile', css:'repeating-linear-gradient(45deg,#1a291b 0 12px,#5d6946 12px 18px,#233322 18px 30px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-feathers-raven', name:'Hollótoll', category:'Animal', colors:['#030303','#25252c','#66708a'], finish:'iridescent', texture:'raven-feather', css:'linear-gradient(115deg,#020204,#252533 42%,#69748e 55%,#09090d 72%)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-feathers-eagle', name:'Sastoll', category:'Animal', colors:['#2b1b0d','#8b6239','#ead9b7'], finish:'natural', texture:'eagle-feather', css:'repeating-linear-gradient(100deg,#2b1b0d 0 7px,#9a7044 7px 11px,#ead9b7 11px 14px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-feathers-peacock', name:'Pávatoll', category:'Animal', colors:['#062c35','#087f83','#d5b33f'], finish:'iridescent', texture:'peacock-feather', css:'radial-gradient(circle,#e1c64b 0 6px,#087f83 7px 14px,#062c35 15px),linear-gradient(135deg,#062c35,#168b8c)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-scales-dragon', name:'Sárkánypikkely', category:'Animal', colors:['#15110b','#7d3d20','#d8a94f'], finish:'fantasy', texture:'dragon-scales', css:'repeating-radial-gradient(circle at 50% 0,#d5a94a 0 4px,#6d351c 5px 11px,#171008 12px 17px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-hair-horse', name:'Lószőr', category:'Animal', colors:['#17110d','#513b2b','#9a7350'], finish:'natural', texture:'horse-hair', css:'repeating-linear-gradient(105deg,#15100d 0 4px,#79583c 4px 7px,#2b1c13 7px 12px)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-wool', name:'Báránygyapjú', category:'Animal', colors:['#ddd8ce','#f7f3ea','#aaa49a'], finish:'soft', texture:'wool', css:'radial-gradient(circle at 20% 30%,#fff 0 8px,transparent 9px),radial-gradient(circle at 65% 60%,#d0ccc4 0 10px,transparent 11px),linear-gradient(135deg,#c9c5bd,#f7f3ea)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-antler', name:'Szarvasagancs', category:'Animal', colors:['#4b301b','#9a6d42','#d1a875'], finish:'natural', texture:'antler', css:'linear-gradient(120deg,#3b2414,#b27c4a 48%,#6c4426 60%,#d1a875)', textCompatible:true, surfaceCompatible:true },
+  { id:'animal-bone', name:'Csont', category:'Animal', colors:['#c8bea5','#eee4cc','#8c8068'], finish:'aged', texture:'bone', css:'linear-gradient(135deg,#a99d83,#eee4cc 48%,#b5a88d)', textCompatible:true, surfaceCompatible:true },
+  { id:'organic-bark', name:'Fakérges szerves felület', category:'Organic', colors:['#24150b','#68401f','#a87945'], finish:'raw', texture:'tree-bark', css:'repeating-linear-gradient(92deg,#24150b 0 9px,#6b421f 9px 13px,#2f1b0c 13px 21px)', textCompatible:true, surfaceCompatible:true },
+  { id:'organic-leaf', name:'Levélszerkezet', category:'Organic', colors:['#102713','#4c7d3a','#a9c76a'], finish:'natural', texture:'leaf-vein', css:'linear-gradient(70deg,transparent 47%,#a9c76a 48% 50%,transparent 51%),linear-gradient(135deg,#102713,#5e8b42)', textCompatible:true, surfaceCompatible:true },
+  { id:'organic-moss', name:'Sűrű moha', category:'Organic', colors:['#10200d','#45652b','#91a75d'], finish:'organic', texture:'dense-moss', css:'radial-gradient(circle at 20% 30%,#7f9c50 0 5px,transparent 6px),radial-gradient(circle at 70% 65%,#344f21 0 8px,transparent 9px),linear-gradient(135deg,#0d1a0c,#4e7130)', textCompatible:true, surfaceCompatible:true },
+  { id:'organic-feather-black', name:'Fekete tollmező', category:'Organic', colors:['#020202','#303039','#8d8da0'], finish:'soft', texture:'feather-field', css:'repeating-linear-gradient(115deg,#020202 0 6px,#454550 6px 8px,#08080c 8px 14px)', textCompatible:true, surfaceCompatible:true },
+
 ];
 
-export const DESIGNLY_MATERIAL_CATEGORIES = ['Metal','Wood','Stone','Glass','Leather','Fabric','Paper','Concrete','Carbon','Ceramic','Liquid','Nature','Special'] as const;
+export const DESIGNLY_MATERIAL_CATEGORIES = ['Metal','Wood','Stone','Glass','Leather','Fabric','Paper','Concrete','Carbon','Ceramic','Liquid','Nature','Animal','Organic','Special'] as const;
 
 export const DESIGNLY_FONT_PAIRS = [
   'Cinzel + Inter','Playfair Display + Manrope','Cormorant Garamond + Montserrat',
