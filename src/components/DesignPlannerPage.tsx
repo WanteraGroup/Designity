@@ -73,7 +73,7 @@ function exportPlanSpec(planType: string, planLabel: string, area: string, rooms
 
 export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
   const { lang } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const hu = lang === 'hu';
   const [planType, setPlanType] = useState('floor-plan');
   const [area, setArea] = useState('100 m²');
@@ -92,7 +92,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
 
   const selectedPlan = useMemo(() => PLAN_TYPES.find((item) => item.id === planType) || PLAN_TYPES[0], [planType]);
   const finalCost = getCreditsForType('custom');
-  const enough = isOwner || (profile?.credits ?? 0) >= finalCost;
+  const enough = isUnlimited || (profile?.credits ?? 0) >= finalCost;
 
   const choosePreset = (presetId: string) => {
     const preset = BODY_PRESETS.find((item) => item.id === presetId);
@@ -296,7 +296,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
               <div className="mt-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                   <div className="text-[9px] uppercase tracking-[.2em] text-gold-300/65">KÖVETKEZŐ LÉPÉS</div>
-                  <div className="text-lg font-display text-cream-50 mt-1">{isOwner ? '∞ kredit' : finalCost + ' kredit'}</div>
+                  <div className="text-lg font-display text-cream-50 mt-1">{isUnlimited ? '∞ kredit' : finalCost + ' kredit'}</div>
                   <div className="text-xs text-cream-300/45 mt-1">A koncepció előnézete ingyenes. A végleges változat csak jóváhagyás után készül.</div>
                 </div>
                 <div className="flex gap-2 flex-wrap">
