@@ -158,8 +158,13 @@ Deno.serve(async (req: Request) => {
 
       if (uploadError) throw new Error("Audio storage upload failed: " + uploadError.message);
 
-      const { data: publicData } = admin.storage.from("designly-music").getPublicUrl(path);
-      const audioUrl = publicData.publicUrl;
+      const { data: signedAudio, error: signedAudioError } = await admin.storage
+        .from("designly-music")
+        .createSignedUrl(path, 24 * 60 * 60);
+      if (signedAudioError || !signedAudio?.signedUrl) {
+        throw new Error("Audio signed URL creation failed.");
+      }
+      const audioUrl = signedAudio.signedUrl;
 
       const { error: rowError } = await admin.from("music_generations").insert({
         user_id: user.id,
