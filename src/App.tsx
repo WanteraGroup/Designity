@@ -21,20 +21,22 @@ import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
 import { HuginnAgent } from '@/components/HuginnAgent';
 import { AgentHubPage } from '@/components/AgentHubPage';
+import { VoiceAgentPage } from '@/components/VoiceAgentPage';
+import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'agents';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'agents',
+  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator',
 ];
 
 function pageFromHash(): Page {
@@ -165,6 +167,8 @@ function AppInner() {
       case 'editor': return <EditorPage onNavigate={navigate} />;
       case 'music': return <MusicPage onNavigate={navigate} />;
       case 'agents': return <AgentHubPage onNavigate={navigate} />;
+      case 'voice': return <VoiceAgentPage onNavigate={navigate} />;
+      case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
