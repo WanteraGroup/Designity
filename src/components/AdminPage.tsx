@@ -41,7 +41,8 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [savedMsg, setSavedMsg] = useState(false);
 
   const [giftEmail, setGiftEmail] = useState('');
-  const [giftType, setGiftType] = useState<'full_unlock' | 'plan'>('full_unlock');
+  const [giftType, setGiftType] = useState<'full_unlock' | 'plan' | 'credits'>('full_unlock');
+  const [giftCredits, setGiftCredits] = useState('100000000');
   const [giftPlan, setGiftPlan] = useState('pro');
   const [giftBusy, setGiftBusy] = useState(false);
   const [giftMessage, setGiftMessage] = useState('');
@@ -134,17 +135,20 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       return;
     }
 
+    const amount = Math.floor(Number(giftCredits));
+    if (giftType === 'credits' && (!Number.isSafeInteger(amount) || amount < 1 || amount > 100000000)) {
+      setGiftMessage(hu ? 'A kredit mennyisége 1 és 100 000 000 között lehet.' : 'Credits must be between 1 and 100,000,000.');
+      return;
+    }
+
     setGiftBusy(true);
     setGiftMessage('');
 
-    const { data, error } = await supabase.functions.invoke('admin-gift', {
-      body: {
-        action: 'gift',
-        email,
-        giftType,
-        planId: giftType === 'plan' ? giftPlan : undefined,
-      },
-    });
+    const body = giftType === 'credits'
+      ? { action: 'grant_credits', email, credits: amount }
+      : { action: 'gift', email, giftType, planId: giftType === 'plan' ? giftPlan : undefined };
+
+    const { data, error } = await supabase.functions.invoke('admin-gift', { body });
 
     setGiftBusy(false);
 
@@ -153,9 +157,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       return;
     }
 
-    setGiftMessage(data.message || (hu ? 'Ajándék hozzáférés aktiválva.' : 'Gift access granted.'));
+    setGiftMessage(data.message || (hu ? 'Ajándék aktiválva.' : 'Gift activated.'));
     setGiftEmail('');
     await loadGifts();
+    await loadUsers();
   };
 
   const revokeGift = async (giftId: string) => {
@@ -360,10 +365,19 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               <label className="text-xs text-cream-300/60">
                 {hu ? 'Ajándék típusa' : 'Gift type'}
                 <select value={giftType} onChange={(e) => setGiftType(e.target.value as 'full_unlock' | 'plan')} className="mt-2 w-full px-3 py-2.5 bg-ink-800 border border-ink-600/40 rounded-lg text-cream-100 focus:outline-none focus:border-gold-600/60">
-                  <option value="full_unlock">{hu ? 'FULL UNLOCK — minden prémium + korlátlan' : 'FULL UNLOCK — all premium + unlimited'}</option>
+                  <option value="full_unlock">{hu ? 'FULL UNLOCK — minden prémium + 100 000 000 kredit' : 'FULL UNLOCK — all premium + 100,000,000 credits'}</option>
                   <option value="plan">{hu ? 'Konkrét előfizetési csomag' : 'Specific subscription plan'}</option>
+                  <option value="credits">{hu ? 'Kredit ajándékozása' : 'Gift credits'}</option>
                 </select>
               </label>
+
+              {giftType === 'credits' && (
+                <label className="text-xs text-cream-300/60">
+                  {hu ? 'Kredit mennyisége' : 'Credit amount'}
+                  <input value={giftCredits} onChange={(e) => setGiftCredits(e.target.value.replace(/\D/g, ''))} type="text" inputMode="numeric" className="mt-2 w-full px-3 py-2.5 bg-ink-800 border border-ink-600/40 rounded-lg text-cream-100 focus:outline-none focus:border-gold-600/60" />
+                  <span className="block mt-1 text-[11px] text-cream-300/40">{hu ? 'Maximum 100 000 000 kredit.' : 'Maximum 100,000,000 credits.'}</span>
+                </label>
+              )}
 
               {giftType === 'plan' && (
                 <label className="text-xs text-cream-300/60">
@@ -376,7 +390,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
               <button onClick={grantGift} disabled={giftBusy} className="btn-gold w-full sm:w-auto">
                 {giftBusy ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-                {giftBusy ? (hu ? 'Feldolgozás…' : 'Processing…') : (hu ? 'AJÁNDÉK AKTIVÁLÁSA' : 'GRANT GIFT ACCESS')}
+                {giftBusy ? (hu ? 'Feldolgozás…' : 'Processing…') : (giftType === 'credits' ? (hu ? 'KREDIT JÓVÁÍRÁSA' : 'GRANT CREDITS') : (hu ? 'AJÁNDÉK AKTIVÁLÁSA' : 'GRANT GIFT ACCESS'))}
               </button>
 
               {giftMessage && <Notice message={giftMessage} />}
