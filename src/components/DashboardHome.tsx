@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Plus, FolderOpen, Coins, Sparkles, TrendingUp, Infinity as InfinityIcon,
-  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe, Music2, Gamepad2,
+  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe, Music2, Gamepad2, Radio,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -190,6 +190,21 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
           <button onClick={() => onNavigate('creator')} className="btn-gold text-sm shrink-0">
             <Gamepad2 className="w-4 h-4" /> Termék készítése
           </button>
+        </div>
+      </section>
+
+      {/* Streamer / Gamer Studio */}
+      <section className="relative overflow-hidden card-lux p-6 border-gold-500/20">
+        <div className="absolute -right-12 -top-12 h-52 w-52 rounded-full bg-gold-500/6 blur-3xl" />
+        <div className="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[.2em] text-gold-300"><Radio className="w-4 h-4" /> Streamer Studio</div>
+            <h2 className="mt-2 text-2xl font-display font-semibold text-cream-50">Overlayek · Alertok · Screens · Branding · Community</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-cream-300/55">
+              Készíts teljes creator csomagot: Starting Soon, BRB, Ending, gameplay overlay, webcam frame, chat box, event list, goal bar, follow/sub/donation/raid alert, panelek, thumbnailok, emote- és badge-rendszer, esports grafika és motion-ready scene.
+            </p>
+          </div>
+          <button onClick={() => onNavigate('streamer')} className="btn-gold text-sm shrink-0"><Gamepad2 className="w-4 h-4" /> Streamer Studio megnyitása</button>
         </div>
       </section>
 
