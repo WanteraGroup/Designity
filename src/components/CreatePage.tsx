@@ -100,6 +100,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [customCredits, setCustomCredits] = useState(100);
   const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
   const [autoBuildRequested, setAutoBuildRequested] = useState(false);
+  const [autoBuildStatus, setAutoBuildStatus] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -148,6 +149,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         setSelectedType(build.type);
         setBrief(build.brief);
         setStep(2);
+        setAutoBuildStatus('AI BUSINESS BUILDER: előkészítés…');
         setAutoBuildRequested(true);
       }
     } catch {
@@ -211,19 +213,29 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setOrchestration(null);
     setApproved(false);
     setPreviewLoading(true);
+    if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: AI előnézet készítése…');
 
-    const result = await runDesignlyMasterAgent({
-      brief,
-      brandKitId: selectedBrand,
-      requestedOutputs: [getAgentOutput()],
-      language: lang,
-      mode: 'preview',
-    });
+    let result: Awaited<ReturnType<typeof runDesignlyMasterAgent>>;
+    try {
+      result = await runDesignlyMasterAgent({
+        brief,
+        brandKitId: selectedBrand,
+        requestedOutputs: [getAgentOutput()],
+        language: lang,
+        mode: 'preview',
+      });
+    } catch (previewRunError) {
+      setPreviewLoading(false);
+      setPreviewError(previewRunError instanceof Error ? previewRunError.message : 'Az AI előnézet futtatása közben váratlan hiba történt.');
+      if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: hiba történt — újrapróbálható');
+      return;
+    }
 
     setPreviewLoading(false);
 
     if (!result.success || !result.designBrief) {
       setPreviewError(result.message || 'The free design preview could not be created.');
+      if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: az előnézet nem készült el — újrapróbálható');
       return;
     }
 
@@ -233,6 +245,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setActiveAgents(result.activeAgents || ['master']);
     setOrchestration(result.orchestration || null);
     setStep(3);
+    if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: előnézet kész — jóváhagyásra vár');
   };
 
   // Automatic Business Builder: trigger the free AI preview after the dashboard handoff is loaded.
@@ -471,6 +484,12 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         <div className="animate-fade-in">
           <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">{t('cw.describeVision')}</h2>
           <p className="text-sm text-cream-300/50 text-center mb-8">{t('cw.describeVisionDesc')}</p>
+
+          {autoBuildStatus && (
+            <div className="mb-4 rounded-lg border border-gold-600/20 bg-gold-600/5 px-4 py-3 text-xs text-gold-200/90" role="status">
+              {autoBuildStatus}
+            </div>
+          )}
 
           <textarea
             value={brief}
