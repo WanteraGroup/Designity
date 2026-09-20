@@ -73,6 +73,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [projectName, setProjectName] = useState('DESIGNLY STUDIO');
   const [buildSpec, setBuildSpec] = useState<any>(null);
   const [projectLoading, setProjectLoading] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<string>('MENTVE');
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
@@ -255,6 +256,29 @@ footer{padding:28px 8%;border-top:1px solid rgba(214,170,74,.2);opacity:.55}
 <body><main><section class="hero"><div class="badge">D</div><h1>${title}</h1><p>${description}</p><button>${design.heroButton || 'GET STARTED'}</button></section><footer>Created with DESIGNLY STUDIO</footer></main></body></html>`;
   };
 
+  const saveProjectNow = async () => {
+    const projectId = localStorage.getItem('designly_selected_project');
+    if (!projectId) {
+      setSaveStatus('NINCS KIVÁLASZTOTT PROJEKT');
+      return;
+    }
+    setSaveStatus('MENTÉS…');
+    const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
+    const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
+    const { error } = await supabase.from('projects').update({
+      config: {
+        ...currentConfig,
+        designState: design,
+        buildSpec,
+        exportVersion: 2,
+        updatedBy: 'DESIGNLY_EDITOR',
+        updatedAt: new Date().toISOString(),
+      },
+      updated_at: new Date().toISOString(),
+    }).eq('id', projectId);
+    setSaveStatus(error ? 'MENTÉSI HIBA' : 'MENTVE');
+  };
+
   const downloadFile = (filename: string, content: string, mime: string) => {
     const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
@@ -369,7 +393,7 @@ footer{padding:28px 8%;border-top:1px solid rgba(214,170,74,.2);opacity:.55}
           <div className="relative group">
             <button className="btn-gold text-xs px-4 py-2">
               <Download className="w-3.5 h-3.5" />
-              EXPORT / MENTÉS
+              EXPORT / MENTÉS · {saveStatus}
             </button>
             <div className="absolute right-0 top-full mt-2 z-50 hidden group-hover:block w-52 rounded-xl border border-gold-600/20 bg-ink-900/95 p-2 shadow-2xl backdrop-blur-xl">
               <button onClick={exportWebsite} className="w-full text-left px-3 py-2 rounded-lg text-xs text-cream-200 hover:bg-gold-600/10">WEBOLDAL · HTML</button>
