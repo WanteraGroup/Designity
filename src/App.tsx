@@ -24,20 +24,21 @@ import { AgentHubPage } from '@/components/AgentHubPage';
 import { VoiceAgentPage } from '@/components/VoiceAgentPage';
 import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
 import { CreatorMerchPage } from '@/components/CreatorMerchPage';
+import { StreamerStudioPage } from '@/components/StreamerStudioPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator',
+  'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer',
 ];
 
 function pageFromHash(): Page {
@@ -171,6 +172,7 @@ function AppInner() {
       case 'voice': return <VoiceAgentPage onNavigate={navigate} />;
       case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
+      case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
