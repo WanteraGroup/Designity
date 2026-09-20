@@ -19,6 +19,7 @@ import {
 import { useI18n } from '@/lib/i18n';
 import { useAuth } from '@/lib/auth';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { PreviewWatermark } from './PreviewWatermark';
 import { supabase } from '@/lib/supabase';
 import {
   runDesignlyGroqEditor,
@@ -639,7 +640,7 @@ ${script}
 
         <div className="flex-1 min-w-0 overflow-auto bg-ink-950 flex justify-center p-2 sm:p-4 lg:p-6 xl:p-8">
           <div
-            className="rounded-xl border border-gold-600/20 shadow-2xl overflow-hidden bg-black transition-all duration-300"
+            className="relative rounded-xl border border-gold-600/20 shadow-2xl overflow-hidden bg-black transition-all duration-300"
             style={{
               width: deviceWidths[device],
               maxWidth: '100%',
@@ -656,6 +657,7 @@ ${script}
                 </section>
               </div>
             )}
+            <PreviewWatermark hidden={isOwner} projectName={projectName} label="DESIGNLY · EDITOR PREVIEW" />
           </div>
         </div>
 
