@@ -210,7 +210,7 @@ function templateAt(index: number): DesignlyTemplate {
 // Each template is reproducible from its index, so the library can scale without shipping
 // 100,000 duplicated JSON objects. Logo, brand, website, social, print and campaign variants
 // are distributed across the catalogue with many font, palette, layout and effect combinations.
-export const TEMPLATE_TOTAL = 100000;
+export const TEMPLATE_TOTAL = 138240;
 export const DESIGNLY_TEMPLATE_INDEXES = Array.from({ length: TEMPLATE_TOTAL }, (_, i) => i);
 export function getDesignlyTemplate(index: number): DesignlyTemplate {
   const safeIndex = Math.max(0, Math.min(TEMPLATE_TOTAL - 1, Math.floor(index)));
