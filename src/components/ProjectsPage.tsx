@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import type { Project } from '@/types';
+import { PreviewWatermark } from './PreviewWatermark';
 
 interface ProjectsPageProps {
   onNavigate: (page: string) => void;
@@ -11,7 +12,7 @@ interface ProjectsPageProps {
 
 export function ProjectsPage({ onNavigate }: ProjectsPageProps) {
   const { t } = useI18n();
-  const { profile } = useAuth();
+  const { profile, isAdmin } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -97,7 +98,10 @@ export function ProjectsPage({ onNavigate }: ProjectsPageProps) {
                 onClick={() => { localStorage.setItem('designly_selected_project', project.id); onNavigate('editor'); }}
               >
                 {project.preview_url ? (
-                  <img src={project.preview_url} alt={project.name} className="w-full h-full object-cover" />
+                  <>
+                    <img src={project.preview_url} alt={project.name} className="w-full h-full object-cover" />
+                    <PreviewWatermark hidden={isAdmin} projectName={project.name} label="DESIGNLY · PREVIEW" />
+                  </>
                 ) : (
                   <div className="text-3xl font-display gold-text opacity-30 capitalize">{project.type[0]}</div>
                 )}
