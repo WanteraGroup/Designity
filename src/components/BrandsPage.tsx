@@ -13,7 +13,7 @@ const PRESET_COLORS = ['#c49a2e', '#0a0a0b', '#f9f5ec', '#2d2d34', '#e0c066', '#
 
 export function BrandsPage({ onNavigate }: BrandsPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [brands, setBrands] = useState<BrandKit[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -48,7 +48,7 @@ export function BrandsPage({ onNavigate }: BrandsPageProps) {
     if (!profile) return;
     setError(null);
 
-    if (!isOwner) {
+    if (!isUnlimited) {
       const cost = 5;
       if ((profile.credits ?? 0) < cost) {
         setError(t('brands.insufficientCredits'));
@@ -79,12 +79,18 @@ export function BrandsPage({ onNavigate }: BrandsPageProps) {
       return;
     }
 
-    if (!isOwner) {
-      await supabase.rpc('deduct_credits', {
+    if (!isUnlimited) {
+      const { data: deducted, error: deductError } = await supabase.rpc('deduct_credits', {
         p_user_id: profile.id,
         p_amount: 5,
         p_description: 'Brand identity generation',
       });
+      if (deductError || deducted !== true) {
+        await supabase.from('brands').delete().eq('id', data.id);
+        setError(t('brands.insufficientCredits'));
+        setGenerating(false);
+        return;
+      }
       await refreshProfile();
     }
 
@@ -201,7 +207,7 @@ export function BrandsPage({ onNavigate }: BrandsPageProps) {
           </div>
 
           <div className="flex justify-between items-center pt-2">
-            <span className="text-sm text-cream-300/50">{t('brands.cost')}: {isOwner ? '∞' : `5 ${t('misc.creditsShort')}`}</span>
+            <span className="text-sm text-cream-300/50">{t('brands.cost')}: {isUnlimited ? '∞' : `5 ${t('misc.creditsShort')}`}</span>
             <div className="flex gap-3">
               <button onClick={() => setShowForm(false)} className="btn-ghost text-sm">{t('common.cancel')}</button>
               <button onClick={handleCreate} disabled={!form.name || !form.industry} className="btn-gold text-sm disabled:opacity-40">
