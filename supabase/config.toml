@@ -21,3 +21,11 @@ entrypoint = "./functions/admin-gift/index.ts"
 [functions.music-generate]
 verify_jwt = true
 entrypoint = "./functions/music-generate/index.ts"
+
+[functions.music-library]
+verify_jwt = true
+entrypoint = "./functions/music-library/index.ts"
+
+[functions.payment-webhook]
+verify_jwt = false
+entrypoint = "./functions/payment-webhook/index.ts"
