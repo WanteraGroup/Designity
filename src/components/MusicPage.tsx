@@ -256,6 +256,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       open={previewOpen}
       title={title + ' · Zenei előnézet'}
       imageUrl={null}
+      previewText={previewBrief}
       loading={previewLoading}
       cost={cost}
       balance={profile?.credits}
