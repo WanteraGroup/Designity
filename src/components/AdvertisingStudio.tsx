@@ -34,6 +34,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [generationBrief, setGenerationBrief] = useState('');
 
   useEffect(() => {
     async function loadBrands() {
@@ -59,8 +60,9 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     setPreviewLoading(true);
     setPreviewImage(null);
     setPreviewId(null);
+    setGenerationBrief(brief);
     const result = await runDesignlyMasterAgent({
-      brief,
+      brief: generationBrief || brief,
       brandKitId: selectedBrand,
       language: lang,
       mode: 'preview',
@@ -133,32 +135,29 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   };
 
   const handleVariation = async (command: string) => {
-    if (!brief) return;
-    if (!isOwner && (profile?.credits ?? 0) < cost) {
-      setError(t('gen.insufficientCredits'));
-      setShowCreditModal(true);
-      return;
-    }
+    if (!profile || !brief.trim() || previewLoading || generating) return;
     setError(null);
-    setGenerating(true);
-    setGenStep(0);
-
-    const genResult = await generateDesign({
-      type: 'advertisement',
-      brief: `${brief} — ${t(`var.${command}`)}`,
+    setProviderNotConfigured(false);
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewId(null);
+    const variationBrief = `${brief} — ${t(`var.${command}`)}`;
+    setGenerationBrief(variationBrief);
+    const preview = await runDesignlyMasterAgent({
+      brief: variationBrief,
       brandKitId: selectedBrand,
-      style: selectedStyle,
+      language: lang,
+      mode: 'preview',
+      requestedOutputs: ['custom'],
     });
-
-    if (!genResult.success) {
-      setError(genResult.message || t('gen.failed'));
-      setGenerating(false);
+    setPreviewLoading(false);
+    if (!preview.success) {
+      setError(preview.message || 'A módosítás ingyenes előnézete nem készült el.');
       return;
     }
-
-    await refreshProfile();
-    setResult(genResult.result || null);
-    setGenerating(false);
+    setPreviewImage(preview.previewImageUrl || null);
+    setPreviewId(preview.previewId || null);
   };
 
   if (generating) {
@@ -397,21 +396,8 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         cost={cost}
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
-        onApprove={async () => { setPreviewOpen(false); setPreviewOpen(false); await handleGenerate(); }}
-        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
-        onBuyCredits={() => setShowCreditModal(true)}
-        approvedLoading={generating}
-      />
-      <FreePreviewModal
-        open={previewOpen}
-        title={AD_FORMATS.find((f) => f.id === selectedFormat)?.label || 'AI Reklám'}
-        imageUrl={previewImage}
-        loading={previewLoading}
-        cost={cost}
-        balance={profile?.credits}
-        onClose={() => setPreviewOpen(false)}
-        onApprove={() => void handleGenerate()}
-        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+        onApprove={() => void handleGenerate().then(() => setPreviewOpen(false))}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); setGenerationBrief(''); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
       />
