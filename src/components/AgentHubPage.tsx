@@ -2,11 +2,12 @@ import {
   Bird, BrainCircuit, BriefcaseBusiness, CheckCircle2, Cpu, FileBarChart2, Hammer, Network, Package,
   Search, ShieldCheck, Sparkles, Waypoints,
 } from 'lucide-react';
+import type { ComponentType } from 'react';
 import { DESIGNLY_FULL_AGENT_TEAM, VYRON_AGENT_TEAM, type DesignlyAgent } from '@/lib/designly-agents';
 
 interface AgentHubPageProps { onNavigate?: (page: string) => void; }
 
-const iconById: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconById: Record<string, ComponentType<{ className?: string }>> = {
   huginn: Bird, muninn: BrainCircuit, core: Network, architect: Cpu, research: Search, techScout: Waypoints,
   business: BriefcaseBusiness, product: Package, builder: Hammer, reviewer: ShieldCheck, sales: Sparkles, report: FileBarChart2,
 };
