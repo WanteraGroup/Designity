@@ -132,7 +132,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         <div className="dl-home-raven-wrap dl-home-raven-right"><Raven flip /></div>
 
         <div className="dl-home-hero-center">
-          <div className="dl-home-crest"><CelticEmblem size={92} animate showD /></div>
+          <div className="dl-home-crest"><CelticEmblem size={168} animate showD /></div>
           <span className="dl-home-kicker">{copy.badge}</span>
           <h1>DESIGNLY <em>STUDIO</em></h1>
           <div className="dl-home-tagline">CREATE · DESIGN · STREAM · DOMINATE</div>
