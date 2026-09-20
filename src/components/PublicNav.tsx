@@ -24,16 +24,18 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
   const primary: NavItem[] = [
     { id: 'home', label: t('nav.home'), page: 'landing' },
     { id: 'create', label: t('nav.create'), page: 'create' },
-    { id: 'studio', label: t('nav.studio'), page: 'advertising' },
-    { id: 'music', label: t('nav.music'), page: 'music' },
     { id: 'templates', label: t('nav.templates'), page: 'templates' },
-    { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
+    { id: 'streamer', label: lang === 'hu' ? 'Streamer Studio' : 'Streamer Studio', page: 'streamer' },
+    { id: 'merch', label: lang === 'hu' ? 'Merch Studio' : 'Merch Studio', page: 'creator' },
     { id: 'pricing', label: t('nav.pricing'), page: 'pricing' },
   ];
 
   const resources: NavItem[] = [
     { id: 'features', label: t('nav.features'), page: 'features' },
+    { id: 'advertising', label: lang === 'hu' ? 'AI Reklám Studio' : 'AI Ad Studio', page: 'advertising' },
+    { id: 'music', label: t('nav.music'), page: 'music' },
     { id: 'workflow', label: t('nav.workflow'), page: 'workflow' },
+    { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
     { id: 'credits', label: t('nav.credits'), page: 'credits' },
     { id: 'faq', label: t('nav.faq'), page: 'faq' },
   ];
@@ -46,6 +48,8 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     projects: 'projects',
     music: 'music',
     pricing: 'pricing',
+    streamer: 'streamer',
+    creator: 'merch',
   };
   const activeId = activePages[currentPage] ?? '';
 
