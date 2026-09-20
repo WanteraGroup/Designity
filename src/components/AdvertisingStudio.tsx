@@ -62,7 +62,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     setPreviewId(null);
     setGenerationBrief(brief);
     const result = await runDesignlyMasterAgent({
-      brief: generationBrief || brief,
+      brief,
       brandKitId: selectedBrand,
       language: lang,
       mode: 'preview',
@@ -106,7 +106,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
 
     const genResult = await generateDesign({
       type: 'advertisement',
-      brief,
+      brief: generationBrief || brief,
       brandKitId: selectedBrand,
       style: selectedStyle,
       format: formatInfo?.label || selectedFormat,
@@ -177,13 +177,19 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
 
         {/* Preview */}
         <div className="card-lux p-8">
-          <div className="aspect-[4/5] sm:aspect-video bg-gradient-to-br from-ink-800 to-ink-900 rounded-lg border border-gold-600/20 flex flex-col items-center justify-center p-8">
-            <Megaphone className="w-16 h-16 text-gold-400/40 mb-4" />
-            <h3 className="text-xl font-display font-bold gold-text mb-2">{t('ad.yourDesign')}</h3>
-            <p className="text-sm text-cream-300/50 text-center max-w-md">
-              {(result?.content as string)?.slice(0, 200) || t('ad.previewReady')}
-            </p>
-          </div>
+          {result?.imageUrl ? (
+            <div className="relative overflow-hidden rounded-lg border border-gold-600/20 bg-black">
+              <img src={String(result.imageUrl)} alt={t('ad.yourDesign')} className="block w-full h-auto object-contain" draggable={false} />
+            </div>
+          ) : (
+            <div className="aspect-[4/5] sm:aspect-video bg-gradient-to-br from-ink-800 to-ink-900 rounded-lg border border-gold-600/20 flex flex-col items-center justify-center p-8">
+              <Megaphone className="w-16 h-16 text-gold-400/40 mb-4" />
+              <h3 className="text-xl font-display font-bold gold-text mb-2">{t('ad.yourDesign')}</h3>
+              <p className="text-sm text-cream-300/50 text-center max-w-md">
+                {(result?.content as string)?.slice(0, 200) || t('ad.previewReady')}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Variations */}
