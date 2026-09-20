@@ -87,7 +87,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
       if (!firstImage && image) firstImage = image;
       anySuccess = anySuccess || success;
     }
-    if (!anySuccess) {
+    if (!results.every(([, id, , success]) => success && !!id)) {
       setError('A kampány ingyenes előnézete nem készült el.');
       return;
     }
@@ -100,7 +100,8 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     setError(null);
     setProviderNotConfigured(false);
 
-    if (!isOwner && (profile.credits ?? 0) < cost) {
+    const totalCost = cost * selectedFormats.length;
+    if (!isOwner && (profile.credits ?? 0) < totalCost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
