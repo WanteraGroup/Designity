@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Crown, LayoutTemplate, Search, Sparkles, Type, Wand2 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { TEMPLATE_CATEGORIES } from '@/lib/constants';
+import { DESIGNLY_MATERIAL_CATEGORIES, DESIGNLY_MATERIAL_LIBRARY } from '@/lib/designly-templates';
 import { TEMPLATE_TOTAL, DESIGNLY_TEMPLATE_INDEXES, getDesignlyTemplate, DESIGNLY_TEMPLATE_STYLES, DESIGNLY_FONT_PAIRS, DESIGNLY_EFFECTS, DESIGNLY_PALETTES, type DesignlyTemplate } from '@/lib/designly-templates';
 
 interface TemplatesPageProps { onNavigate: (page: string) => void; }
@@ -17,6 +18,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
   const [page, setPage] = useState(1);
   const [style, setStyle] = useState('All');
   const [effect, setEffect] = useState('All');
+  const [material, setMaterial] = useState('All');
   const PAGE_SIZE = 60;
 
   const filtered = useMemo(() => {
@@ -92,7 +94,7 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
               </div>
             ))}
           </div>
-          <div className="text-[10px] text-cream-300/45">{DESIGNLY_FONT_PAIRS.length} betűpár · {DESIGNLY_EFFECTS.length} vizuális effekt · {DESIGNLY_PALETTES.length} paletta</div>
+          <div className="text-[10px] text-cream-300/45">{DESIGNLY_FONT_PAIRS.length} betűpár · {DESIGNLY_EFFECTS.length} vizuális effekt · {DESIGNLY_PALETTES.length} paletta · {DESIGNLY_MATERIAL_LIBRARY.length} anyag</div>
         </div>
       </div>
 
@@ -107,6 +109,24 @@ export function TemplatesPage({ onNavigate }: TemplatesPageProps) {
         {['All', ...DESIGNLY_TEMPLATE_STYLES].map((item) => (
           <button key={item} onClick={() => handleStyle(item)} className={'chip transition-all ' + (style === item ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60')}>{item}</button>
         ))}
+      </div>
+
+      <div className="card-lux p-4 border-gold-600/15">
+        <div className="text-[10px] uppercase tracking-[.22em] text-gold-300/70 mb-2">MATERIAL LIBRARY</div>
+        <div className="text-xs text-cream-300/55 mb-3">Fém · fa · kő · üveg · bőr · textil · beton · karbon · folyékony anyagok — felületre és betűre.</div>
+        <div className="flex flex-wrap gap-2">
+          {['All', ...DESIGNLY_MATERIAL_CATEGORIES].map((item) => (
+            <button key={item} onClick={() => setMaterial(item)} className={'chip transition-all ' + (material === item ? 'border-gold-600/40 bg-gold-600/10 text-gold-200' : 'border-ink-500/40 text-cream-300/60')}>{item}</button>
+          ))}
+        </div>
+        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+          {(material === 'All' ? DESIGNLY_MATERIAL_LIBRARY : DESIGNLY_MATERIAL_LIBRARY.filter((m) => m.category === material)).map((m) => (
+            <button key={m.id} title={m.name} className="rounded-lg border border-ink-600/40 p-2 text-left hover:border-gold-500/40 transition-all">
+              <div className="h-10 rounded-md border border-white/10" style={{ background: m.css }} />
+              <div className="text-[9px] text-cream-200/70 mt-1 truncate">{m.name}</div>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
