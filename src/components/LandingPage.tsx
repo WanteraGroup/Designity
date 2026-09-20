@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import {
   ArrowRight, Check, ChevronDown, Gamepad2, Image, Layout, Palette,
   Play, Sparkles, Wand2, Zap, Shirt, Bot, Layers3, MousePointer2,
@@ -107,7 +107,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     { title: hu ? 'Esport Design' : 'Esports Design', icon: Trophy, color: 'green', page: 'streamer' },
   ];
 
-  const workflow = [
+  const workflow: Array<[string, string, string, ComponentType<{ className?: string }>]> = [
     [ '01', hu ? 'Válassz sablont vagy AI-területet' : 'Choose a template or AI tool', hu ? 'Kezdj egy kész iránnyal vagy tiszta lappal.' : 'Start from a direction or a clean canvas.', MousePointer2 ],
     [ '02', hu ? 'Szabd testre' : 'Customize it', hu ? 'Színek, szöveg, stílus, elemek és márkaarculat.' : 'Colors, copy, style, elements and brand system.', Palette ],
     [ '03', hu ? 'Nézd meg nagy előnézetben' : 'Preview at full size', hu ? 'Ellenőrizd az egész kompozíciót és az exportot.' : 'Review the full composition and export setup.', Image ],
@@ -224,10 +224,9 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           <div><span className="dl-home-label">03 / WORKFLOW</span><h2>{copy.workflowTitle}</h2><p>{copy.workflowSub}</p></div>
         </div>
         <div className="dl-home-workflow-grid">
-          {workflow.map(([number, title, desc, Icon]) => {
-            const I = Icon as any;
-            return <div key={number} className="dl-home-step"><span className="dl-home-step-number">{number}</span><div className="dl-home-step-icon"><I className="w-5 h-5" /></div><h3>{title}</h3><p>{desc}</p></div>;
-          })}
+          {workflow.map(([number, title, desc, Icon]) => (
+            <div key={number} className="dl-home-step"><span className="dl-home-step-number">{number}</span><div className="dl-home-step-icon"><Icon className="w-5 h-5" /></div><h3>{title}</h3><p>{desc}</p></div>
+          ))}
         </div>
       </section>
 
