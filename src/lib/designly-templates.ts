@@ -65,6 +65,18 @@ export const DESIGNLY_FONT_PAIRS = [
   'Manrope + Cormorant Garamond','Outfit + DM Serif Display','Syne + Inter',
   'Urbanist + Playfair Display','Marcellus + Source Sans 3','Jost + Cormorant Garamond',
   'Anton + Inter','IBM Plex Sans + Playfair Display','Noto Serif + Manrope','Space Grotesk + Cormorant',
+  'Bodoni + Montserrat','Gloock + Inter','DM Serif Text + Manrope','Newsreader + Inter','Instrument Serif + Inter','Young Serif + Manrope',
+  'Cormorant Infant + Montserrat','Cardo + Work Sans','Lora + Poppins','Merriweather + Montserrat','Spectral + Inter','Bitter + Manrope',
+  'Source Serif 4 + Inter','Literata + Manrope','Crimson Pro + Work Sans','Playfair Display + Raleway','Prata + Montserrat','Oranienbaum + Inter',
+  'Abril Fatface + Lato','Bodoni Moda + Space Grotesk','DM Serif Display + Outfit','Fraunces + Manrope','Marcellus + Montserrat','Cinzel Decorative + Inter',
+  'Unica One + Inter','League Spartan + Lora','Archivo Black + Manrope','Barlow Condensed + Inter','Roboto Slab + Manrope','Kanit + Inter',
+  'Rajdhani + Inter','Oxanium + Manrope','Michroma + Inter','Orbitron + Inter','Exo 2 + Manrope','Space Mono + Inter',
+  'JetBrains Mono + Inter','IBM Plex Mono + Inter','Fira Code + Inter','Chakra Petch + Inter','Titillium Web + Lora','Barlow + Cormorant',
+  'Quicksand + DM Serif Display','Nunito Sans + Playfair Display','Raleway + DM Serif','Josefin Sans + Cormorant','Cabin + Libre Baskerville','Karla + Fraunces',
+  'Mulish + Cormorant Garamond','Work Sans + EB Garamond','Inter + Bodoni Moda','Manrope + Prata','Outfit + Cormorant','Sora + Libre Baskerville',
+  'Figtree + DM Serif Display','Geist + Playfair Display','Geist + Manrope','Plus Jakarta Sans + Cormorant','Public Sans + Lora','Rubik + Merriweather',
+  'Vollkorn + Inter','Arvo + Manrope','Zilla Slab + Inter','Bree Serif + Lato','Alfa Slab One + Inter','Righteous + Manrope',
+  'Poiret One + Montserrat','Cormorant SC + Inter','Forum + Manrope','Yeseva One + Inter','Italiana + Lato','Bodoni 72 + Inter',
 ];
 
 export const DESIGNLY_EFFECTS = [
@@ -79,7 +91,11 @@ const EFFECTS = DESIGNLY_EFFECTS;
 const NAMES = [
   'Aurelia','Nordic','Celtic','Imperial','Velvet','Obsidian','Monarch','Atlas',
   'Eclipse','Heritage','Noble','Vantage','Sovereign','Aurora','Legacy','Element',
-  'Prestige','Summit','Noir','Elysian','Valhalla','Raven','Fjord','Runestone',
+  'Prestige','Summit','Noir','Elysian','Valhalla','Raven','Fjord','Runestone','Odin','Freya','Thor','Asgard','Drakkar','Saga',
+  'Valkyrie','Mjolnir','Fenrir','Yggdrasil','Bifrost','Skald','Jarl','Edda','Boreal','Solstice','Ember','Onyx','Titan',
+  'Apex','Crown','Regal','Majestic','Halo','Nova','Luna','Solaris','Vesper','Celeste','Artemis','Apollo','Zenith','Vertex',
+  'Forge','Foundry','Legacy','Dynasty','Empire','Regent','Palace','Chateau','Maison','Atelier','Studio','Craft','Pulse','Vector',
+  'Quantum','Nexus','Orbit','Matrix','Signal','Vertex','Prism','Flux','Echo','Horizon','Monument','Pillar','Keystone','Summit',
 ];
 
 function templateAt(index: number): DesignlyTemplate {
@@ -109,9 +125,12 @@ function templateAt(index: number): DesignlyTemplate {
   };
 }
 
-// 50,000 deterministic templates are available locally.
-// The catalogue is generated on demand to avoid allocating 50,000 objects during app startup.
-export const TEMPLATE_TOTAL = 50000;
+// 100,000 deterministic templates are available locally.
+// The catalogue is generated on demand to keep startup memory usage low.
+// Each template is reproducible from its index, so the library can scale without shipping
+// 100,000 duplicated JSON objects. Logo, brand, website, social, print and campaign variants
+// are distributed across the catalogue with many font, palette, layout and effect combinations.
+export const TEMPLATE_TOTAL = 100000;
 export const DESIGNLY_TEMPLATE_INDEXES = Array.from({ length: TEMPLATE_TOTAL }, (_, i) => i);
 export function getDesignlyTemplate(index: number): DesignlyTemplate {
   const safeIndex = Math.max(0, Math.min(TEMPLATE_TOTAL - 1, Math.floor(index)));
