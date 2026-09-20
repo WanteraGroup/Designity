@@ -109,40 +109,44 @@ export function CreditPurchaseModal({
             <div className="mt-6 rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-200">{paymentError}</div>
           )}
 
-          {paymentState !== 'success' && <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-7">
-            {CREDIT_PACKAGES.map((pkg) => (
-              <button key={pkg.id} type="button" onClick={() => void startCheckout(pkg.id)} className="rounded-xl border border-gold-600/15 bg-ink-900/70 p-4 text-left hover:border-gold-500/45 hover:bg-gold-500/5 transition-all">
-                <div className="text-xl font-display font-bold gold-text">{pkg.credits.toLocaleString('hu-HU')}</div>
-                <div className="text-[10px] uppercase tracking-wider text-cream-400/50 mt-1">kredit</div>
-                <div className="text-sm text-cream-100 mt-3">{formatPrice(pkg.price, lang)}</div>
-              </button>
-            ))}
-          </div>}
-
-          {paymentState !== 'success' && <div className="mt-5 rounded-xl border border-gold-600/15 bg-ink-900/60 p-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <div className="text-sm font-semibold text-cream-100">Egyedi kreditmennyiség</div>
-                <div className="text-xs text-cream-400/55 mt-1">Válassz pontosan 1–10 000 kredit között.</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min={1}
-                  max={10000}
-                  step={1}
-                  value={minCredits}
-                  onChange={(e) => setMinCredits(Math.max(1, Math.min(10000, Math.floor(Number(e.target.value) || 1))))}
-                  className="input-lux w-36"
-                  aria-label="Egyedi kreditmennyiség"
-                />
-                <button type="button" onClick={() => void startCheckout('custom_' + minCredits)} className="btn-gold text-sm whitespace-nowrap">
-                  <Sparkles className="w-4 h-4" />
-                  Vásárlás · {formatPrice(getCustomCreditPrice(minCredits), lang)}
+          {paymentState !== 'success' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-7">
+              {CREDIT_PACKAGES.map((pkg) => (
+                <button key={pkg.id} type="button" onClick={() => void startCheckout(pkg.id)} className="rounded-xl border border-gold-600/15 bg-ink-900/70 p-4 text-left hover:border-gold-500/45 hover:bg-gold-500/5 transition-all">
+                  <div className="text-xl font-display font-bold gold-text">{pkg.credits.toLocaleString('hu-HU')}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-cream-400/50 mt-1">kredit</div>
+                  <div className="text-sm text-cream-100 mt-3">{formatPrice(pkg.price, lang)}</div>
                 </button>
+              ))}
+            </div>
+          )}
+
+          {paymentState !== 'success' && (
+            <div className="mt-5 rounded-xl border border-gold-600/15 bg-ink-900/60 p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-cream-100">Egyedi kreditmennyiség</div>
+                  <div className="text-xs text-cream-400/55 mt-1">Válassz pontosan 1–10 000 kredit között.</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    max={10000}
+                    step={1}
+                    value={minCredits}
+                    onChange={(e) => setMinCredits(Math.max(1, Math.min(10000, Math.floor(Number(e.target.value) || 1))))}
+                    className="input-lux w-36"
+                    aria-label="Egyedi kreditmennyiség"
+                  />
+                  <button type="button" onClick={() => void startCheckout('custom_' + minCredits)} className="btn-gold text-sm whitespace-nowrap">
+                    <Sparkles className="w-4 h-4" />
+                    Vásárlás · {formatPrice(getCustomCreditPrice(minCredits), lang)}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>}
+          )}
 
           <button type="button" onClick={onClose} className="btn-ghost w-full mt-5">Vissza</button>
         </div>
