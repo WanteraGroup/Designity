@@ -101,6 +101,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
   const [autoBuildRequested, setAutoBuildRequested] = useState(false);
   const [autoBuildMode, setAutoBuildMode] = useState(false);
+  const [autoBuildFinalizeRequested, setAutoBuildFinalizeRequested] = useState(false);
   const [autoBuildStatus, setAutoBuildStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -247,7 +248,15 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setActiveAgents(result.activeAgents || ['master']);
     setOrchestration(result.orchestration || null);
     setStep(3);
-    if (autoBuildMode) setAutoBuildStatus('AI BUSINESS BUILDER: előnézet kész — jóváhagyásra vár');
+    if (autoBuildMode) {
+      if (isOwner) {
+        setApproved(true);
+        setAutoBuildStatus('AI BUSINESS BUILDER: előnézet jóváhagyva — végleges weboldal építése…');
+        setAutoBuildFinalizeRequested(true);
+      } else {
+        setAutoBuildStatus('AI BUSINESS BUILDER: előnézet kész — jóváhagyásra vár');
+      }
+    }
   };
 
   // Automatic Business Builder: trigger the free AI preview after the dashboard handoff is loaded.
@@ -256,6 +265,13 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setAutoBuildRequested(false);
     void handlePreview();
   }, [autoBuildRequested, selectedType, brief]);
+
+  useEffect(() => {
+    if (!autoBuildFinalizeRequested || !autoBuildMode || !approved || !previewId || !previewImageUrl || generating) return;
+    setAutoBuildFinalizeRequested(false);
+    setAutoBuildStatus('AI BUSINESS BUILDER: végleges weboldal építése…');
+    void handleGenerate();
+  }, [autoBuildFinalizeRequested, autoBuildMode, approved, previewId, previewImageUrl, generating]);
 
   const handleGenerate = async () => {
     if (!profile || !selectedType || !approved) return;
