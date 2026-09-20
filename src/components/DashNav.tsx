@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -36,7 +36,8 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     { id: 'assets', label: 'Asset Vault', icon: ImageIcon },
     { id: 'credits', label: 'Credit Center', icon: Coins },
     { id: 'billing', label: 'Plans & Billing', icon: CreditCard },
-    { id: 'settings', label: 'Workspace Settings', icon: Settings }
+    { id: 'settings', label: 'Workspace Settings', icon: Settings },
+    ...(isAdmin ? [{ id: 'shopify', label: 'Shopify Studio', icon: ShoppingBag }] : [])
   ];
 
   if (isAdmin) {
