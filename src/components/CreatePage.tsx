@@ -88,6 +88,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [genStep, setGenStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [createdProject, setCreatedProject] = useState<string | null>(null);
+  const [projectName, setProjectName] = useState('DESIGNLY STUDIO');
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [preview, setPreview] = useState<AgentDesignBrief | null>(null);
