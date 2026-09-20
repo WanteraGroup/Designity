@@ -54,6 +54,7 @@ Deno.serve(async (req: Request) => {
     const mood = String(body.mood || "emotional, cinematic, uplifting").trim().slice(0, 500);
     const vocal = String(body.vocal || "warm lead vocal").trim().slice(0, 300);
     const duration = Math.max(60, Math.min(300, Math.round(Number(body.duration) || 60)));
+    const mode = body.mode === "preview" ? "preview" : "final";
 
     if (!lyrics) return json({ error: "MISSING_LYRICS", message: "Dalszöveg szükséges." }, 400);
 
@@ -76,7 +77,7 @@ Deno.serve(async (req: Request) => {
     const creditCost = Math.ceil(duration / 60) * perMinute;
     const unlimited = profile.role === "owner" || profile.unlimited_access === true;
 
-    if (!unlimited && Number(profile.credits) < creditCost) {
+    if (mode === "final" && !unlimited && Number(profile.credits) < creditCost) {
       return json({
         error: "INSUFFICIENT_CREDITS",
         message: "Nincs elegendő kredit ehhez a dalhoz.",
@@ -85,7 +86,7 @@ Deno.serve(async (req: Request) => {
       }, 402);
     }
 
-    if (!unlimited) {
+    if (mode === "final" && !unlimited) {
       const { error: deductError } = await admin.rpc("deduct_credits", {
         p_user_id: user.id,
         p_amount: creditCost,
@@ -134,6 +135,17 @@ Deno.serve(async (req: Request) => {
 
       const audioBuffer = await audioResponse.arrayBuffer();
       const safeTitle = title.toLowerCase().replace(/[^a-z0-9-_]+/gi, "-").replace(/-+/g, "-").slice(0, 60) || "song";
+      if (mode === "preview") {
+        return json({
+          success: true,
+          preview: true,
+          audioUrl: sourceUrl,
+          duration: Math.round(Number(providerData.duration) || duration),
+          creditsUsed: 0,
+          message: "A zenei előnézet ingyenes. Kredit csak véglegesítéskor kerül levonásra.",
+        });
+      }
+
       const path = user.id + "/" + crypto.randomUUID() + "-" + safeTitle + ".wav";
 
       const { error: uploadError } = await admin.storage
@@ -174,7 +186,7 @@ Deno.serve(async (req: Request) => {
         provider: "minimax/music-3",
       });
     } catch (generationError) {
-      if (!unlimited) {
+      if (mode === "final" && !unlimited) {
         await admin.rpc("refund_credits", {
           p_user_id: user.id,
           p_amount: creditCost,
