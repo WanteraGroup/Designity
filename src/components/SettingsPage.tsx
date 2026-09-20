@@ -78,6 +78,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
     const { error: profileError } = await supabase.rpc('update_my_profile', {
       p_full_name: profileUpdate.full_name,
       p_phone: profileUpdate.phone,
+      p_email: emailChanged ? nextEmail : null,
     });
 
     if (profileError) {
