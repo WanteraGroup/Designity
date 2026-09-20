@@ -9,11 +9,12 @@ export type StreamerTemplateSeed = {
 export const STREAMER_TEMPLATE_AXES = {
   styles: [
     'tech_noir','gaming','esports','cyberpunk','neon',
-    'nordic','celtic','minimal','retro','dark_fantasy'
+    'nordic','celtic','minimal','retro','dark_fantasy','sci_fi','street'
   ],
   layouts: [
     'edge_hud','full_frame','split_screen','clean_minimal',
-    'glass_panel','center_stage'
+    'glass_panel','center_stage','corner_hud','wide_cinema',
+    'vertical_stack','arena_scoreboard'
   ],
   motifs: [
     'raven','wolf','dragon','skull','tiger','oni',
@@ -27,7 +28,7 @@ export const STREAMER_TEMPLATE_AXES = {
   ],
   typography: [
     'bold_condensed','esports_block','futuristic',
-    'sharp_serif','clean_sans','rune_display'
+    'sharp_serif','clean_sans','rune_display','arcade','mono_tech'
   ],
 } as const;
 
