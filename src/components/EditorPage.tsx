@@ -74,6 +74,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [projectName, setProjectName] = useState('DESIGNLY STUDIO');
   const [buildSpec, setBuildSpec] = useState<any>(null);
   const [projectLoading, setProjectLoading] = useState(true);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
