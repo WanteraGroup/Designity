@@ -189,7 +189,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
         </section>
       )}
 
-      <CreditPurchaseModal open={showCreditModal} onClose={()=>setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason='Vásárolj kreditet közvetlenül a Creator / Gamer Product Studio-ból.' />
+      <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={()=>setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason='Vásárolj kreditet közvetlenül a Creator / Gamer Product Studio-ból.' />
     </div>
   );
 }
