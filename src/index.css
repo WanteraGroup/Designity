@@ -2090,3 +2090,44 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     transition-duration:.01ms !important;
   }
 }
+
+
+/* DESIGNLY anti-screenshot preview watermark. Visible on non-admin previews and intentionally captured by screenshots. */
+.designly-preview-watermark{
+  position:absolute;
+  inset:-18%;
+  z-index:80;
+  pointer-events:none;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(170px,1fr));
+  grid-auto-rows:minmax(110px,1fr);
+  gap:18px 28px;
+  align-items:center;
+  justify-items:center;
+  transform:rotate(-17deg);
+  transform-origin:center;
+  user-select:none;
+  overflow:hidden;
+  opacity:.23;
+  mix-blend-mode:screen;
+}
+.designly-preview-watermark span{
+  display:block;
+  white-space:nowrap;
+  color:rgba(245,235,204,.86);
+  font:700 12px/1 Inter,sans-serif;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(0,0,0,.95),0 0 10px rgba(0,0,0,.72);
+  border:1px solid rgba(229,201,107,.22);
+  border-radius:999px;
+  padding:7px 14px;
+  background:rgba(3,4,5,.18);
+  box-shadow:0 0 14px rgba(0,0,0,.14);
+}
+.designly-preview-watermark span:nth-child(3n){opacity:.72}
+.designly-preview-watermark span:nth-child(5n){opacity:.48;transform:scale(.88)}
+@media(max-width:700px){
+  .designly-preview-watermark{grid-template-columns:repeat(3,minmax(150px,1fr));grid-auto-rows:minmax(95px,1fr);gap:12px 18px;opacity:.20}
+  .designly-preview-watermark span{font-size:9px;letter-spacing:.15em;padding:6px 10px}
+}
