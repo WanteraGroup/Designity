@@ -57,7 +57,11 @@ export function VoiceAgentPage({ onNavigate }: { onNavigate: (page: string) => v
     const result = await askHuginn(clean, languageCode);
     const answer = result.ok && result.reply
       ? result.reply
-      : 'A hangalapú kapcsolat jelenleg nem érhető el. Ellenőrizd a DESIGNLY AI kapcsolatot, majd próbáld újra.';
+      : result.error === 'PROVIDER_NOT_CONFIGURED'
+        ? 'HUGINN AI nincs beállítva a háttérben. A mikrofon működik, de az AI szolgáltatás kulcsa hiányzik.'
+        : result.error === 'HUGINN_UNAVAILABLE' || result.error === 'HUGINN_ERROR'
+          ? 'HUGINN háttérszolgáltatása jelenleg nem érhető el. Ellenőrizd a DESIGNLY Supabase Edge Function telepítését.'
+          : `HUGINN kapcsolati hiba: ${result.error || 'ismeretlen hiba'}.`;
     setReply(answer);
     setStatus('Válasz elkészült.');
     speak(answer);
