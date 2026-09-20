@@ -4,6 +4,7 @@ interface FreePreviewModalProps {
   open: boolean;
   title: string;
   imageUrl?: string | null;
+  previewText?: string | null;
   loading?: boolean;
   cost: number;
   balance?: number | null;
@@ -18,6 +19,7 @@ export function FreePreviewModal({
   open,
   title,
   imageUrl,
+  previewText,
   loading = false,
   cost,
   balance,
@@ -59,11 +61,12 @@ export function FreePreviewModal({
               ) : imageUrl ? (
                 <img src={imageUrl} alt={title + ' AI preview'} className="block max-h-[72vh] w-full object-contain select-none" draggable={false} />
               ) : (
-                <div className="min-h-[52vh] grid place-items-center text-center text-black/45 px-8">
-                  <div>
+                <div className="min-h-[52vh] grid place-items-center text-center text-black/50 px-8">
+                  <div className="max-w-2xl">
                     <Eye className="w-12 h-12 mx-auto mb-4 opacity-35" />
-                    <div className="text-sm">Az AI előnézeti képe itt jelenik meg.</div>
+                    <div className="text-sm">AI előnézeti koncepció</div>
                     <div className="mt-2 text-[9px] uppercase tracking-[.18em]">0 KREDIT · PREVIEW</div>
+                    {previewText && <div className="mt-5 rounded-2xl border border-black/10 bg-white/60 p-5 text-left text-sm leading-7 text-black/65">{previewText}</div>}
                   </div>
                 </div>
               )}
