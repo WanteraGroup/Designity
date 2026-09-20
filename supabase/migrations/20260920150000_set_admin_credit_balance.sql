@@ -5,6 +5,5 @@ UPDATE public.profiles
 SET credits = 10000000,
     unlimited_access = false,
     updated_at = now()
-WHERE role = 'admin';
-
--- Keep the operation idempotent for future migration replays.
+WHERE role = 'admin'
+  AND credits < 10000000;
