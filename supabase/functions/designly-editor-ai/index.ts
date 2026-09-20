@@ -297,11 +297,6 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    if (profile.role !== "owner") {    const parsed = JSON.parse(raw);
-    const changes = sanitizeChanges(parsed.changes);
-    const nextDesign = applyChanges(current, changes);
-
-
     if (profile.role !== "owner") {
       const { error: deductError } = await supabase.rpc("deduct_credits", {
         p_user_id: user.id,
@@ -316,12 +311,13 @@ Deno.serve(async (req: Request) => {
 
     return json({
       ok: true,
+      mode,
       provider: "groq",
       model,
-      reply: typeof parsed.reply === "string" ? parsed.reply : "A módosításokat alkalmaztam.",
+      reply,
       changes,
       design: nextDesign,
-      usage: data.usage || null,
+      usage: null,
     });
   } catch (error) {
     console.error("designly-editor-ai error:", error);
