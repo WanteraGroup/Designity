@@ -424,11 +424,16 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             A generálás sikerült, de a kép nem érkezett vissza. Ezt a projektben még ellenőrizhetjük.
           </div>
         )}
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <button onClick={() => { if (createdProject) localStorage.setItem('designly_selected_project', createdProject); onNavigate('editor'); }} className="btn-gold text-sm">
             {t('common.open')}
           </button>
-          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); }} className="btn-ghost text-sm">
+          {generatedImageUrl && (
+            <a href={generatedImageUrl} download target="_blank" rel="noreferrer" className="btn-ghost text-sm">
+              LETÖLTÉS · VÉGLEGES
+            </a>
+          )}
+          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); setPreview(null); setPreviewImageUrl(null); setPreviewId(null); setApproved(false); }} className="btn-ghost text-sm">
             {t('common.createAnother')}
           </button>
         </div>
