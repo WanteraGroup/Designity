@@ -251,7 +251,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
               <CreditCard className="w-4 h-4" /> {text.credits}
             </div>
             <div className="mt-2 text-2xl font-display font-bold gold-text">
-              {isUnlimited ? '∞' : (profile?.credits ?? 0).toLocaleString('hu-HU')}
+              {(profile?.credits ?? 0).toLocaleString('hu-HU')}
             </div>
             <div className="mt-1 text-xs text-cream-300/45">{isUnlimited ? (hu ? 'Korlátlan hozzáférés' : 'Unlimited access') : 'credits'}</div>
           </div>
