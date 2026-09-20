@@ -221,7 +221,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
             </div>
             <div className='relative min-h-[70vh] overflow-auto bg-[#020303] p-2 sm:p-5 lg:p-8'>
               {imageUrl && <img src={imageUrl} alt='Creator merch master artwork' className='mx-auto block w-full max-w-[1500px] h-auto object-contain rounded-xl' draggable={false} />}
-              <PreviewWatermark hidden={isOwner} projectName={creator || 'CREATOR'} label='DESIGNLY · CREATOR PREVIEW' />
+              <PreviewWatermark hidden={true} projectName={creator || 'CREATOR'} label='DESIGNLY · CREATOR FINAL' />
             </div>
           </div>
           <div className='grid gap-5 lg:grid-cols-[1fr_auto]'>
