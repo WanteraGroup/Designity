@@ -416,9 +416,9 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
               {t('editor.tools')}
             </div>
             <div className="space-y-1">
-              <ToolButton icon={Type} label={t('editor.editText')} />
-              <ToolButton icon={Palette} label={t('editor.changeColors')} />
-              <ToolButton icon={Layout} label={t('editor.changeLayout')} />
+              <ToolButton icon={Type} label={t('editor.editText')} command="Make the typography and text hierarchy stronger" onRun={applyAiCommand} />
+              <ToolButton icon={Palette} label={t('editor.changeColors')} command="Refine the color palette while preserving the premium DESIGNLY identity" onRun={applyAiCommand} />
+              <ToolButton icon={Layout} label={t('editor.changeLayout')} command="Improve the selected section layout and spacing for a polished responsive composition" onRun={applyAiCommand} />
             </div>
           </div>
 
@@ -627,12 +627,20 @@ function buildBusinessPreviewSpec(spec: any, projectName: string, design: Design
 function ToolButton({
   icon: Icon,
   label,
+  command,
+  onRun,
 }: {
   icon: ComponentType<{ className?: string }>;
   label: string;
+  command: string;
+  onRun: (command: string) => void;
 }) {
   return (
-    <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-cream-300/60 hover:text-gold-200 hover:bg-ink-700/40 transition-all">
+    <button
+      type="button"
+      onClick={() => onRun(command)}
+      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-cream-300/60 hover:text-gold-200 hover:bg-ink-700/40 transition-all border border-transparent hover:border-gold-600/15"
+    >
       <Icon className="w-3.5 h-3.5" />
       {label}
     </button>
