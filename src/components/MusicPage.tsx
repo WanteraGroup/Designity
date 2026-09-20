@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/auth';
 const DURATIONS = [60, 120, 180, 240, 300];
 
 export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }) {
-  const { user, profile, isOwner } = useAuth();
+  const { user, profile, isOwner, refreshProfile } = useAuth();
   const [lyrics, setLyrics] = useState('');
   const [lyricsTheme, setLyricsTheme] = useState('');
   const [lyricsTitle, setLyricsTitle] = useState('');
