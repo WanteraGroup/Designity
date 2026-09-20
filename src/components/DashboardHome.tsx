@@ -143,7 +143,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
                 disabled={!companyName.trim() || !industry.trim() || !goal.trim()}
                 onClick={() => {
                   const brief = `ÜGYFÉLPROJEKT — ${companyName.trim()} — ${industry.trim()}. Ügyfél kapcsolattartó: ${clientName.trim() || 'nincs megadva'}. Cél: ${goal.trim()}. Megrendelt csomag: ${packageName}. Build a complete production-oriented responsive business website/app. Include premium hero, value proposition, services/products, pricing, CTA, contact flow, mobile navigation, AI assistant concept, admin/dashboard structure, customer/order flow where relevant, coherent brand system, editable placeholders for unknown details. Use DESIGNLY premium black, gold, metallic and Celtic visual language. Treat all client-specific details as editable content.`;
-                  localStorage.setItem('designly_auto_build', JSON.stringify({ type:'website', brief }));
+                  localStorage.setItem('designly_auto_build', JSON.stringify({ type:'website', brief, projectName: companyName.trim(), clientName: clientName.trim(), companyName: companyName.trim(), packageName }));
                   setClientModal(false);
                   onNavigate('create');
                 }}
