@@ -142,14 +142,14 @@ export function CncCamPage() {
   };
 
   const download = () => {
-    const blob = new Blob([shown.join('\.') + '\.'], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([shown.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'designly-' + operation + '.nc'; a.click(); URL.revokeObjectURL(url);
     setStatus('NC fájl exportálva');
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(shown.join('\.'));
+    await navigator.clipboard.writeText(shown.join('\n'));
     setStatus('G-kód a vágólapra másolva');
   };
 
