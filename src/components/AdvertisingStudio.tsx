@@ -62,7 +62,6 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     const result = await runDesignlyMasterAgent({
       brief,
       brandKitId: selectedBrand,
-      style: selectedStyle,
       language: lang,
       mode: 'preview',
       requestedOutputs: ['custom'],
