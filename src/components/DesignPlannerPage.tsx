@@ -73,7 +73,7 @@ function exportPlanSpec(planType: string, planLabel: string, area: string, rooms
 
 export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
   const { lang } = useI18n();
-  const { profile, isUnlimited, refreshProfile } = useAuth();
+  const { profile, isUnlimited, isAdmin, refreshProfile } = useAuth();
   const hu = lang === 'hu';
   const [planType, setPlanType] = useState('floor-plan');
   const [area, setArea] = useState('100 m²');
@@ -272,7 +272,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
                 </div>
               ) : (finalImage || preview) ? (
                 <div className="relative w-full max-h-[850px] overflow-hidden">
-                  <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                  <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className={`block w-full max-h-[850px] object-contain select-none ${isAdmin ? 'pointer-events-auto' : 'pointer-events-none'}`} draggable={isAdmin} onContextMenu={isAdmin ? undefined : (e) => e.preventDefault()} />
                   {!finalImage && <PreviewWatermark projectName="DESIGNLY PLANNER" />}
                 </div>
               ) : null}
