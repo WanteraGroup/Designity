@@ -16,7 +16,7 @@ interface AdvertisingStudioProps {
 }
 
 export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { profile, isOwner, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
@@ -59,12 +59,11 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     setPreviewLoading(true);
     setPreviewImage(null);
     setPreviewId(null);
-    const formatInfo = AD_FORMATS.find((f) => f.id === selectedFormat);
     const result = await runDesignlyMasterAgent({
       brief,
       brandKitId: selectedBrand,
       style: selectedStyle,
-      language: 'hu',
+      language: lang,
       mode: 'preview',
       requestedOutputs: ['custom'],
     });
@@ -80,6 +79,10 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   const handleGenerate = async () => {
     if (!profile || !selectedFormat || !previewId) return;
     setError(null);
+    if (!isOwner && (profile.credits ?? 0) < cost) {
+      setShowCreditModal(true);
+      return;
+    }
     setProviderNotConfigured(false);
 
     setGenerating(true);
@@ -396,6 +399,19 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
         onApprove={async () => { setPreviewOpen(false); setPreviewOpen(false); await handleGenerate(); }}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
+        onBuyCredits={() => setShowCreditModal(true)}
+        approvedLoading={generating}
+      />
+      <FreePreviewModal
+        open={previewOpen}
+        title={AD_FORMATS.find((f) => f.id === selectedFormat)?.label || 'AI Reklám'}
+        imageUrl={previewImage}
+        loading={previewLoading}
+        cost={cost}
+        balance={profile?.credits}
+        onClose={() => setPreviewOpen(false)}
+        onApprove={() => void handleGenerate()}
         onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
