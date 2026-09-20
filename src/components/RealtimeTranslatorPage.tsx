@@ -100,12 +100,14 @@ export function RealtimeTranslatorPage({ onNavigate }: { onNavigate: (page: stri
     recognition.interimResults = true;
     recognition.onresult = (event) => {
       let full = '';
-      for (let i = event.resultIndex; i < event.results.length; i += 1) full += event.results[i]?.[0]?.transcript || '';
-      if (full.trim()) {
-        setSourceText(full.trim());
-        const lastIndex = event.results.length - 1;
-        if (event.results[lastIndex]?.isFinal) void processFinal(full.trim());
+      let latestFinal = '';
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
+        const value = event.results[i]?.[0]?.transcript || '';
+        full += value;
+        if (event.results[i]?.isFinal) latestFinal = value;
       }
+      if (full.trim()) setSourceText(full.trim());
+      if (latestFinal.trim()) void processFinal(latestFinal.trim());
     };
     recognition.onerror = (event) => {
       setListening(false);
