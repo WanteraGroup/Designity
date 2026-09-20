@@ -266,7 +266,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
         <div><label className="text-sm text-cream-200">Hangulat</label><input value={mood} onChange={e => setMood(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Énekhang</label><input value={vocal} onChange={e => setVocal(e.target.value)} className="input-premium mt-2 w-full" /></div>
         <div><label className="text-sm text-cream-200">Hossz</label><div className="grid grid-cols-5 gap-2 mt-2">{DURATIONS.map(d => <button key={d} onClick={() => setDuration(d)} className={'rounded-lg py-2 text-xs border transition ' + (duration === d ? 'border-gold-500/50 bg-gold-600/15 text-gold-200' : 'border-gold-600/10 text-cream-400/70 hover:border-gold-600/30')}>{d / 60}p</button>)}</div></div>
-        <button onClick={() => void buildMusicPreview()} disabled={loading || previewLoading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'DAL GENERÁLÁSA · ' + cost + ' KREDIT'}</button>
+        <button onClick={() => void buildMusicPreview()} disabled={loading || previewLoading} className="btn-gold w-full flex items-center justify-center gap-2 disabled:opacity-50">{previewLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}{loading ? 'Zene készül…' : 'INGYENES ZENEI ELŐNÉZET'}</button>
         {error && <div className="rounded-xl border border-red-500/20 bg-red-500/5 text-red-200 text-sm p-3">{error}</div>}
       </section>
     </div>
