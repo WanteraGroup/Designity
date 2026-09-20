@@ -56,7 +56,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     testimonial: 'A DESIGNLY egy helyre hozza a teljes kreatív folyamatot.',
     pricingTitle: 'PRICING / ÁRAZÁS',
     pricingSub: 'Válassz a számodra megfelelő csomagot.',
-    finalTitle: 'KÉSZÍTS VALAMI EMLÉKEZETES DE KÍVÁNSZ',
+    finalTitle: 'KÉSZÍTS VALAMI EMLÉKEZETESET, AMIRE BÜSZKE LESZEL.',
     finalSub: 'Egy ötlet. Egy rendszer. Végtelen lehetőség.',
     join: 'Belépek a DESIGNLY-be',
     back: 'Vissza a tetejére',
