@@ -7,6 +7,9 @@ import { generateDesign } from '@/lib/ai';
 import { CAMPAIGN_FORMATS, DESIGN_STYLES } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
 import { CreditPurchaseModal } from './CreditPurchaseModal';
+import { FreePreviewModal } from './FreePreviewModal';
+import { runDesignlyMasterAgent } from '@/lib/designly-agent';
+import { getCreditsForType } from '@/lib/constants';
 import type { BrandKit } from '@/types';
 
 interface CampaignGeneratorProps {
@@ -28,6 +31,10 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   const [providerNotConfigured, setProviderNotConfigured] = useState(false);
   const [campaignId, setCampaignId] = useState<string | null>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewIds, setPreviewIds] = useState<Record<string,string>>({});
 
   useEffect(() => {
     async function loadBrands() {
@@ -42,7 +49,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     loadBrands();
   }, [profile]);
 
-  const cost = 10; // campaign = 10 credits
+  const cost = getCreditsForType('advertisement');
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
 
   const toggleFormat = (fmt: string) => {
@@ -51,13 +58,52 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     );
   };
 
+  const buildPreview = async () => {
+    if (!profile || selectedFormats.length === 0 || previewLoading) return;
+    setError(null);
+    setProviderNotConfigured(false);
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    setPreviewImage(null);
+    setPreviewIds({});
+    const results = await Promise.all(
+      selectedFormats.map(async (fmt) => {
+        const result = await runDesignlyMasterAgent({
+          brief: brief + '\\nCAMPAIGN FORMAT: ' + fmt,
+          brandKitId: selectedBrand,
+          style: selectedStyle,
+          language: 'hu',
+          mode: 'preview',
+          requestedOutputs: ['custom'],
+        });
+        return [fmt, result.previewId || '', result.previewImageUrl || null, result.success] as const;
+      }),
+    );
+    setPreviewLoading(false);
+    const ids: Record<string,string> = {};
+    let firstImage: string | null = null;
+    let anySuccess = false;
+    for (const [fmt, id, image, success] of results) {
+      if (id) ids[fmt] = id;
+      if (!firstImage && image) firstImage = image;
+      anySuccess = anySuccess || success;
+    }
+    if (!anySuccess) {
+      setError('A kampány ingyenes előnézete nem készült el.');
+      return;
+    }
+    setPreviewIds(ids);
+    setPreviewImage(firstImage);
+  };
+
   const handleGenerate = async () => {
-    if (!profile || selectedFormats.length === 0) return;
+    if (!profile || selectedFormats.length === 0 || Object.keys(previewIds).length === 0) return;
     setError(null);
     setProviderNotConfigured(false);
 
     if (!isOwner && (profile.credits ?? 0) < cost) {
       setError(t('gen.insufficientCredits'));
+      setShowCreditModal(true);
       return;
     }
 
@@ -122,6 +168,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
         style: selectedStyle,
         format: fmt,
         campaignId: campaign.id,
+        previewId: previewIds[fmt],
       });
 
       if (!genResult.success) {
@@ -358,14 +405,27 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
           <div className="flex justify-between items-center">
             <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
             <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">KREDIT VÁSÁRLÁS</button>
-            <button onClick={handleGenerate} disabled={!hasEnoughCredits} className="btn-gold text-sm disabled:opacity-40">
+            <button onClick={() => void buildPreview()} disabled={!brief.trim() || previewLoading} className="btn-gold text-sm disabled:opacity-40">
               <Sparkles className="w-4 h-4" />
-              {t('campaign.generate')}
+              INGYENES ELŐNÉZET
             </button>
           </div>
         </div>
       )}
       </div>
+      <FreePreviewModal
+        open={previewOpen}
+        title="AI Campaign Preview"
+        imageUrl={previewImage}
+        loading={previewLoading}
+        cost={cost * Math.max(1, selectedFormats.length)}
+        balance={profile?.credits}
+        onClose={() => setPreviewOpen(false)}
+        onApprove={() => void handleGenerate()}
+        onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewIds({}); }}
+        onBuyCredits={() => setShowCreditModal(true)}
+        approvedLoading={generating}
+      />
       <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="Vásárolj kreditet közvetlenül a Campaign Engine-ből, visszalépés nélkül." />
     </>
   );
