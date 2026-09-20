@@ -4,6 +4,7 @@ import {
   Network, Ruler, Save, Sparkles, Triangle, Wrench, X
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
+import { PreviewWatermark } from './PreviewWatermark';
 import { useI18n } from '@/lib/i18n';
 import { runDesignlyMasterAgent } from '@/lib/designly-agent';
 import { generateDesign } from '@/lib/ai';
@@ -265,8 +266,11 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
                   <div className="text-center"><Sparkles className="w-10 h-10 mx-auto mb-3 animate-pulse" /><div className="text-xs uppercase tracking-[.22em]">AI PLANNER · GENERÁLÁS</div></div>
                 </div>
               ) : (finalImage || preview) ? (
-                <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} />
-              ) : null}
+                <div className="relative w-full max-h-[850px] overflow-hidden">
+                  <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+                  {!finalImage && <PreviewWatermark projectName="DESIGNLY PLANNER" />}
+                </div>
+              ) : null
             </div>
           </div>
           {previewBrief && (
