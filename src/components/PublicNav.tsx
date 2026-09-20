@@ -34,6 +34,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     { id: 'features', label: t('nav.features'), page: 'features' },
     { id: 'advertising', label: lang === 'hu' ? 'AI Reklám Studio' : 'AI Ad Studio', page: 'advertising' },
     { id: 'tattoo', label: lang === 'hu' ? 'Tattoo Library' : 'Tattoo Library', page: 'tattoo' },
+    { id: 'planner', label: lang === 'hu' ? 'Tervező & Vizualizáló' : 'Planner & Visualizer', page: 'planner' },
     { id: 'music', label: t('nav.music'), page: 'music' },
     { id: 'workflow', label: t('nav.workflow'), page: 'workflow' },
     { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
@@ -52,6 +53,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     streamer: 'streamer',
     creator: 'merch',
     tattoo: 'tattoo',
+    planner: 'planner',
   };
   const activeId = activePages[currentPage] ?? '';
 
