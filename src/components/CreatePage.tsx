@@ -9,6 +9,7 @@ import { generateDesign } from '@/lib/ai';
 import { runDesignlyMasterAgent, type DesignBrief as AgentDesignBrief, type DesignOutput, type MasterAgentResult as AgentDesignResult } from '@/lib/designly-agent';
 import { CelticEmblem } from './CelticEmblem';
 import { PreviewWatermark } from './PreviewWatermark';
+import { CreditPurchaseModal } from './CreditPurchaseModal';
 import type { ProjectType, BrandKit } from '@/types';
 
 
@@ -743,101 +744,15 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       )}
     </div>
 
-      {showCreditModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="credit-purchase-title"
-            className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl border border-gold-600/30 bg-ink-950 shadow-2xl"
-          >
-            <button
-              type="button"
-              onClick={() => setShowCreditModal(false)}
-              className="absolute right-4 top-4 w-9 h-9 rounded-full border border-ink-600/60 bg-ink-900 flex items-center justify-center text-cream-300 hover:text-cream-50"
-              aria-label="Bezárás"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="p-6 sm:p-8">
-              <div className="text-center pr-8">
-                <CreditCard className="w-10 h-10 text-gold-400 mx-auto mb-3" />
-                <h2 id="credit-purchase-title" className="text-xl sm:text-2xl font-display font-bold text-cream-50">
-                  {t('credits.buyCredits')}
-                </h2>
-                <p className="text-sm text-cream-300/60 mt-2">
-                  {t('gen.insufficientCredits')}
-                </p>
-                <div className="mt-3 text-sm text-gold-200">
-                  {t('credits.currentBalance')}: {isOwner ? '∞' : profile?.credits ?? 0} · {t('designer.finalCost')}: {cost}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                {CREDIT_PACKAGES.map((pkg) => (
-                  <div key={pkg.id} className="card-lux p-5 flex flex-col border-gold-600/15 hover:border-gold-600/40 transition-colors">
-                    <div className="text-2xl font-display font-bold gold-text">{pkg.credits.toLocaleString()}</div>
-                    <div className="text-xs text-cream-300/50 mt-1">{t('misc.credits')}</div>
-                    <div className="text-lg font-medium text-cream-100 mt-3 mb-4">{formatPrice(pkg.price, lang)}</div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowCreditModal(false);
-                        onNavigate('checkout', { type: 'credit_package', itemId: pkg.id });
-                      }}
-                      className="btn-gold text-sm mt-auto"
-                    >
-                      <CreditCard className="w-4 h-4" />
-                      {t('credits.buyNow')}
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 rounded-xl border border-gold-600/20 bg-ink-900/60 p-5">
-                <div className="text-sm font-semibold text-cream-100">Egyedi kreditmennyiség</div>
-                <p className="text-xs text-cream-300/50 mt-1">Válassz 1–10 000 kredit között pontosan annyit, amennyire szükséged van.</p>
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                  <input
-                    type="number"
-                    min={1}
-                    max={10000}
-                    step={1}
-                    value={customCredits}
-                    onChange={(e) => {
-                      const value = Number(e.target.value);
-                      setCustomCredits(Number.isFinite(value) ? Math.max(1, Math.min(10000, Math.floor(value))) : 1);
-                    }}
-                    className="input-lux flex-1"
-                    aria-label="Egyedi kreditek"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowCreditModal(false);
-                      onNavigate('checkout', { type: 'credit_package', itemId: `custom_${customCredits}` });
-                    }}
-                    className="btn-gold sm:min-w-[190px]"
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    Vásárlás · {formatPrice(getCustomCreditPrice(customCredits), lang)}
-                  </button>
-                </div>
-                <div className="text-[11px] text-cream-300/40 mt-2">Minimum 1 · maximum 10 000 kredit</div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowCreditModal(false)}
-                className="btn-ghost text-sm w-full mt-5"
-              >
-                {t('common.back')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreditPurchaseModal
+        open={showCreditModal}
+        onClose={() => setShowCreditModal(false)}
+        onNavigate={onNavigate}
+        currentCredits={profile?.credits}
+        onCreditsUpdated={refreshProfile}
+        reason="A végleges generáláshoz nincs elegendő kredit. A kreditfeltöltés innen, a szerkesztő elhagyása nélkül indítható."
+      />
+)}
     </>
   );
 }
