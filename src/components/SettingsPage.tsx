@@ -75,13 +75,13 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
       profileUpdate.email = nextEmail;
     }
 
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update(profileUpdate)
-      .eq('id', profile.id);
+    const { error: profileError } = await supabase.rpc('update_my_profile', {
+      p_full_name: profileUpdate.full_name,
+      p_phone: profileUpdate.phone,
+    });
 
     if (profileError) {
-      setError(profileError.message);
+      setError(hu ? 'A profil mentése nem sikerült: ' + profileError.message : 'Profile save failed: ' + profileError.message);
     } else {
       await refreshProfile();
       setSaved(true);
