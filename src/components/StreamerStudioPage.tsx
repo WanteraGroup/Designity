@@ -95,7 +95,12 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
   const enough = isOwner || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
-    if (!profile || previewLoading) return;
+    if (previewLoading) return;
+    if (!profile) {
+      setError('Az ingyenes előnézethez be kell jelentkezned. Átirányítás a bejelentkezéshez…');
+      onNavigate('login');
+      return;
+    }
     const creatorName = creator.trim() || 'CREATOR';
     const creatorHandle = handle.trim() || creatorName;
     const prompt = buildStreamerTemplatePrompt(
