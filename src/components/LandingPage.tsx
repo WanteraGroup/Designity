@@ -68,7 +68,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
         </div>
 
         <div className="dl-reference-center">
-          <div className="dl-suite-badge">VYRON INTELLIGENCE × DESIGNLY STUDIO · ONE AI SYSTEM</div>
+          <div className="dl-suite-badge">DESIGNLY CREATIVE OS · POWERED BY VYRON INTELLIGENCE</div>
           <div className="dl-reference-crest">
             <div className="dl-reference-glow" />
             <CelticEmblem size={410} animate showD />
@@ -80,7 +80,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
           <div className="dl-actions dl-reference-actions">
             <button className="dl-btn dl-btn-secondary" onClick={() => { const url = import.meta.env.VITE_VYRON_URL; if (url) window.open(url, '_blank', 'noopener,noreferrer'); }}>
-              ◆ VYRON BUSINESS AI
+              ◆ VYRON BUSINESS ENGINE
             </button>
             <button className="dl-btn dl-btn-primary" onClick={() => onNavigate('signup')}>
               {t('landing.start')} <ArrowRight className="w-4 h-4" />
@@ -91,11 +91,11 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
           </div>
 
           <div className="dl-reference-stats">
-            <div><strong>50 000+</strong><span>{t('landing.templates')}</span></div>
+            <div><strong>100 000+</strong><span>{t('landing.templates')}</span></div>
             <i />
             <div><strong>∞</strong><span>{t('landing.possibilities')}</span></div>
             <i />
-            <div><strong>12+</strong><span>{t('landing.tools')}</span></div>
+            <div><strong>16+</strong><span>{t('landing.tools')}</span></div>
             <i />
             <div><strong>GYORS</strong><span>{t('landing.results')}</span></div>
           </div>
@@ -128,10 +128,10 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
       <section id="features" className="dl-section dl-studio">
         <div className="dl-section-head">
           <div>
-            <span className="dl-label">THE STUDIO / 01</span>
-            <h2>One place.<br /><em>Every creative move.</em></h2>
+            <span className="dl-label">CREATIVE OS / 01</span>
+            <h2>One workspace.<br /><em>Every creative move.</em></h2>
           </div>
-          <p>DESIGNLY combines AI generation, editing, brand systems, campaigns, templates and music into one focused workspace.</p>
+          <p>DESIGNLY is a creative operating system: AI generation, brand systems, campaigns, templates, music and a visual editor — connected in one workflow.</p>
         </div>
         <div className="dl-feature-grid">
           {capabilities.map((item) => (
@@ -196,7 +196,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
 
       <section id="credits" className="dl-section dl-credits">
         <div className="dl-section-head">
-          <div><span className="dl-label">ONE SYSTEM / 04</span><h2>Credits that<br /><em>move with you.</em></h2></div>
+          <div><span className="dl-label">ONE SYSTEM / 04</span><h2>One balance.<br /><em>Every project.</em></h2></div>
           <p>Use one creative balance across the studio. Generate, refine and keep building without switching systems.</p>
         </div>
         <div className="dl-credit-row">
