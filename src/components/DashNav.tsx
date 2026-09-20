@@ -19,17 +19,17 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
   const navItems = [
     { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { id: 'create', label: t('nav.create'), icon: Plus },
-    { id: 'advertising', label: t('nav.advertising'), icon: Megaphone },
-    { id: 'campaign', label: t('nav.campaign'), icon: Layers },
+    { id: 'create', label: 'AI Website Builder', icon: Plus },
+    { id: 'advertising', label: 'Ad Studio', icon: Megaphone },
+    { id: 'campaign', label: 'Campaign Engine', icon: Layers },
     { id: 'music', label: 'AI Music Studio', icon: Music2 },
     { id: 'projects', label: t('nav.projects'), icon: FolderOpen },
     { id: 'brands', label: t('nav.brands'), icon: Palette },
-    { id: 'templates', label: t('nav.templatesDash'), icon: LayoutTemplate },
-    { id: 'assets', label: t('nav.assets'), icon: ImageIcon },
-    { id: 'credits', label: t('nav.credits'), icon: Coins },
-    { id: 'billing', label: t('nav.billing'), icon: CreditCard },
-    { id: 'settings', label: t('nav.settings'), icon: Settings },
+    { id: 'templates', label: '100K+ Templates', icon: LayoutTemplate },
+    { id: 'assets', label: 'Asset Vault', icon: ImageIcon },
+    { id: 'credits', label: 'Credit Center', icon: Coins },
+    { id: 'billing', label: 'Plans & Billing', icon: CreditCard },
+    { id: 'settings', label: 'Workspace Settings', icon: Settings }
   ];
 
   if (isAdmin) {
@@ -52,7 +52,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
       <aside className="hidden lg:flex flex-col w-60 fixed left-0 top-0 bottom-0 border-r border-gold-600/10 bg-ink-900/90 backdrop-blur-xl z-40">
         <div className="h-16 flex items-center px-5 border-b border-gold-600/10">
           <button onClick={() => onNavigate('landing')}>
-            <Logo size={32} />
+            <div className="flex items-center gap-2"><Logo size={32} /><span className="text-[9px] tracking-[0.22em] text-gold-300/70">CREATIVE OS</span></div>
           </button>
         </div>
 
