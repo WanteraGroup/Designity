@@ -271,7 +271,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, [autoBuildRequested, selectedType, brief]);
 
   useEffect(() => {
-    if (!autoBuildFinalizeRequested || !autoBuildMode || !approved || !previewId || !previewImageUrl || generating) return;
+    if (!autoBuildFinalizeRequested || !autoBuildMode || !approved || !previewId || generating) return;
     setAutoBuildFinalizeRequested(false);
     setAutoBuildStatus('AI BUSINESS BUILDER: végleges weboldal építése…');
     void handleGenerate();
@@ -698,7 +698,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
                   <button
                     onClick={() => setApproved(true)}
-                    disabled={!preview || !previewImageUrl || !previewId}
+                    disabled={!preview || !previewId}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
                     KÉREM · {isUnlimited ? '∞' : cost} KREDIT
