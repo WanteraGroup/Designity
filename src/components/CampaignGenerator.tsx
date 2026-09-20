@@ -18,7 +18,7 @@ interface CampaignGeneratorProps {
 
 export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   const { t } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [brief, setBrief] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('premium');
@@ -51,7 +51,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   }, [profile]);
 
   const cost = getCreditsForType('advertisement');
-  const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
+  const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const toggleFormat = (fmt: string) => {
     setSelectedFormats((prev) =>
@@ -102,7 +102,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     setProviderNotConfigured(false);
 
     const totalCost = cost * selectedFormats.length;
-    if (!isOwner && (profile.credits ?? 0) < totalCost) {
+    if (!isUnlimited && (profile.credits ?? 0) < totalCost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
@@ -414,11 +414,11 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-sm text-cream-300/60 block">{t('cw.creditCost')}</span>
-                <span className="text-lg font-display font-bold gold-text">{isOwner ? '∞' : cost}</span>
+                <span className="text-lg font-display font-bold gold-text">{isUnlimited ? '∞' : cost}</span>
               </div>
               <div className="text-right">
                 <span className="text-sm text-cream-300/60 block">{t('cw.currentBalance')}</span>
-                <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
+                <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
               </div>
             </div>
             {!hasEnoughCredits && (
