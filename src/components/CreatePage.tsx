@@ -752,7 +752,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         onCreditsUpdated={refreshProfile}
         reason="A végleges generáláshoz nincs elegendő kredit. A kreditfeltöltés innen, a szerkesztő elhagyása nélkül indítható."
       />
-)}
     </>
   );
 }
