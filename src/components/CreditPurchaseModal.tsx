@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CreditCard, X, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import { CREDIT_PACKAGES, formatPrice, getCustomCreditPrice } from '@/lib/constants';
@@ -21,10 +22,7 @@ export function CreditPurchaseModal({
   reason = 'A művelethez további kredit szükséges.',
 }: CreditPurchaseModalProps) {
   const { lang } = useI18n();
-  const [minCredits, setMinCredits] = (() => {
-    const React = require('react') as typeof import('react');
-    return React.useState(100);
-  })();
+  const [minCredits, setMinCredits] = useState(100);
 
   if (!open) return null;
 
