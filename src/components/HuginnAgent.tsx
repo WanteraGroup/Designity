@@ -4,16 +4,26 @@ import { useI18n } from '@/lib/i18n';
 import { askHuginn } from '@/lib/huginn-agent';
 
 
-function HuginnRaven({ className = '' }: { className?: string }) {
+function RavenMark({ className = '', flipped = false, eyeClass = 'huginn-eye' }: { className?: string; flipped?: boolean; eyeClass?: string }) {
   return <svg className={`huginn-raven ${className}`} viewBox="0 0 100 72" aria-hidden="true">
-    <defs><linearGradient id="huginnMetal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f0d48a"/><stop offset=".45" stopColor="#b98a2f"/><stop offset="1" stopColor="#4b3514"/></linearGradient></defs>
-    <path className="huginn-wing" d="M45 38C28 15 17 12 5 9c10 13 15 24 29 34 5 4 8 3 11-5Z" fill="#111417" stroke="url(#huginnMetal)" strokeWidth="1.4"/>
-    <ellipse cx="55" cy="43" rx="25" ry="14" fill="#0b0d0f" stroke="url(#huginnMetal)" strokeWidth="1.5"/>
-    <circle cx="70" cy="27" r="11" fill="#0a0c0e" stroke="url(#huginnMetal)" strokeWidth="1.4"/>
-    <path d="M79 28l16 5-16 5z" fill="#18130a" stroke="#b98a2f" strokeWidth="1"/>
-    <circle className="huginn-eye" cx="73" cy="26" r="2.2" fill="#ffd56a"/>
-    <path d="M39 48c8 12 19 17 30 16" fill="none" stroke="#17191b" strokeWidth="6" strokeLinecap="round"/>
+    <defs><linearGradient id={flipped ? "muninnMetal" : "huginnMetal"} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f0d48a"/><stop offset=".45" stopColor="#b98a2f"/><stop offset="1" stopColor="#4b3514"/></linearGradient></defs>
+    <g transform={flipped ? "translate(100 0) scale(-1 1)" : undefined}>
+      <path className="huginn-wing" d="M45 38C28 15 17 12 5 9c10 13 15 24 29 34 5 4 8 3 11-5Z" fill="#111417" stroke={`url(#${flipped ? "muninnMetal" : "huginnMetal"})`} strokeWidth="1.4"/>
+      <ellipse cx="55" cy="43" rx="25" ry="14" fill="#0b0d0f" stroke={`url(#${flipped ? "muninnMetal" : "huginnMetal"})`} strokeWidth="1.5"/>
+      <circle cx="70" cy="27" r="11" fill="#0a0c0e" stroke={`url(#${flipped ? "muninnMetal" : "huginnMetal"})`} strokeWidth="1.4"/>
+      <path d="M79 28l16 5-16 5z" fill="#18130a" stroke="#b98a2f" strokeWidth="1"/>
+      <circle className={eyeClass} cx="73" cy="26" r="2.2" fill="#ffd56a"/>
+      <path d="M39 48c8 12 19 17 30 16" fill="none" stroke="#17191b" strokeWidth="6" strokeLinecap="round"/>
+    </g>
   </svg>;
+}
+
+function HuginnRaven({ className = '' }: { className?: string }) {
+  return <RavenMark className={className} />;
+}
+
+function MuninnRaven({ className = '' }: { className?: string }) {
+  return <RavenMark className={className} flipped eyeClass="muninn-eye" />;
 }
 
 interface HuginnAgentProps { onNavigate: (page: string) => void; }
@@ -63,8 +73,11 @@ export function HuginnAgent({ onNavigate }: HuginnAgentProps) {
       {open && (
         <section className="huginn-panel" aria-label="Huginn AI agent">
           <header className="huginn-header">
-            <div className="huginn-avatar"><HuginnRaven /></div>
-            <div><strong>HUGINN</strong><span>{lang === 'hu' ? 'ODIN HOLLÓJA · AI ASSZISZTENS' : 'ODIN’S RAVEN · AI GUIDE'}</span></div>
+            <div className="huginn-dual-avatar" aria-label="Huginn és Muninn">
+              <div className="huginn-dual-raven"><HuginnRaven /></div>
+              <div className="muninn-dual-raven"><MuninnRaven /></div>
+            </div>
+            <div><strong>HUGINN · MUNINN</strong><span>{lang === 'hu' ? 'ODIN KÉT HOLLÓJA · AI ÜGYNÖKPÁR' : 'ODIN’S TWO RAVENS · AI AGENT DUO'}</span></div>
             <button onClick={() => setOpen(false)} aria-label="Close"><X /></button>
           </header>
           <div className="huginn-messages">
@@ -86,8 +99,14 @@ export function HuginnAgent({ onNavigate }: HuginnAgentProps) {
           </form>
         </section>
       )}
-      <button className="huginn-orb" onClick={() => setOpen((v) => !v)} aria-label="Huginn AI agent">
-        {open ? <ChevronDown /> : <><HuginnRaven /><span><b>HUGINN</b><small>AI</small></span><Sparkles /></>}
+      <button className="huginn-orb" onClick={() => setOpen((v) => !v)} aria-label="Huginn és Muninn AI agentek">
+        {open ? <ChevronDown /> : (
+          <>
+            <span className="huginn-orb-ravens"><HuginnRaven /><MuninnRaven /></span>
+            <span><b>HUGINN</b><small>+ MUNINN · AI</small></span>
+            <Sparkles />
+          </>
+        )}
       </button>
     </div>
   );
