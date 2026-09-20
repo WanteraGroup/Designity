@@ -100,6 +100,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   const [customCredits, setCustomCredits] = useState(100);
   const [vyronBlueprint, setVyronBlueprint] = useState<VyronBlueprint | null>(null);
   const [autoBuildRequested, setAutoBuildRequested] = useState(false);
+  const [autoBuildMode, setAutoBuildMode] = useState(false);
   const [autoBuildStatus, setAutoBuildStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -149,6 +150,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         setSelectedType(build.type);
         setBrief(build.brief);
         setStep(2);
+        setAutoBuildMode(true);
         setAutoBuildStatus('AI BUSINESS BUILDER: előkészítés…');
         setAutoBuildRequested(true);
       }
@@ -213,7 +215,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setOrchestration(null);
     setApproved(false);
     setPreviewLoading(true);
-    if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: AI előnézet készítése…');
+    if (autoBuildMode) setAutoBuildStatus('AI BUSINESS BUILDER: AI előnézet készítése…');
 
     let result: Awaited<ReturnType<typeof runDesignlyMasterAgent>>;
     try {
@@ -227,7 +229,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     } catch (previewRunError) {
       setPreviewLoading(false);
       setPreviewError(previewRunError instanceof Error ? previewRunError.message : 'Az AI előnézet futtatása közben váratlan hiba történt.');
-      if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: hiba történt — újrapróbálható');
+      if (autoBuildMode) setAutoBuildStatus('AI BUSINESS BUILDER: hiba történt — újrapróbálható');
       return;
     }
 
@@ -235,7 +237,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
     if (!result.success || !result.designBrief) {
       setPreviewError(result.message || 'The free design preview could not be created.');
-      if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: az előnézet nem készült el — újrapróbálható');
+      if (autoBuildMode) setAutoBuildStatus('AI BUSINESS BUILDER: az előnézet nem készült el — újrapróbálható');
       return;
     }
 
@@ -245,7 +247,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setActiveAgents(result.activeAgents || ['master']);
     setOrchestration(result.orchestration || null);
     setStep(3);
-    if (autoBuildRequested) setAutoBuildStatus('AI BUSINESS BUILDER: előnézet kész — jóváhagyásra vár');
+    if (autoBuildMode) setAutoBuildStatus('AI BUSINESS BUILDER: előnézet kész — jóváhagyásra vár');
   };
 
   // Automatic Business Builder: trigger the free AI preview after the dashboard handoff is loaded.
@@ -482,25 +484,38 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       {/* Step 2: Brief */}
       {step === 2 && selectedType && (
         <div className="animate-fade-in">
-          <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">{t('cw.describeVision')}</h2>
-          <p className="text-sm text-cream-300/50 text-center mb-8">{t('cw.describeVisionDesc')}</p>
+          <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">
+            {autoBuildMode ? 'Az AI felépíti az üzletedet' : t('cw.describeVision')}
+          </h2>
+          <p className="text-sm text-cream-300/50 text-center mb-8">
+            {autoBuildMode ? 'Az Automatic Business Builder a teljes weboldal/app struktúrát automatikusan megtervezi.' : t('cw.describeVisionDesc')}
+          </p>
 
-          {autoBuildStatus && (
-            <div className="mb-4 rounded-lg border border-gold-600/20 bg-gold-600/5 px-4 py-3 text-xs text-gold-200/90" role="status">
-              {autoBuildStatus}
+          {autoBuildMode ? (
+            <div className="rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/10 via-ink-950 to-black p-7 text-center shadow-2xl">
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full border border-gold-400/40 bg-gold-500/10 flex items-center justify-center text-2xl text-gold-300">◆</div>
+              <div className="text-sm font-semibold uppercase tracking-[.18em] text-gold-300">Automatic Business Builder</div>
+              <p className="mt-3 text-sm leading-6 text-cream-200/70">
+                Nem kell promptot írnod. A DESIGNLY AI automatikusan elkészíti az üzleti struktúrát, a vizuális irányt, a funkciókat és az első előnézetet.
+              </p>
+              {autoBuildStatus && (
+                <div className="mt-5 rounded-lg border border-gold-600/20 bg-black/30 px-4 py-3 text-xs text-gold-200/90" role="status">
+                  {autoBuildStatus}
+                </div>
+              )}
             </div>
-          )}
-
-          <textarea
-            value={brief}
-            onChange={(e) => {
-              setBrief(e.target.value);
-              if (previewError) setPreviewError(null);
-            }}
-            rows={6}
-            className="input-lux resize-none"
-            placeholder={t('cw.briefPlaceholder')}
-          />
+          ) : (
+            <textarea
+              value={brief}
+              onChange={(e) => {
+                setBrief(e.target.value);
+                if (previewError) setPreviewError(null);
+              }}
+              rows={6}
+              className="input-lux resize-none"
+              placeholder={t('cw.briefPlaceholder')}
+            />
+          )
 
           {previewError && (
             <div
