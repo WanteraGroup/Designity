@@ -91,7 +91,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
             <Logo size={42} showText={false} />
             <div className="hidden sm:flex flex-col leading-none text-left">
               <span className="font-display text-[15px] tracking-[0.22em] text-cream-50">DESIGNLY</span>
-              <span className="text-[9px] tracking-[0.38em] text-gold-300/80 mt-1">STUDIO</span>
+              <span className="text-[9px] tracking-[0.34em] text-gold-300/80 mt-1">CREATIVE OS</span>
             </div>
           </div>
         </button>
@@ -144,7 +144,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-gold-600/25 bg-ink-950/70 text-[10px] font-semibold tracking-[0.12em] text-gold-200 hover:border-gold-500/60 hover:bg-gold-600/10 transition-all"
           >
-            ◆ VYRON AI
+            ◆ VYRON ENGINE
           </a>
           <LanguageSelector />
           {user ? (
