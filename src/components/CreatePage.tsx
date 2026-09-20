@@ -280,6 +280,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
     if (!isOwner && (profile.credits ?? 0) < cost) {
       setError(t('gen.insufficientCredits'));
+      setShowCreditModal(true);
       return;
     }
 
@@ -666,15 +667,22 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <span>{t('gen.insufficientCredits')} <button onClick={() => setShowCreditModal(true)} className="underline">{t('credits.buyCredits')}</button>.</span>
                 </div>
               )}
-              <div className="flex justify-between items-center gap-3">
-                <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
-                <button
-                  onClick={() => setApproved(true)}
-                  disabled={!preview || !previewImageUrl || !previewId || !hasEnoughCredits}
-                  className="btn-gold text-sm disabled:opacity-40"
-                >
-                  {t('designer.select')}
-                </button>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {!isOwner && (
+                  <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
+                    KREDIT VÁSÁRLÁS · 1–10 000
+                  </button>
+                )}
+                <div className="flex justify-between items-center gap-3 sm:ml-auto">
+                  <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
+                  <button
+                    onClick={() => setApproved(true)}
+                    disabled={!preview || !previewImageUrl || !previewId || !hasEnoughCredits}
+                    className="btn-gold text-sm disabled:opacity-40"
+                  >
+                    {t('designer.select')}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -694,15 +702,22 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <span className="text-lg font-display font-bold text-cream-50">{isOwner ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
                 </div>
               </div>
-              <div className="flex justify-between items-center gap-3">
-                <button onClick={() => setApproved(false)} className="btn-ghost text-sm">{t('designer.modify')}</button>
-                <button
-                  onClick={handleGenerate}
-                  disabled={!hasEnoughCredits}
-                  className="btn-gold text-sm disabled:opacity-40"
-                >
-                  {t('designer.continue').replace('{credits}', isOwner ? '∞' : String(cost))}
-                </button>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {!isOwner && (
+                  <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
+                    KREDIT VÁSÁRLÁS · 1–10 000
+                  </button>
+                )}
+                <div className="flex justify-between items-center gap-3 sm:ml-auto">
+                  <button onClick={() => setApproved(false)} className="btn-ghost text-sm">{t('designer.modify')}</button>
+                  <button
+                    onClick={handleGenerate}
+                    disabled={!hasEnoughCredits}
+                    className="btn-gold text-sm disabled:opacity-40"
+                  >
+                    {t('designer.continue').replace('{credits}', isOwner ? '∞' : String(cost))}
+                  </button>
+                </div>
               </div>
             </div>
           )}
