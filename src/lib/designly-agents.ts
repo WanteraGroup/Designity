@@ -22,7 +22,19 @@ export type DesignlyAgentId =
   | 'monkey_marketing'
   | 'monkey_print'
   | 'monkey_presentation'
-  | 'monkey_qa';
+  | 'monkey_qa'
+  | 'huginn'
+  | 'muninn'
+  | 'core'
+  | 'architect'
+  | 'research'
+  | 'techScout'
+  | 'business'
+  | 'product'
+  | 'builder'
+  | 'reviewer'
+  | 'sales'
+  | 'report';
 
 export interface DesignlyAgent {
   id: DesignlyAgentId;
@@ -98,3 +110,30 @@ export const DESIGNLY_AGENT_TEAM: DesignlyAgent[] = [
     outputs: ['template matching', 'template metadata'],
   },
 ];
+
+export const VYRON_AGENT_TEAM: DesignlyAgent[] = [
+  { id:'huginn', name:'HUGINN', purpose:'Odin hollója; látogatói és felhasználói AI-guide, amely eligazít a DESIGNLY felületén.', outputs:['visitor guidance','navigation','AI help'] },
+  { id:'muninn', name:'MUNINN', purpose:'Huginn társa; memória-, kontextus- és tudásréteg a projektek és briefek összefoglalására.', outputs:['context memory','knowledge summary','handoff context'] },
+  { id:'core', name:'VYRON CORE', purpose:'Főorchestrátor; a specialisták feladatbontását és együttműködését koordinálja.', outputs:['mission plan','agent routing','combined result'] },
+  { id:'architect', name:'NEXORA ARCHITECT', purpose:'Technikai tervező; rendszer-, oldal- és megvalósítási struktúrák megtervezése.', outputs:['architecture','component plan','technical plan'] },
+  { id:'research', name:'RESEARCH', purpose:'Kutató és intelligence agent; a briefhez szükséges háttérinformáció strukturálása.', outputs:['research brief','facts','background'] },
+  { id:'techScout', name:'TECH SCOUT', purpose:'AI-technológiai felderítő; új technológiák és integrációs irányok azonosítása.', outputs:['technology scan','integration options','AI capability map'] },
+  { id:'business', name:'BUSINESS', purpose:'Üzleti agent; célcsoport, ajánlat, modell és működési logika támogatása.', outputs:['business model','offer structure','sales logic'] },
+  { id:'product', name:'PRODUCT FACTORY', purpose:'Eladható terméktervező; az ötletből konkretizált digitális termék- vagy szolgáltatáscsomagot készít.', outputs:['product concept','feature set','offer package'] },
+  { id:'builder', name:'NEXORA BUILDER', purpose:'Megvalósító agent; a jóváhagyott tervet konkrét build-spec és végrehajtható feladatokká alakítja.', outputs:['build spec','implementation tasks','artifact plan'] },
+  { id:'reviewer', name:'NEXORA CODE REVIEWER', purpose:'QA és megvalósíthatósági reviewer; hibák, hiányok és inkonzisztenciák feltárása.', outputs:['QA findings','risk list','revision plan'] },
+  { id:'sales', name:'SALES AGENT', purpose:'Prospecting és személyre szabott értékesítési megkeresések támogatása.', outputs:['prospect brief','outreach angle','sales message'] },
+  { id:'report', name:'REPORT', purpose:'Elemző és riport agent; eredmények, státuszok és következő lépések összefoglalása.', outputs:['report','status summary','next actions'] },
+];
+
+export const DESIGNLY_FULL_AGENT_TEAM: DesignlyAgent[] = [
+  ...DESIGNLY_AGENT_TEAM,
+  ...MONKEY_DESIGN_AGENT_TEAM,
+  ...TIKTOK_SHOP_AGENT_TEAM,
+  ...VYRON_AGENT_TEAM,
+];
+
+export const ODIN_RAVENS = {
+  first: VYRON_AGENT_TEAM.find((agent) => agent.id === 'huginn')!,
+  second: VYRON_AGENT_TEAM.find((agent) => agent.id === 'muninn')!,
+};
