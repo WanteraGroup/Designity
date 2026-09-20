@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Download, Mail, Music2, Play, Pause, Sparkles, Loader2, Clock3, History, Disc3, Wand2, RefreshCw } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
+import { CreditPurchaseModal } from './CreditPurchaseModal';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 
@@ -19,6 +20,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [audioUrl, setAudioUrl] = useState('');
   const [title, setTitle] = useState('DESIGNLY AI Song');
   const [error, setError] = useState('');
+  const [showCreditModal, setShowCreditModal] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string; created_at: string }>>([]);
   const cost = useMemo(() => Math.ceil(duration / 60) * 100, [duration]);
@@ -107,7 +109,9 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
     if (!user) { onNavigate('login'); return; }
     if (!lyrics.trim()) { setError('Írd be a dalszöveget.'); return; }
     if (!isOwner && (profile?.credits ?? 0) < cost) {
-      setError('Ehhez a dalhoz ' + cost + ' kredit szükséges. Jelenlegi egyenleg: ' + (profile?.credits ?? 0) + '.'); return;
+      setError('Ehhez a dalhoz ' + cost + ' kredit szükséges.');
+      setShowCreditModal(true);
+      return;
     }
     setLoading(true); setError(''); setAudioUrl(''); setPlaying(false);
     try {
@@ -178,7 +182,10 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
     </section>
     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
       <div><div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.24em]"><Music2 className="w-4 h-4" /> SONG BUILDER</div><h2 className="font-display text-2xl lg:text-3xl text-cream-100 mt-2">Építsd fel a saját dalodat</h2><p className="text-cream-400/60 mt-2 max-w-2xl">A dalszöveg és a zenei irány alapján a rendszer komplett dalt készít énekkel.</p></div>
-      <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-200">{cost} kredit / {duration} mp</div>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-200">{cost} kredit / {duration} mp</div>
+        {!isOwner && <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">KREDIT VÁSÁRLÁS</button>}
+      </div>
     </div>
     <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
       <section className="card-premium p-5 lg:p-7">
@@ -203,6 +210,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
       </section>
     </div>
     {audioUrl && <section className="card-premium p-5 lg:p-7"><div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.2em] text-gold-300">Elkészült mű</div><h2 className="font-display text-2xl text-cream-100 mt-1">{title}</h2></div><div className="flex flex-wrap gap-2"><button onClick={togglePlay} className="btn-gold flex items-center gap-2">{playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />} Lejátszás</button><a href={audioUrl} download target="_blank" rel="noreferrer" className="btn-ghost flex items-center gap-2"><Download className="w-4 h-4" /> WAV letöltése</a><button onClick={() => sendEmail()} className="btn-ghost flex items-center gap-2"><Mail className="w-4 h-4" /> Küldés e-mailben</button></div></div><div className="mt-5 rounded-xl border border-gold-600/10 bg-ink-950/70 p-4"><audio id="designly-audio" src={audioUrl} controls className="w-full music-audio" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)} /></div><div className="mt-3 flex items-center gap-2 text-xs text-cream-500/60"><Clock3 className="w-3.5 h-3.5" /> A dal a DESIGNLY kredit-egyenlegből készült.</div></section>}
+    <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A zene generálásához szükséges kredit nincs teljes egészében az egyenlegeden." />
     {library.length > 0 && <section className="card-premium p-5 lg:p-7">
       <div className="flex items-center gap-2 mb-5">
         <History className="w-4 h-4 text-gold-400" />
