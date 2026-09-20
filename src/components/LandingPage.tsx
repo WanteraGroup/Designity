@@ -2,7 +2,7 @@ import { useEffect, useState, type ComponentType } from 'react';
 import {
   ArrowRight, Check, ChevronDown, Gamepad2, Image, Layout, Palette,
   Play, Sparkles, Wand2, Zap, Shirt, Bot, Layers3, MousePointer2,
-  Globe2, ShoppingBag, Megaphone, Music2, Trophy, Users
+  Globe2, ShoppingBag, Megaphone, Music2, Trophy, Users, Ruler
 } from 'lucide-react';
 import { CelticEmblem } from './CelticEmblem';
 import { Logo } from './Logo';
@@ -93,6 +93,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     { label: 'Merch Studio', desc: hu ? 'Pólók, bögrék, egérpadok és csapatgrafikák.' : 'Shirts, mugs, mousepads and team graphics.', icon: Shirt, page: 'creator', media: 'merch' },
     { label: 'Sablonok', desc: hu ? '100 000+ kreatív irány, igény szerint.' : '100,000+ creative directions on demand.', icon: Layers3, page: 'templates', media: 'templates' },
     { label: 'Design Editor', desc: hu ? 'AI-képszerkesztés és vizuális finomhangolás.' : 'AI editing and visual refinement.', icon: Wand2, page: 'editor', media: 'editor' },
+    { label: 'Tervező & Vizualizáló', desc: hu ? 'Alaprajzok, villamos és gépészeti tervkoncepciók AI-val.' : 'Floor plans, electrical and building-system concepts with AI.', icon: Ruler, page: 'planner', media: 'planner' },
     { label: 'AI Video & Mockup', desc: hu ? 'Videós, animációs és prezentációs kreatívok.' : 'Video, animation and presentation creatives.', icon: Play, page: 'create', media: 'video' },
   ];
 
@@ -105,6 +106,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
     { title: hu ? 'Weboldal Sablonok' : 'Website Templates', icon: Globe2, color: 'cyan', page: 'templates' },
     { title: hu ? 'Emote Csomagok' : 'Emote Packs', icon: Users, color: 'pink', page: 'streamer' },
     { title: hu ? 'Esport Design' : 'Esports Design', icon: Trophy, color: 'green', page: 'streamer' },
+    { title: hu ? 'Alaprajz & Tervrajz' : 'Plans & Layouts', icon: Ruler, color: 'gold', page: 'planner' },
   ];
 
   const workflow: Array<[string, string, string, ComponentType<{ className?: string }>]> = [
