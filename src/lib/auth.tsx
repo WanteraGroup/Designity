@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async (uid: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, role, plan_id, credits, unlimited_access, full_name, avatar_url, created_at')
+      .select('id, email, role, plan_id, credits, unlimited_access, full_name, avatar_url, phone, created_at')
       .eq('id', uid)
       .maybeSingle();
 
@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         unlimited_access: false,
         full_name: null,
         avatar_url: null,
+        phone: null,
         created_at: new Date().toISOString(),
       };
       setProfile(fallback);
