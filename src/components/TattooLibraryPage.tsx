@@ -713,7 +713,7 @@ export function TattooLibraryPage({ onNavigate }: { onNavigate: (page: string) =
         </div>
       )}
 
-      <CreditPurchaseModal open={showCreditModal} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A végleges AI tetoválás elkészítéséhez kredit szükséges." />
+      <CreditPurchaseModal open={showCreditModal} onCreditsUpdated={refreshProfile} onClose={() => setShowCreditModal(false)} onNavigate={onNavigate} currentCredits={profile?.credits} reason="A végleges AI tetoválás elkészítéséhez kredit szükséges." />
 
       <style>{`
         .tattoo-art-wrap{position:absolute;inset:0;display:grid;place-items:center;background:#f3eee4}
