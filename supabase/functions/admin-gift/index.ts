@@ -112,6 +112,12 @@ try {
     const giftType = body.giftType || "full_unlock";
     if (giftType === "plan" && !body.planId) return json({ error: "PLAN_REQUIRED" }, 400);
 
+    const { data: existingProfile } = await admin
+      .from("profiles")
+      .select("id, plan_id, credits, unlimited_access, role")
+      .ilike("email", email)
+      .maybeSingle();
+
     if (existingProfile?.role === "owner") {
       return json({ error: "OWNER_PROTECTED", message: "The OWNER account is protected and cannot be changed by gifting." }, 400);
     }
@@ -125,12 +131,6 @@ try {
 
       if (!plan || !plan.is_public) return json({ error: "INVALID_PLAN" }, 400);
     }
-
-    const { data: existingProfile } = await admin
-      .from("profiles")
-      .select("id, plan_id, credits, unlimited_access, role")
-      .ilike("email", email)
-      .maybeSingle();
 
     const { data: gift, error: insertError } = await admin
       .from("admin_gifts")
