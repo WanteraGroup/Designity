@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   AlertTriangle, ArrowLeft, BadgeCheck, Bell, Camera, Check, Clock3, Download, Gamepad2, Image,
-  Layout, MessageSquare, Play, Radio, Shield, Sparkles, Star, Tv2, Users, Video
+  Layout, MessageSquare, Play, Radio, Shield, Shirt, Sparkles, Star, Tv2, Users, Video
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { generateDesign } from '@/lib/ai';
@@ -79,6 +79,8 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
   const [error, setError] = useState('');
   const [showCredits, setShowCredits] = useState(false);
   const [templateIndex, setTemplateIndex] = useState(0);
+  const templateCatalogSize = STREAMER_TEMPLATE_COUNT;
+  const assetCombinationCount = ASSETS.length * templateCatalogSize;
 
   const filtered = useMemo(() => ASSETS.filter((a) => (group === 'All' || a.group === group) && (platform === 'All' || a.platform.toLowerCase().includes(platform.toLowerCase()))), [group, platform]);
   const selected = ASSETS.find((a) => a.id === assetId) || ASSETS[0];
@@ -125,7 +127,7 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
   return <div className='space-y-7'>
     <section className='relative overflow-hidden rounded-3xl border border-gold-500/20 bg-gradient-to-br from-ink-900 via-[#0a0c0e] to-black p-7 lg:p-10'>
       <div className='absolute -right-20 -top-20 h-80 w-80 rounded-full bg-gold-500/7 blur-3xl'/>
-      <div className='relative z-10'><div className='flex items-center gap-2 text-[10px] uppercase tracking-[.28em] text-gold-300'><Gamepad2 className='h-4 w-4'/> CREATOR / STREAMER / GAMER</div><h1 className='mt-3 text-4xl lg:text-5xl font-display font-bold text-cream-50'>Streamer Studio</h1><p className='mt-3 max-w-4xl text-sm leading-7 text-cream-300/60'>Overlayek, stream screenek, alertok, webcam keretek, chat boxok, goal barok, panelek, csatorna branding, thumbnailok, emote- és badge-rendszerek, motion-ready scene-ek és esports kreatívok.</p><div className='mt-5 flex flex-wrap gap-2'>{['OBS','Streamlabs','Twitch','YouTube','TikTok Live','Kick','Discord'].map((p)=><span key={p} className='chip border-gold-500/15 bg-black/20 text-cream-300/60 text-[9px]'>{p}</span>)}<span className='chip border-gold-400/30 bg-gold-500/10 text-gold-100 text-[9px]'>115 200+ SABLONVARIÁCIÓ</span></div></div>
+      <div className='relative z-10'><div className='flex items-center gap-2 text-[10px] uppercase tracking-[.28em] text-gold-300'><Gamepad2 className='h-4 w-4'/> CREATOR / STREAMER / GAMER</div><h1 className='mt-3 text-4xl lg:text-5xl font-display font-bold text-cream-50'>Streamer Studio</h1><p className='mt-3 max-w-4xl text-sm leading-7 text-cream-300/60'>Overlayek, stream screenek, alertok, webcam keretek, chat boxok, goal barok, panelek, csatorna branding, thumbnailok, emote- és badge-rendszerek, motion-ready scene-ek és esports kreatívok.</p><div className='mt-5 flex flex-wrap gap-2'>{['OBS','Streamlabs','Twitch','YouTube','TikTok Live','Kick','Discord'].map((p)=><span key={p} className='chip border-gold-500/15 bg-black/20 text-cream-300/60 text-[9px]'>{p}</span>)}<span className='chip border-gold-400/30 bg-gold-500/10 text-gold-100 text-[9px]'>{templateCatalogSize.toLocaleString('hu-HU')}+ SABLONVARIÁCIÓ</span></div></div>
     </section>
     {!resultUrl ? <>
       <section className='card-lux p-5'><div className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'><div><div className='text-[9px] uppercase tracking-[.22em] text-gold-300/60'>ASSET LIBRARY</div><h2 className='mt-1 text-2xl font-display text-cream-50'>Minden streamer/gamer kreatív egy helyen</h2></div><select value={platform} onChange={(e)=>setPlatform(e.target.value)} className='input-lux w-full lg:w-56 text-xs'>{PLATFORMS.map((p)=><option key={p}>{p}</option>)}</select></div><div className='mt-4 flex flex-wrap gap-2'>{GROUPS.map((g)=><button key={g} onClick={()=>setGroup(g)} className={'chip ' + (group===g ? 'border-gold-400/45 bg-gold-500/10 text-gold-100' : 'border-gold-600/10 bg-black/10 text-cream-300/55')}>{g}</button>)}</div></section>
@@ -133,11 +135,11 @@ export function StreamerStudioPage({ onNavigate }: { onNavigate: (page: string) 
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div>
             <div className='text-[9px] uppercase tracking-[.22em] text-gold-300/60'>STREAMER TEMPLATE FACTORY</div>
-            <div className='mt-1 text-sm font-semibold text-cream-100'>${STREAMER_TEMPLATE_COUNT.toLocaleString('hu-HU')} kombinálható sablonvariáció</div>
-            <div className='mt-1 text-[10px] text-cream-300/40'>A DESIGNLY nem tárol több százezer fájlt: egy skálázható template-motor állítja elő a variációkat igény szerint.</div>
+            <div className='mt-1 text-sm font-semibold text-cream-100'>{templateCatalogSize.toLocaleString('hu-HU')} kombinálható sablonvariáció</div>
+            <div className='mt-1 text-[10px] text-cream-300/40'>Virtuális sablonmotor: nem több százezer előre renderelt fájl, hanem igény szerint összeállított variációk. {ASSETS.length} asset-típussal ez {assetCombinationCount.toLocaleString('hu-HU')} lehetséges kombináció.</div>
           </div>
           <div className='flex items-center gap-2'>
-            <span className='chip border-gold-600/10 bg-black/10 text-cream-300/55 text-[9px]'>#${(templateIndex + 1).toLocaleString('hu-HU')}</span>
+            <span className='chip border-gold-600/10 bg-black/10 text-cream-300/55 text-[9px]'>#{(templateIndex + 1).toLocaleString('hu-HU')}</span>
             <button onClick={() => setTemplateIndex((v) => (v + 1) % STREAMER_TEMPLATE_COUNT)} className='btn-ghost text-xs'><Sparkles className='h-4 w-4'/> Másik sablon</button>
           </div>
         </div>
