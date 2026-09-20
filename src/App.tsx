@@ -20,20 +20,21 @@ import { AdvertisingStudio } from '@/components/AdvertisingStudio';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
 import { HuginnAgent } from '@/components/HuginnAgent';
+import { AgentHubPage } from '@/components/AgentHubPage';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'agents';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music',
+  'settings', 'admin', 'editor', 'music', 'agents',
 ];
 
 function pageFromHash(): Page {
@@ -163,6 +164,7 @@ function AppInner() {
       case 'admin': return <AdminPage onNavigate={navigate} />;
       case 'editor': return <EditorPage onNavigate={navigate} />;
       case 'music': return <MusicPage onNavigate={navigate} />;
+      case 'agents': return <AgentHubPage onNavigate={navigate} />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
