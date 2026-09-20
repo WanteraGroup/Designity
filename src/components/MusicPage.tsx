@@ -24,7 +24,7 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
   const [error, setError] = useState('');
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string; created_at: string }>>([]);
+  const [library, setLibrary] = useState<Array<{ id: string; title: string; duration_seconds: number; audio_url: string | null; created_at: string }>>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewBrief, setPreviewBrief] = useState<string | null>(null);
@@ -89,26 +89,25 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
 
   const loadLibrary = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from('music_generations')
-      .select('id,title,duration_seconds,audio_url,created_at')
-      .order('created_at', { ascending: false })
-      .limit(12);
-    setLibrary(data || []);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL;
+      if (!token || !baseUrl) return;
+      const response = await fetch(baseUrl + '/functions/v1/music-library', {
+        headers: { Authorization: 'Bearer ' + token },
+      });
+      const data = await response.json();
+      if (response.ok) setLibrary(data.songs || []);
+    } catch {
+      // Keep the current library visible if a signed-url refresh fails.
+    }
   };
 
   useEffect(() => {
     if (!user) return;
-    let active = true;
-    supabase
-      .from('music_generations')
-      .select('id,title,duration_seconds,audio_url,created_at')
-      .order('created_at', { ascending: false })
-      .limit(12)
-      .then(({ data }) => {
-        if (active) setLibrary(data || []);
-      });
-    return () => { active = false; };
+    void loadLibrary();
+    return () => undefined;
   }, [user?.id]);
 
   const buildMusicPreview = async () => {
@@ -304,10 +303,14 @@ export function MusicPage({ onNavigate }: { onNavigate: (page: string) => void }
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <a href={song.audio_url} download target="_blank" rel="noreferrer" className="btn-ghost text-xs px-4 py-2 flex items-center gap-2">
-                <Download className="w-3.5 h-3.5" /> WAV
-              </a>
-              <button onClick={() => sendEmail(song.audio_url, song.title)} className="btn-ghost text-xs px-4 py-2 flex items-center gap-2">
+              {song.audio_url ? (
+                <a href={song.audio_url} download target="_blank" rel="noreferrer" className="btn-ghost text-xs px-4 py-2 flex items-center gap-2">
+                  <Download className="w-3.5 h-3.5" /> WAV
+                </a>
+              ) : (
+                <button disabled className="btn-ghost text-xs px-4 py-2 opacity-40">WAV</button>
+              )}
+              <button onClick={() => song.audio_url && sendEmail(song.audio_url, song.title)} disabled={!song.audio_url} className="btn-ghost text-xs px-4 py-2 flex items-center gap-2 disabled:opacity-40">
                 <Mail className="w-3.5 h-3.5" /> E-mail
               </button>
             </div>
