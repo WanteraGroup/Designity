@@ -49,7 +49,7 @@ function buildPlannerPrompt(planLabel: string, userBrief: string, area: string, 
   ].join('\n');
 }
 
-function exportPlanSpec(planType: string, planLabel: string, area: string, rooms: string, constraints: string, brief: string, imageUrl: string | null) {
+function exportPlanSpec(planType: string, planLabel: string, area: string, rooms: string, constraints: string, brief: string, imageUrl: string | null, finalImage: boolean) {
   const payload = {
     product: 'DESIGNLY PLANNER & VISUALIZER',
     planType,
@@ -58,7 +58,7 @@ function exportPlanSpec(planType: string, planLabel: string, area: string, rooms
     rooms,
     constraints,
     brief,
-    previewImageUrl: imageUrl,
+    previewImageUrl: finalImage ? imageUrl : null,
     generatedAt: new Date().toISOString(),
     status: 'CONCEPT_ONLY_ENGINEERING_REVIEW_REQUIRED',
   };
@@ -185,7 +185,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
             <div className="absolute inset-0 opacity-50" style={{ backgroundImage: 'linear-gradient(#d8d2c8 1px, transparent 1px), linear-gradient(90deg,#d8d2c8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
             <div className="relative mx-auto mt-5 w-[88%] h-[210px] border-4 border-black/75 bg-[#fbfaf7]">
               <div className="absolute left-0 top-0 w-[42%] h-[54%] border-r-2 border-b-2 border-black/60"><span className="absolute inset-0 grid place-items-center text-xs font-semibold text-black/55">NAPPALI</span></div>
-              <div className="absolute right-0 top-0 w-[58%] h-[54%]"><div className="absolute left-0 top-0 w-[50%] h-full border-r-2 border-b-2 border-black/60" /><div className="absolute right-0 top-0 w-[50%] h-full border-bottom-2 border-black/60" /><span className="absolute inset-x-0 bottom-3 text-center text-[10px] text-black/45">HÁLÓ / HÁLÓ / FÜRDŐ</span></div>
+              <div className="absolute right-0 top-0 w-[58%] h-[54%]"><div className="absolute left-0 top-0 w-[50%] h-full border-r-2 border-b-2 border-black/60" /><div className="absolute right-0 top-0 w-[50%] h-full border-b-2 border-black/60" /><span className="absolute inset-x-0 bottom-3 text-center text-[10px] text-black/45">HÁLÓ / HÁLÓ / FÜRDŐ</span></div>
               <div className="absolute left-0 bottom-0 w-full h-[46%] border-t-2 border-black/60"><span className="absolute inset-0 grid place-items-center text-sm font-semibold text-black/45">KONYHA · ÉTKEZŐ · KÖZLEKEDÉS</span></div>
             </div>
             <div className="absolute right-4 top-4 chip text-[8px] bg-black/75 text-white border-black/10">100 m² CONCEPT</div>
@@ -240,8 +240,8 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
             {loading ? <Sparkles className="w-4 h-4 animate-pulse" /> : <Sparkles className="w-4 h-4" />}
             {loading ? 'ELŐNÉZET KÉSZÜL…' : 'INGYENES AI ELŐNÉZET'}
           </button>
-          <button type="button" onClick={() => exportPlanSpec(planType, selectedPlan.label, area, rooms, constraints, brief, finalImage || preview)} className="btn-ghost">
-            <Download className="w-4 h-4" /> TERVSPEC EXPORT
+          <button type="button" onClick={() => exportPlanSpec(planType, selectedPlan.label, area, rooms, constraints, brief, finalImage, Boolean(finalImage))} disabled={!finalImage} className="btn-ghost disabled:opacity-30">
+            <Download className="w-4 h-4" /> {finalImage ? 'VÉGLEGES TERVSPEC EXPORT' : 'TERVSPEC · JÓVÁHAGYÁS UTÁN'}
           </button>
           {finalImage && (
             <a href={finalImage} download target="_blank" rel="noreferrer" className="btn-ghost">
