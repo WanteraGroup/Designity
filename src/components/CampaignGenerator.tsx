@@ -71,7 +71,6 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
         const result = await runDesignlyMasterAgent({
           brief: brief + '\\nCAMPAIGN FORMAT: ' + fmt,
           brandKitId: selectedBrand,
-          style: selectedStyle,
           language: 'hu',
           mode: 'preview',
           requestedOutputs: ['custom'],
