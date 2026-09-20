@@ -155,3 +155,102 @@
     transition: none;
   }
 }
+
+
+/* Final polish: persistent command-room atmosphere across every dashboard module. */
+html {
+  background: #030405;
+  scrollbar-color: rgba(216,180,90,.35) #050607;
+  scrollbar-width: thin;
+}
+
+body {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(216,180,90,.055), transparent 28%),
+    #030405;
+}
+
+body ::selection {
+  background: rgba(216,180,90,.25);
+  color: #fff6d9;
+}
+
+body ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body ::-webkit-scrollbar-track {
+  background: #050607;
+}
+
+body ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(244,223,157,.42), rgba(216,180,90,.16));
+  border-radius: 999px;
+  border: 2px solid #050607;
+}
+
+.section-pad::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: .42;
+  background:
+    linear-gradient(rgba(216,180,90,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(216,180,90,.014) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black 0%, transparent 82%);
+}
+
+.section-pad :is(button, a, input, select, textarea):focus-visible {
+  outline: 1px solid rgba(244,223,157,.75);
+  outline-offset: 3px;
+}
+
+.section-pad .card-lux,
+.section-pad .card-premium {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-pad .card-lux::before,
+.section-pad .card-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,.018), transparent 28%, transparent 72%, rgba(216,180,90,.018));
+}
+
+.section-pad .btn-gold {
+  min-height: 40px;
+}
+
+.section-pad .btn-ghost {
+  min-height: 40px;
+}
+
+.section-pad .chip {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+@media (max-width: 640px) {
+  .section-pad {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .section-pad h1 {
+    font-size: clamp(1.65rem, 8vw, 2.35rem);
+    line-height: 1.05;
+  }
+
+  .section-pad h2 {
+    line-height: 1.1;
+  }
+}
