@@ -1,6 +1,6 @@
 import {
   Bird, BrainCircuit, BriefcaseBusiness, CheckCircle2, Cpu, FileBarChart2, Hammer, Network, Package,
-  Search, ShieldCheck, Sparkles, Waypoints,
+  Search, ShieldCheck, Sparkles, Waypoints, Mic, Languages,
 } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { DESIGNLY_FULL_AGENT_TEAM, VYRON_AGENT_TEAM, type DesignlyAgent } from '@/lib/designly-agents';
@@ -10,6 +10,7 @@ interface AgentHubPageProps { onNavigate?: (page: string) => void; }
 const iconById: Record<string, ComponentType<{ className?: string }>> = {
   huginn: Bird, muninn: BrainCircuit, core: Network, architect: Cpu, research: Search, techScout: Waypoints,
   business: BriefcaseBusiness, product: Package, builder: Hammer, reviewer: ShieldCheck, sales: Sparkles, report: FileBarChart2,
+  voice: Mic, translator: Languages,
 };
 
 function AgentCard({ agent }: { agent: DesignlyAgent }) {
@@ -71,6 +72,23 @@ export function AgentHubPage({ onNavigate }: AgentHubPageProps) {
       <section>
         <div className="mb-4"><div className="text-[9px] uppercase tracking-[.25em] text-gold-300/60">VYRON / NEXORA RÉTEG</div><h2 className="mt-1 text-2xl font-display font-semibold text-cream-50">Orchestration & specialist agents</h2></div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{orchestration.map((agent) => <AgentCard key={agent.id} agent={agent} />)}</div>
+      </section>
+      <section>
+        <div className="mb-4">
+          <div className="text-[9px] uppercase tracking-[.25em] text-gold-300/60">VOICE & LANGUAGE</div>
+          <h2 className="mt-1 text-2xl font-display font-semibold text-cream-50">MIRA / VEYRA capability bridge</h2>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <button onClick={() => onNavigate?.('voice')} className="group text-left">
+            <AgentCard agent={VYRON_AGENT_TEAM.find((agent) => agent.id === 'voice')!} />
+          </button>
+          <button onClick={() => onNavigate?.('translator')} className="group text-left">
+            <AgentCard agent={VYRON_AGENT_TEAM.find((agent) => agent.id === 'translator')!} />
+          </button>
+        </div>
+        <p className="mt-3 text-xs leading-6 text-cream-300/45">
+          A hang- és fordító réteg most böngészőalapú képességként került be. A MIRA-specifikus backend/agent runtime külön adapterként köthető rá; a VEYRA-ból igazolt beszédfelismerés, fordítás és felolvasás már használható.
+        </p>
       </section>
       <section className="card-lux p-6">
         <div className="mb-5 flex items-center gap-2"><Network className="h-5 w-5 text-gold-300" /><div><div className="text-[9px] uppercase tracking-[.24em] text-gold-300/60">AUTOMATIC BUILD PIPELINE</div><h2 className="text-xl font-display font-semibold text-cream-50">Brief → döntés → build → QA → riport</h2></div></div>
