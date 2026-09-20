@@ -275,7 +275,7 @@ export function DesignPlannerPage({ onNavigate }: DesignPlannerPageProps) {
                   <img src={finalImage || preview || ''} alt="DESIGNLY Planner preview" className="block w-full max-h-[850px] object-contain select-none" draggable={false} onContextMenu={(e) => e.preventDefault()} />
                   {!finalImage && <PreviewWatermark projectName="DESIGNLY PLANNER" />}
                 </div>
-              ) : null
+              ) : null}
             </div>
           </div>
           {previewBrief && (
