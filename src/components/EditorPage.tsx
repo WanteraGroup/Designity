@@ -61,7 +61,7 @@ function clampHistory<T>(items: T[], limit = 30) {
 
 export function EditorPage({ onNavigate }: EditorPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner, refreshProfile } = useAuth();
+  const { profile, isUnlimited, refreshProfile } = useAuth();
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [selectedElement, setSelectedElement] = useState<string | null>('hero');
   const [aiCommand, setAiCommand] = useState('');
@@ -181,7 +181,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const approveAiCommand = async () => {
     if (!pendingAiDesign || aiLoading) return;
 
-    if (!isOwner && (profile?.credits ?? 0) < 1) {
+    if (!isUnlimited && (profile?.credits ?? 0) < 1) {
       setAiError('Ehhez az AI szerkesztéshez 1 kredit szükséges.');
       setShowCreditModal(true);
       return;
@@ -573,10 +573,10 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
               <div>
                 <div className="text-xs text-cream-300/40 mb-2">{t('editor.costPerEdit')}</div>
                 <div className="text-sm font-medium text-gold-200">
-                  {isOwner ? '∞' : `1 ${t('misc.creditsShort')}`}
+                  {isUnlimited ? '∞' : `1 ${t('misc.creditsShort')}`}
                 </div>
               </div>
-              {!isOwner && (
+              {!isUnlimited && (
                 <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-[10px] px-3 py-2">
                   KREDIT VÁSÁRLÁS
                 </button>
