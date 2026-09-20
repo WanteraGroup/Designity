@@ -16,6 +16,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Parse Editor TSX
+        run: npx esbuild src/components/EditorPage.tsx --loader:.tsx=tsx --outfile=/tmp/editor.js
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
