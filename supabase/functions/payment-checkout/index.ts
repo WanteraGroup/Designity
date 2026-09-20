@@ -276,9 +276,17 @@ if (!supabaseKey) throw new Error("SUPABASE_SECRET_KEYS is not configured");
     const customCreditMatch = itemType === "credit_package" ? itemId.match(/^custom_(\d+)$/) : null;
     const customCreditCount = customCreditMatch ? Math.max(1, Math.min(10000, Number(customCreditMatch[1]))) : null;
     const customCreditPrice = (credits: number) => {
-      const tier = Math.floor(credits / 100);
-      const unitPrice = Math.max(10, 21 - tier);
-      return credits * unitPrice;
+      let remaining = credits;
+      let total = 0;
+      let band = 0;
+      while (remaining > 0) {
+        const quantity = Math.min(100, remaining);
+        const unitPrice = Math.max(10, 20 - band);
+        total += quantity * unitPrice;
+        remaining -= quantity;
+        band += 1;
+      }
+      return total;
     };
 
     // Look up the item price
