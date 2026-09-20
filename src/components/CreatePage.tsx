@@ -539,7 +539,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               className="input-lux resize-none"
               placeholder={t('cw.briefPlaceholder')}
             />
-          )
+          )}
 
           {previewError && (
             <div
