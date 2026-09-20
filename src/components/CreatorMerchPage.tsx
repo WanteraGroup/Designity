@@ -113,6 +113,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
       brief: customBrief,
       style,
       format: `creator-merch:${product.id}` ,
+      previewId,
     });
     if (!result.success) {
       setError(result.message || 'A merch generálás nem sikerült.');
