@@ -54,6 +54,13 @@ export function CreditPurchaseModal({
   };
 
   useEffect(() => {
+    if (!open) return;
+    setPaymentId(null);
+    setPaymentState('idle');
+    setPaymentError(null);
+  }, [open]);
+
+  useEffect(() => {
     if (!open || !paymentId || paymentState !== 'waiting') return;
     let active = true;
     const check = async () => {
