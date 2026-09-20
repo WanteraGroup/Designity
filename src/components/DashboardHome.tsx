@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Plus, FolderOpen, Coins, Sparkles, TrendingUp, Infinity as InfinityIcon,
-  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe, Music2,
+  Layout, Palette, CreditCard, FileText, Image as ImageIcon, Globe, Music2, Gamepad2,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -173,6 +173,25 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
           ))}
         </div>
       </div>
+
+      {/* Creator / Gamer Product Studio */}
+      <section className="relative overflow-hidden card-lux p-6 border-gold-600/20">
+        <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-gold-500/5 blur-3xl" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+          <div>
+            <div className="flex items-center gap-2 text-gold-300 text-xs uppercase tracking-[0.2em]">
+              <Gamepad2 className="w-4 h-4" /> Creator / Gamer Product Studio
+            </div>
+            <h2 className="text-2xl font-display font-semibold text-cream-50 mt-2">Merch → master artwork → gyártási specifikáció</h2>
+            <p className="text-sm text-cream-300/55 mt-2 max-w-2xl">
+              Póló, hoodie, XXL egérpad, bögre, sapka, poszter, matrica vagy telefontok. A streamer/gamer saját nevére és stílusára szabható grafika projektként menthető.
+            </p>
+          </div>
+          <button onClick={() => onNavigate('creator')} className="btn-gold text-sm shrink-0">
+            <Gamepad2 className="w-4 h-4" /> Termék készítése
+          </button>
+        </div>
+      </section>
 
       {/* AI Music Studio */}
       <section className="relative overflow-hidden card-lux p-6 border-gold-600/20">
