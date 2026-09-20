@@ -12,9 +12,9 @@ interface CreditsPageProps {
 
 export function CreditsPage({ onNavigate }: CreditsPageProps) {
   const { t } = useI18n();
-  const { profile, isOwner } = useAuth();
+  const { profile, isUnlimited } = useAuth();
 
-  if (isOwner) {
+  if (isUnlimited) {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-display font-bold text-cream-50">{t('nav.credits')}</h1>
