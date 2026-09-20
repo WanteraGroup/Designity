@@ -56,6 +56,29 @@ const rect = (x: number, y: number, w: number, h: number) => [
 ] as number[][];
 
 function buildGcode(operation: Operation, p: Params, controller: Controller) {
+  const invalid = [
+    p.stockW <= 0 ? 'Anyag X mérete legyen pozitív.' : '',
+    p.stockH <= 0 ? 'Anyag Y mérete legyen pozitív.' : '',
+    p.stockT <= 0 ? 'Anyag Z vastagsága legyen pozitív.' : '',
+    p.shapeW <= 0 ? 'Forma X mérete legyen pozitív.' : '',
+    p.shapeH <= 0 ? 'Forma Y mérete legyen pozitív.' : '',
+    p.shapeW > p.stockW ? 'A forma X mérete nagyobb az anyagnál.' : '',
+    p.shapeH > p.stockH ? 'A forma Y mérete nagyobb az anyagnál.' : '',
+    Math.abs(p.depth) <= 0 ? 'A megmunkálási mélység legyen nagyobb 0 mm-nél.' : '',
+    Math.abs(p.depth) > p.stockT ? 'A megmunkálási mélység nem lehet nagyobb az anyag vastagságánál.' : '',
+    p.tool <= 0 ? 'A szerszámátmérő legyen pozitív.' : '',
+    p.feed <= 0 || p.plunge <= 0 || p.spindle <= 0 ? 'Az előtolás, Z-előtolás és fordulatszám legyen pozitív.' : '',
+    p.safeZ <= 0 ? 'A biztonsági Z legyen pozitív.' : '',
+    p.stepDown <= 0 ? 'A lépésmélység legyen pozitív.' : '',
+  ].filter(Boolean);
+  if (operation === 'contour' && (p.shapeW <= p.tool || p.shapeH <= p.tool)) invalid.push('Kontúrnál a szerszám nem lehet nagyobb a forma belső méreténél.');
+  if (operation === 'drill' && (Math.abs(p.holeSpacingX) > p.stockW || Math.abs(p.holeSpacingY) > p.stockH)) {
+    invalid.push('A furatkiosztás nem fér el az anyagban.');
+  }
+  if (invalid.length) {
+    return { lines: ['( ERROR: ' + invalid.join(' | ') + ' )'], points: [] as number[][] };
+  }
+
   const left = (p.stockW - p.shapeW) / 2;
   const bottom = (p.stockH - p.shapeH) / 2;
   const lines: string[] = [
@@ -134,7 +157,7 @@ export function CncCamPage() {
 
   const generate = () => {
     setGcode(result.lines);
-    setStatus(result.lines[0].startsWith('( ERROR') ? 'Paraméter hiba' : 'G-kód elkészült');
+    setStatus(result.lines[0].startsWith('( ERROR') ? 'Paraméter hiba — export tiltva' : 'G-kód elkészült');
   };
 
   const reset = () => {
