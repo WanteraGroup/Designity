@@ -75,6 +75,8 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [buildSpec, setBuildSpec] = useState<any>(null);
   const [projectLoading, setProjectLoading] = useState(true);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [pendingAiDesign, setPendingAiDesign] = useState<DesignEditorState | null>(null);
+  const [pendingAiChanges, setPendingAiChanges] = useState<DesignEditorChange[]>([]);
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
@@ -143,17 +145,15 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
 
     setAiCommand('');
     setAiError(null);
-    if (!isOwner && (profile?.credits ?? 0) < 1) {
-      setAiError('Ehhez az AI szerkesztéshez 1 kredit szükséges.');
-      setShowCreditModal(true);
-      return;
-    }
     setAiReply('');
+    setPendingAiDesign(null);
+    setPendingAiChanges([]);
     setAiHistory((items) => [normalized, ...items].slice(0, 20));
     setAiLoading(true);
 
     const result = await runDesignlyGroqEditor({
       command: normalized,
+      mode: 'preview',
       selectedElement,
       device,
       design,
@@ -162,33 +162,71 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     setAiLoading(false);
 
     if (!result.ok || !result.design) {
-      setAiError(result.message || 'Az AI szerkesztő nem tudta alkalmazni a módosítást.');
+      setAiError(result.message || 'Az AI szerkesztési előnézet nem készült el.');
       return;
     }
 
-    const changed =
-      JSON.stringify(result.design) !== JSON.stringify(design);
-
-    if (changed) {
-      pushHistory(design);
-      setDesign(result.design);
-      const projectId = localStorage.getItem('designly_selected_project');
-      if (projectId) {
-        const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
-        const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
-        await supabase.from('projects').update({
-          config: {
-            ...currentConfig,
-            designState: result.design,
-            updatedBy: 'DESIGNLY_AI_EDITOR',
-            updatedAt: new Date().toISOString(),
-          },
-          updated_at: new Date().toISOString(),
-        }).eq('id', projectId);
-      }
+    const changed = JSON.stringify(result.design) !== JSON.stringify(design);
+    if (!changed) {
+      setAiReply(result.reply || 'Nem volt szükséges módosítás.');
+      return;
     }
 
-    setAiReply(result.reply || 'A módosítást alkalmaztam.');
+    setPendingAiDesign(result.design);
+    setPendingAiChanges(result.changes || []);
+    setAiReply(result.reply || 'Az AI előnézete elkészült. Jóváhagyás után alkalmazzuk.');
+  };
+
+  const approveAiCommand = async () => {
+    if (!pendingAiDesign || aiLoading) return;
+
+    if (!isOwner && (profile?.credits ?? 0) < 1) {
+      setAiError('Ehhez az AI szerkesztéshez 1 kredit szükséges.');
+      setShowCreditModal(true);
+      return;
+    }
+
+    setAiLoading(true);
+    setAiError(null);
+
+    const result = await runDesignlyGroqEditor({
+      command: 'Approved AI editor change',
+      mode: 'final',
+      approvedChanges: pendingAiChanges,
+      selectedElement,
+      device,
+      design,
+    });
+
+    setAiLoading(false);
+
+    if (!result.ok || !result.design) {
+      setAiError(result.message || 'Az AI módosítás véglegesítése nem sikerült.');
+      return;
+    }
+
+    pushHistory(design);
+    setDesign(result.design);
+    setPendingAiDesign(null);
+    setPendingAiChanges([]);
+    setAiReply(result.reply || 'A módosításokat alkalmaztam.');
+
+    const projectId = localStorage.getItem('designly_selected_project');
+    if (projectId) {
+      const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
+      const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
+      await supabase.from('projects').update({
+        config: {
+          ...currentConfig,
+          designState: result.design,
+          updatedBy: 'DESIGNLY_AI_EDITOR',
+          updatedAt: new Date().toISOString(),
+        },
+        updated_at: new Date().toISOString(),
+      }).eq('id', projectId);
+    }
+
+    await refreshProfile();
   };
 
   const startVoiceCommand = () => {
@@ -465,9 +503,22 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
               <div className="mt-3 rounded-lg border border-gold-600/15 bg-gold-600/5 px-3 py-2 text-xs text-cream-200">
                 <div className="flex items-center gap-1.5 text-gold-300 mb-1">
                   <Check className="w-3 h-3" />
-                  AI válasz
+                  AI előnézet
                 </div>
                 {aiReply}
+                {pendingAiDesign && (
+                  <div className="mt-3 rounded-lg border border-gold-500/20 bg-black/25 p-3">
+                    <div className="text-[10px] uppercase tracking-[.17em] text-gold-300/65">0 KREDIT · NINCS MÉG ALKALMAZVA</div>
+                    <div className="mt-1 text-xs text-cream-300/50">A vizuális módosítást csak jóváhagyás után alkalmazzuk és csak akkor vonunk le 1 kreditet.</div>
+                    <div className="mt-3 flex gap-2 flex-wrap">
+                      <button type="button" onClick={approveAiCommand} disabled={aiLoading} className="btn-gold text-xs">
+                        {aiLoading ? <Sparkles className="w-3.5 h-3.5 animate-pulse" /> : <Check className="w-3.5 h-3.5" />}
+                        TETSZIK · ALKALMAZÁS · 1 KREDIT
+                      </button>
+                      <button type="button" onClick={() => { setPendingAiDesign(null); setPendingAiChanges([]); }} disabled={aiLoading} className="btn-ghost text-xs">MÓDOSÍTOM</button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
