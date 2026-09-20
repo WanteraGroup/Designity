@@ -236,7 +236,7 @@ export function CncCamPage() {
 
           <section className="card-lux overflow-hidden">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 border-b border-ink-600/40"><div><h2 className="text-lg font-display font-semibold text-cream-100">G-kód</h2><p className="text-xs text-cream-300/45 mt-1">{shown.length} sor · ellenőrizd a gép specifikációját export előtt</p></div><div className="flex gap-2"><button onClick={copy} className="btn-ghost text-xs"><Copy className="w-4 h-4" /> Másolás</button><button onClick={download} className="btn-gold text-xs"><Download className="w-4 h-4" /> .NC EXPORT</button></div></div>
-            <pre className="p-4 max-h-[520px] overflow-auto bg-black/30 text-[11px] leading-5 text-cream-200/80 font-mono whitespace-pre">{shown.join('\.')}</pre>
+            <pre className="p-4 max-h-[520px] overflow-auto bg-black/30 text-[11px] leading-5 text-cream-200/80 font-mono whitespace-pre">{shown.join('\n')}</pre>
           </section>
 
           <section className="card-lux p-5"><div className="flex items-start gap-3"><ShieldCheck className="w-5 h-5 text-gold-400 shrink-0 mt-0.5" /><div><h3 className="text-sm font-semibold text-cream-100">Biztonsági ellenőrzés</h3><p className="text-xs text-cream-300/50 mt-1">A modul nem küld G-kódot közvetlenül CNC gépre. Export előtt ellenőrizd a nullpontot, tengelyutakat, szerszámot, fordulatot, előtolást és vezérlő-specifikus kódokat.</p></div></div></section>
