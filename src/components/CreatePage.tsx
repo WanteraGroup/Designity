@@ -1,4 +1,6 @@
 import { useState, useEffect, type SyntheticEvent } from 'react';
+
+const PENDING_EDITOR_KEY = 'designly_pending_editor_state';
 import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
@@ -142,6 +144,17 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     } catch {
       localStorage.removeItem('designly_selected_template');
     }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PENDING_EDITOR_KEY);
+      if (!raw) return;
+      const pending = JSON.parse(raw);
+      if (pending?.itemId) {
+        setShowCreditModal(false);
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
