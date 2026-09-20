@@ -30,8 +30,6 @@ export function CreditPurchaseModal({
   const [paymentState, setPaymentState] = useState<'idle' | 'opening' | 'waiting' | 'success' | 'failed'>('idle');
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
-  if (!open) return null;
-
   const startCheckout = async (itemId: string) => {
     setPaymentError(null);
     setPaymentState('opening');
@@ -41,6 +39,7 @@ export function CreditPurchaseModal({
       popup?.close();
       setPaymentState('failed');
       setPaymentError(result.message || 'Az online fizetés indítása nem sikerült.');
+      onNavigate('checkout', { type: 'credit_package', itemId });
       return;
     }
     if (popup) {
@@ -72,6 +71,8 @@ export function CreditPurchaseModal({
     const timer = window.setInterval(() => { void check(); }, 5000);
     return () => { active = false; window.clearInterval(timer); };
   }, [open, paymentId, paymentState, onCreditsUpdated]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -141,7 +142,7 @@ export function CreditPurchaseModal({
                 </button>
               </div>
             </div>
-          </div>
+          </div>}
 
           <button type="button" onClick={onClose} className="btn-ghost w-full mt-5">Vissza</button>
         </div>
