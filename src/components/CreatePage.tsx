@@ -680,12 +680,9 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <span className="text-xl font-display font-bold text-cream-50">{isOwner ? '∞' : profile?.credits ?? 0}</span>
                 </div>
               </div>
-              {!hasEnoughCredits && (
-                <div className="flex items-start gap-2 p-3 rounded-lg border border-red-500/30 bg-red-500/10 text-sm text-red-300">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{t('gen.insufficientCredits')} <button onClick={() => setShowCreditModal(true)} className="underline">{t('credits.buyCredits')}</button>.</span>
-                </div>
-              )}
+              <div className="rounded-lg border border-gold-600/20 bg-gold-500/5 p-3 text-sm text-cream-200/70">
+                <span className="font-semibold text-gold-200">INGYENES ELŐNÉZET:</span> a jóváhagyás önmagában nem von le kreditet. Kredit csak a végleges generálás indításakor kerül levonásra.
+              </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 {!isOwner && (
                   <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
@@ -696,10 +693,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
                   <button
                     onClick={() => setApproved(true)}
-                    disabled={!preview || !previewImageUrl || !previewId || !hasEnoughCredits}
+                    disabled={!preview || !previewImageUrl || !previewId}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
-                    {t('designer.select')}
+                    KÉREM · {isOwner ? '∞' : cost} KREDIT
                   </button>
                 </div>
               </div>
