@@ -22,6 +22,7 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [polling, setPolling] = useState(false);
   const pendingEditorKey = 'designly_pending_editor_state';
+  const pendingReturnRef = window.localStorage.getItem(pendingEditorKey);
 
   // Check URL params for redirect status from payment link
   useEffect(() => {
@@ -49,7 +50,6 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
     if (result.success && result.status === 'succeeded') {
       setStatus('success');
       await refreshProfile();
-      window.localStorage.removeItem(pendingEditorKey);
     } else if (result.success && result.status === 'failed') {
       setStatus('failed');
     }
@@ -124,8 +124,8 @@ export function CheckoutPage({ onNavigate, checkoutItem }: CheckoutPageProps) {
       const raw = window.localStorage.getItem(pendingEditorKey);
       const pending = raw ? JSON.parse(raw) : null;
       window.localStorage.removeItem(pendingEditorKey);
-      onNavigate(pending?.hash ? 'editor' : 'create');
-    } catch { onNavigate('create'); }
+      onNavigate('editor');
+    } catch { onNavigate('editor'); }
   };
 
   if (status === 'success') {
