@@ -179,7 +179,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
   const hasEnoughCredits = isOwner || (profile?.credits ?? 0) >= cost;
-  const canDownloadImages = isOwner || profile?.role === 'admin';
+  const canDownloadImages = isOwner || profile?.role === 'admin' || step === 4;
 
   const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
     if (!canDownloadImages) {
