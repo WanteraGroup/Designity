@@ -5,6 +5,8 @@ where id = 'designly-music';
 
 drop policy if exists "Public can read DESIGNLY music files" on storage.objects;
 
+drop policy if exists "Service can manage DESIGNLY music files" on storage.objects;
+
 create policy "Service can manage DESIGNLY music files"
 on storage.objects for all
 to service_role
