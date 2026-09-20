@@ -13,12 +13,69 @@ function json(data: unknown, status = 200) {
   });
 }
 
-async function shopifyGraphql(query: string, variables: Record<string, unknown> = {}) {
-  const domain = Deno.env.get("SHOPIFY_STORE_DOMAIN");
-  const token = Deno.env.get("SHOPIFY_ADMIN_ACCESS_TOKEN");
-  if (!domain || !token) throw new Error("SHOPIFY_NOT_CONFIGURED");
+function getShopDomain() {
+  const raw = String(Deno.env.get("SHOPIFY_SHOP") || "").trim();
+  if (!raw) throw new Error("SHOPIFY_NOT_CONFIGURED");
 
-  const response = await fetch(`https://${domain}/admin/api/2026-07/graphql.json`, {
+  const withoutProtocol = raw.replace(/^https?:\/\//i, "").split("/")[0];
+  const shop = withoutProtocol.replace(/\.myshopify\.com$/i, "");
+
+  if (!/^[a-z0-9][a-z0-9-]*$/i.test(shop)) {
+    throw new Error("SHOPIFY_INVALID_SHOP");
+  }
+
+  return shop;
+}
+
+let cachedAccessToken: { token: string; expiresAt: number } | null = null;
+
+async function getShopifyAccessToken() {
+  const shop = getShopDomain();
+  const clientId = Deno.env.get("SHOPIFY_CLIENT_ID");
+  const clientSecret = Deno.env.get("SHOPIFY_CLIENT_SECRET");
+
+  if (!clientId || !clientSecret) throw new Error("SHOPIFY_NOT_CONFIGURED");
+
+  const now = Date.now();
+  if (cachedAccessToken && cachedAccessToken.expiresAt > now + 60_000) {
+    return cachedAccessToken.token;
+  }
+
+  const tokenResponse = await fetch(
+    "https://" + shop + ".myshopify.com/admin/oauth/access_token",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: clientId,
+        client_secret: clientSecret,
+      }),
+    },
+  );
+
+  const tokenBody = await tokenResponse.json().catch(() => ({}));
+  if (!tokenResponse.ok || !tokenBody.access_token) {
+    console.error("Shopify token request failed", tokenResponse.status, tokenBody?.error || tokenBody?.errors);
+    throw new Error("SHOPIFY_AUTH_ERROR");
+  }
+
+  const expiresIn = Number(tokenBody.expires_in) || 86_399;
+  cachedAccessToken = {
+    token: String(tokenBody.access_token),
+    expiresAt: Date.now() + Math.max(60_000, expiresIn * 1000),
+  };
+
+  return cachedAccessToken.token;
+}
+
+async function shopifyGraphql(query: string, variables: Record<string, unknown> = {}) {
+  const shop = getShopDomain();
+  const token = await getShopifyAccessToken();
+
+  const response = await fetch("https://" + shop + ".myshopify.com/admin/api/2026-07/graphql.json", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -81,7 +138,11 @@ Deno.serve(async (req: Request) => {
     if (action === "list") {
       const data = await shopifyGraphql(`
         query {
-          shop { name primaryDomain { url } }
+          shop {
+            name
+            currencyCode
+            primaryDomain { url }
+          }
           products(first: 50, sortKey: UPDATED_AT, reverse: true) {
             nodes {
               id title handle status productType vendor
@@ -95,7 +156,7 @@ Deno.serve(async (req: Request) => {
         shop: {
           name: data.shop.name,
           domain: new URL(data.shop.primaryDomain.url).hostname,
-          currencyCode: "HUF",
+          currencyCode: data.shop.currencyCode || "HUF",
         },
         products: data.products.nodes.map((p: any) => ({
           id: p.id,
@@ -172,7 +233,7 @@ Deno.serve(async (req: Request) => {
     const code = error instanceof Error ? error.message : "INTERNAL_ERROR";
     if (code === "NO_SESSION") return json({ error: code, message: "Bejelentkezés szükséges." }, 401);
     if (code === "FORBIDDEN") return json({ error: code, message: "Csak admin vagy owner kezelheti a Shopify modult." }, 403);
-    if (code === "SHOPIFY_NOT_CONFIGURED") return json({ error: code, message: "A Shopify szerveroldali kapcsolat még nincs beállítva. A SHOPIFY_STORE_DOMAIN és SHOPIFY_ADMIN_ACCESS_TOKEN secret szükséges." }, 503);
+    if (code === "SHOPIFY_NOT_CONFIGURED") return json({ error: code, message: "A Shopify szerveroldali kapcsolat még nincs beállítva. A SHOPIFY_SHOP, SHOPIFY_CLIENT_ID és SHOPIFY_CLIENT_SECRET Supabase secret szükséges." }, 503);
     if (code === "PROFILE_LOOKUP_FAILED") return json({ error: code, message: "A felhasználói jogosultság ellenőrzése sikertelen." }, 500);
     if (code === "SERVER_CONFIG_ERROR") return json({ error: code, message: "A Supabase szerver konfiguráció hiányos." }, 500);
     console.error("shopify-studio error", error);
