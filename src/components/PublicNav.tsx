@@ -33,6 +33,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
   const resources: NavItem[] = [
     { id: 'features', label: t('nav.features'), page: 'features' },
     { id: 'advertising', label: lang === 'hu' ? 'AI Reklám Studio' : 'AI Ad Studio', page: 'advertising' },
+    { id: 'tattoo', label: lang === 'hu' ? 'Tattoo Library' : 'Tattoo Library', page: 'tattoo' },
     { id: 'music', label: t('nav.music'), page: 'music' },
     { id: 'workflow', label: t('nav.workflow'), page: 'workflow' },
     { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
@@ -50,6 +51,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
     pricing: 'pricing',
     streamer: 'streamer',
     creator: 'merch',
+    tattoo: 'tattoo',
   };
   const activeId = activePages[currentPage] ?? '';
 
