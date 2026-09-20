@@ -401,7 +401,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         <h2 className="text-2xl font-display font-bold text-cream-50 mb-2">{t('gen.success')}</h2>
         <p className="text-sm text-cream-300/60 mb-6">{t('gen.successDesc')}</p>
         {generatedImageUrl ? (
-          <div className="w-full max-w-2xl mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-ink-900 shadow-2xl">
+          <div className="w-full max-w-[1500px] mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-black shadow-2xl">
             <img
               src={generatedImageUrl}
               alt="DESIGNLY AI generated design"
@@ -430,7 +430,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   return (
     <>
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className={`w-full mx-auto space-y-8 ${step === 3 ? 'max-w-[1700px]' : 'max-w-5xl'}`}>
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3].map((s) => (
@@ -583,19 +583,26 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           )}
 
           {previewImageUrl && (
-            <div className="card-lux overflow-hidden border-gold-600/25 bg-ink-950">
-              <div className="px-5 py-3 border-b border-gold-600/15 flex items-center justify-between">
-                <span className="text-xs uppercase tracking-wider text-gold-400">AI eredmény – előnézet</span>
-                <span className="text-xs text-cream-300/50">0 kredit</span>
+            <div className="card-lux overflow-hidden border-gold-600/30 bg-black shadow-2xl">
+              <div className="px-5 py-3 border-b border-gold-600/15 flex items-center justify-between bg-ink-900/90 sticky top-0 z-10">
+                <div>
+                  <span className="text-xs uppercase tracking-[.18em] text-gold-400">AI eredmény · nagy előnézet</span>
+                  <div className="text-[10px] text-cream-300/40 mt-1">A kész művet nagy, fókuszált vásznon látod.</div>
+                </div>
+                <span className="chip border-gold-600/20 bg-black/30 text-cream-300/50 text-[10px]">0 kredit</span>
               </div>
-              <img
-                src={previewImageUrl}
-                alt="DESIGNLY AI preview"
-                draggable={canDownloadImages}
-                onContextMenu={protectImage}
-                onDragStart={protectImage}
-                className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
-              />
+              <div className="bg-[#020303] p-2 sm:p-4 lg:p-6">
+                <div className="mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-gold-600/15 bg-black shadow-[0_0_80px_rgba(0,0,0,.6)]">
+                  <img
+                    src={previewImageUrl}
+                    alt="DESIGNLY AI preview"
+                    draggable={canDownloadImages}
+                    onContextMenu={protectImage}
+                    onDragStart={protectImage}
+                    className={`block w-full h-auto object-contain ${canDownloadImages ? '' : 'select-none'}`}
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -835,14 +842,17 @@ function GenerationOverlay({ step, t }: { step: number; t: (k: any) => string })
   const done = step >= 5;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-ink-950/95 backdrop-blur-xl flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-[100] bg-ink-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-6">
+      <div className="absolute top-5 left-1/2 -translate-x-1/2 chip border-gold-500/20 bg-black/30 text-gold-200 text-[10px] uppercase tracking-[.2em]">
+        AUTOMATIC BUILD · NAGY MUNKATÉR
+      </div>
       <div className="absolute inset-0 bg-grid opacity-20" />
       <div className="relative flex flex-col items-center">
         <CelticEmblem size={200} animate showD />
         <div className="font-display text-2xl font-bold text-cream-50 tracking-wide mt-8 mb-2">DESIGNLY STUDIO</div>
         <div className="text-sm text-gold-200 mb-8">{done ? t('gen.reveal') : t('gen.creating')}</div>
 
-        <div className="w-64 space-y-2">
+        <div className="w-full max-w-xl space-y-2 rounded-2xl border border-gold-600/10 bg-black/20 p-5">
           {steps.map((s, i) => (
             <div
               key={i}
