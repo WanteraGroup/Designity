@@ -265,7 +265,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                       <td className="py-3 px-5 text-cream-100">{u.email}</td>
                       <td className="py-3 px-5"><span className="chip text-[10px] border-ink-500/40 text-cream-300/60">{u.role}</span></td>
                       <td className="py-3 px-5 text-cream-200 capitalize">{u.unlimited_access ? 'FULL UNLOCK' : u.plan_id}</td>
-                      <td className="py-3 px-5 text-right text-gold-200">{u.role === 'owner' || u.unlimited_access ? '∞' : u.credits}</td>
+                      <td className="py-3 px-5 text-right text-gold-200">{Number(u.credits ?? 0).toLocaleString('hu-HU')}</td>
                       <td className="py-3 px-5 text-right text-cream-300/40 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
