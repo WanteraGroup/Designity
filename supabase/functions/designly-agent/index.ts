@@ -386,43 +386,14 @@ Deno.serve(async (req: Request) => {
         Deno.env.get("GROQ_API_KEY") || apiKey,
         teamModel,
         "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. Return strict JSON only.",
-        [
-          `BRIEF: ${body.brief}`,
-          `BUSINESS: ${structured.businessName || "not specified"}`,
-          `OUTPUTS: ${structured.requiredOutputs.join(", ")}`,
-        ].join("\n"),
+        `BRIEF: ${body.brief}`,
         "designly_team",
         {
           type: "object",
           additionalProperties: false,
           properties: {
-            specialistOutputs: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  agent: { type: "string" },
-                  deliverable: { type: "string" },
-                  decisions: { type: "array", items: { type: "string" } },
-                },
-                required: ["agent", "deliverable", "decisions"],
-              },
-            },
-            buildSpec: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                pages: { type: "array", items: { type: "object", additionalProperties: true } },
-                sections: { type: "array", items: { type: "object", additionalProperties: true } },
-                components: { type: "array", items: { type: "object", additionalProperties: true } },
-                content: { type: "object", additionalProperties: true },
-                interactions: { type: "array", items: { type: "string" } },
-                responsiveRules: { type: "array", items: { type: "string" } },
-                acceptanceCriteria: { type: "array", items: { type: "string" } },
-              },
-              required: ["pages", "sections"],
-            },
+            specialistOutputs: { type: "array", items: { type: "object", additionalProperties: true } },
+            buildSpec: { type: "object", additionalProperties: true },
           },
           required: ["specialistOutputs", "buildSpec"],
         },
@@ -430,16 +401,6 @@ Deno.serve(async (req: Request) => {
     } catch (teamError) {
       console.error("designly-agent team stage failed:", teamError);
       teamPlan = fallbackTeamPlan;
-    }
-
-    try {
-      reviewedTeam = {
-        status: "PASS",
-        blockers: [],
-        buildSpec: teamPlan.buildSpec as typeof fallbackTeamPlan.buildSpec,
-      };
-    } catch {
-      reviewedTeam = fallbackReviewedTeam;
     }
 
     const normalizedBuildSpec = {
@@ -458,6 +419,8 @@ Deno.serve(async (req: Request) => {
     if (body.mode === "preview" || body.mode === undefined) {
       const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || apiKey;
       const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-1";
+      const fallbackImage = buildFallbackPreviewSvg(structured, body.brief);
+      previewImageUrl = fallbackImage;
 
       try {
         const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
@@ -493,31 +456,33 @@ Deno.serve(async (req: Request) => {
           const imageErrorText = await imageResponse.text().catch(() => "");
           console.error("designly-agent image stage failed:", imageResponse.status, imageErrorText.slice(0, 240));
         }
-
-        if (!previewImageUrl) {
-          previewImageUrl = buildFallbackPreviewSvg(structured, body.brief);
-        }
       } catch (imageError) {
         console.error("designly-agent image stage error:", imageError);
-        previewImageUrl = buildFallbackPreviewSvg(structured, body.brief);
       }
 
-      if (previewImageUrl) {
-        const { data: previewRow, error: previewError } = await supabase
-          .from("ai_previews")
-          .insert({ user_id: user.id, image_url: previewImageUrl, brief: body.brief })
-          .select()
-          .single();
+      const { data: previewRow, error: previewInsertError } = await supabase
+        .from("design_previews")
+        .insert({
+          user_id: user.id,
+          type: fallbackOutputs[0] || "custom",
+          brief: body.brief.trim(),
+          image_url: previewImageUrl,
+          status: "ready",
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        })
+        .select("id")
+        .single();
 
-        if (previewError || !previewRow) {
-          return json({
-            error: "PREVIEW_RECORD_FAILED",
-            message: "The preview image was created, but its preview record could not be saved. No DESIGNLY credits were charged.",
-          }, 500);
-        }
-
-        previewId = previewRow.id;
+      if (previewInsertError || !previewRow) {
+        console.error("Preview record creation failed:", previewInsertError);
+        return json({
+          error: "PREVIEW_RECORD_FAILED",
+          message: "The preview image was created, but its preview record could not be saved. No DESIGNLY credits were charged.",
+          detail: previewInsertError?.message || "No row returned",
+        }, 500);
       }
+
+      previewId = previewRow.id;
     }
 
     const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
@@ -552,7 +517,6 @@ Deno.serve(async (req: Request) => {
         model,
         fallbackUsed: providerStageError !== null,
         providerError: providerStageError,
-        teamFallbackUsed: false,
       },
     });
   } catch (error) {
