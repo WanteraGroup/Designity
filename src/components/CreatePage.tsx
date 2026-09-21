@@ -79,7 +79,7 @@ interface CreatePageProps {
 
 export function CreatePage({ onNavigate }: CreatePageProps) {
   const { t, lang } = useI18n();
-  const { profile, isUnlimited, refreshProfile } = useAuth();
+  const { profile, isUnlimited, isAdmin, refreshProfile } = useAuth();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<ProjectType | null>(null);
   const [brief, setBrief] = useState('');
@@ -185,7 +185,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, [profile]);
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
-  const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
+  const hasEnoughCredits = !isUnlimited || (profile?.credits ?? 0) >= cost || isAdmin;
   const canDownloadImages = isUnlimited || profile?.role === 'admin' || step === 4;
 
   const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
@@ -288,7 +288,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!profile || !selectedType || !approved) return;
     setError(null);
 
-    if (!isUnlimited && (profile.credits ?? 0) < cost) {
+    if ((isAdmin || !isUnlimited) && (profile.credits ?? 0) < cost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
