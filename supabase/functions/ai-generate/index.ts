@@ -130,7 +130,11 @@ Deno.serve(async (req: Request) => {
     }
 
     // Deduct credits (atomic, server-side)
-    const unlimited = profile.role === "owner" || profile.unlimited_access === true;
+    // Owner/Admin accounts are deliberately billable so testing uses the same
+    // credit path as a real customer. Other users with an explicit unlimited
+    // grant remain exempt from credit deduction.
+    const billableAdmin = profile.role === "owner" || profile.role === "admin";
+    const unlimited = !billableAdmin && profile.unlimited_access === true;
 
     if (!unlimited) {
       if (profile.credits < creditCost) {
@@ -168,7 +172,7 @@ Deno.serve(async (req: Request) => {
         type,
         status: "processing",
         provider: previewId && aiProvider === "none" ? "approved-preview" : aiProvider,
-        credits_cost: unlimited ? 0 : creditCost,
+        credits_cost: creditCost,
       })
       .select()
       .single();
@@ -303,7 +307,7 @@ Deno.serve(async (req: Request) => {
       success: true,
       jobId: job.id,
       result: generationResult,
-      creditsUsed: unlimited ? 0 : creditCost,
+      creditsUsed: creditCost,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
