@@ -1,0 +1,397 @@
+/* DESIGNLY — FINAL VISUAL OVERRIDE
+   One last cascade layer intentionally overrides the experimental visual layers.
+   This file is the active Nordic / Celtic / Viking art-direction layer. */
+
+:root{
+  --df-void:#020505;
+  --df-night:#06100f;
+  --df-panel:rgba(7,16,15,.84);
+  --df-panel-hi:rgba(14,30,28,.82);
+  --df-ice:#9ceee5;
+  --df-ice-hi:#e3fffb;
+  --df-gold:#d6b36a;
+  --df-copper:#b9784f;
+  --df-bone:#eee8dc;
+  --df-muted:#9aa6a0;
+}
+
+html,body,#root{background:#020505!important;color:var(--df-bone)!important}
+body{font-family:"Manrope","Inter",system-ui,sans-serif!important}
+h1,h2,h3,h4,h5,h6,.font-display{font-family:"Marcellus","Cormorant Garamond",Georgia,serif!important}
+
+/* COMMAND BAR / HEADER */
+.celtic-header{
+  position:relative!important;
+  z-index:60!important;
+  background:linear-gradient(180deg,rgba(2,7,7,.97),rgba(3,9,9,.84))!important;
+  border-bottom:1px solid rgba(156,238,229,.18)!important;
+  box-shadow:0 18px 50px rgba(0,0,0,.48),0 1px 0 rgba(214,179,106,.10)!important;
+}
+.celtic-header::before{
+  content:""!important;
+  position:absolute!important;inset:0!important;pointer-events:none!important;
+  background:
+    radial-gradient(circle at 12% 50%,rgba(156,238,229,.10),transparent 24%),
+    radial-gradient(circle at 82% 40%,rgba(214,179,106,.05),transparent 20%)!important;
+}
+.celtic-header::after{
+  content:""!important;
+  position:absolute!important;left:3%!important;right:3%!important;bottom:0!important;height:1px!important;
+  background:linear-gradient(90deg,transparent,var(--df-copper),var(--df-ice),var(--df-gold),var(--df-ice),transparent)!important;
+  box-shadow:0 0 20px rgba(156,238,229,.30)!important;
+}
+.celtic-header .nav-link{
+  color:rgba(238,232,220,.68)!important;
+  font:800 10px/1 "Manrope","Inter",sans-serif!important;
+  letter-spacing:.16em!important;text-transform:uppercase!important;
+}
+.celtic-header .nav-link:hover,.celtic-header .nav-link--active{color:var(--df-ice-hi)!important;text-shadow:0 0 15px rgba(156,238,229,.34)!important}
+.celtic-header .nav-link::after{background:linear-gradient(90deg,transparent,var(--df-ice),transparent)!important;box-shadow:0 0 14px rgba(156,238,229,.52)!important}
+
+/* APP ATMOSPHERE — actual Nordic/Viking artwork */
+.designly-app-page{
+  position:relative!important;
+  isolation:isolate!important;
+  min-height:calc(100vh - 74px)!important;
+}
+.designly-app-page::before{
+  content:""!important;
+  position:fixed!important;
+  inset:0 0 0 252px!important;
+  z-index:-20!important;
+  pointer-events:none!important;
+  background:
+    linear-gradient(180deg,rgba(2,6,7,.34),rgba(2,7,7,.54) 45%,rgba(2,5,6,.88)),
+    url("/designly-odin-hall-bg.svg") 50% 50%/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  opacity:1!important;
+  filter:saturate(1.05) contrast(1.04)!important;
+}
+.designly-app-page::after{
+  content:""!important;
+  position:fixed!important;
+  inset:0 0 0 252px!important;
+  z-index:-19!important;
+  pointer-events:none!important;
+  background:
+    radial-gradient(circle at 70% 15%,rgba(156,238,229,.11),transparent 23%),
+    radial-gradient(circle at 26% 82%,rgba(185,120,79,.075),transparent 24%),
+    linear-gradient(rgba(156,238,229,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(156,238,229,.016) 1px,transparent 1px)!important;
+  background-size:auto,auto,84px 84px,84px 84px!important;
+}
+.designly-public-page:not(.designly-page-landing)::before{
+  content:""!important;
+  position:fixed!important;inset:0!important;z-index:-20!important;pointer-events:none!important;
+  background:
+    linear-gradient(180deg,rgba(2,6,7,.36),rgba(2,7,7,.60) 48%,rgba(2,5,6,.91)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  opacity:1!important;
+}
+
+/* route-specific focal lighting */
+.designly-page-dashboard::before{background-position:50% 54%!important}
+.designly-page-create::before{background-position:18% 50%!important}
+.designly-page-advertising::before{background-position:74% 46%!important}
+.designly-page-campaign::before{background-position:60% 28%!important}
+.designly-page-music::before{background-position:84% 60%!important}
+.designly-page-agents::before{background-position:42% 44%!important}
+.designly-page-voice::before{background-position:30% 42%!important}
+.designly-page-translator::before{background-position:54% 66%!important}
+.designly-page-shopify::before{background-position:18% 64%!important}
+.designly-page-admin::before{background-position:84% 50%!important}
+.designly-page-diagnostics::before{background-position:50% 26%!important}
+.designly-page-projects::before{background-position:62% 66%!important}
+.designly-page-brands::before{background-position:8% 35%!important}
+.designly-page-templates::before{background-position:56% 42%!important}
+.designly-page-tattoo::before{background-position:38% 54%!important}
+.designly-page-planner::before{background-position:78% 30%!important}
+.designly-page-cnc::before{background-position:50% 72%!important}
+.designly-page-settings::before{background-position:14% 50%!important}
+.designly-page-credits::before{background-position:78% 20%!important}
+.designly-page-billing::before{background-position:50% 14%!important}
+.designly-page-editor::before{background-position:62% 50%!important}
+
+/* SIDEBAR */
+aside.hidden.lg\\:flex{
+  width:252px!important;
+  background:
+    linear-gradient(180deg,rgba(4,10,10,.98),rgba(2,6,7,.985)),
+    url("/designly-odin-hall-bg.svg") 76% 50%/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  border-right:1px solid rgba(156,238,229,.15)!important;
+  box-shadow:24px 0 70px rgba(0,0,0,.56)!important;
+}
+aside.hidden.lg\\:flex::before{
+  content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;
+  background:linear-gradient(180deg,rgba(156,238,229,.045),transparent 16%,transparent 76%,rgba(185,120,79,.045))!important;
+}
+aside.hidden.lg\\:flex::after{
+  content:""!important;position:absolute!important;right:0!important;top:0!important;bottom:0!important;width:1px!important;
+  background:linear-gradient(180deg,transparent,var(--df-copper),var(--df-ice),transparent)!important;
+  box-shadow:0 0 15px rgba(156,238,229,.30)!important;
+}
+aside.hidden.lg\\:flex nav button{
+  min-height:44px!important;border-radius:12px!important;
+  transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+}
+aside.hidden.lg\\:flex nav button:hover{transform:translateX(3px)!important;background:rgba(156,238,229,.055)!important;border-color:rgba(156,238,229,.10)!important}
+aside.hidden.lg\\:flex nav button[class*="bg-gold"]{
+  background:linear-gradient(90deg,rgba(156,238,229,.13),rgba(156,238,229,.025))!important;
+  border-color:rgba(156,238,229,.22)!important;
+  color:var(--df-ice-hi)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 12px 26px rgba(0,0,0,.20),0 0 22px rgba(156,238,229,.05)!important;
+}
+
+/* PANELS — bevelled steel + Celtic frame */
+.designly-app-page .card-lux,
+.designly-app-page .card-premium,
+.designly-surface{
+  position:relative!important;
+  overflow:hidden!important;
+  border:1px solid rgba(156,238,229,.18)!important;
+  border-radius:20px!important;
+  background:
+    linear-gradient(145deg,rgba(12,26,25,.90),rgba(3,8,9,.94))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -20px 50px rgba(0,0,0,.16),
+    0 30px 80px rgba(0,0,0,.48)!important;
+  backdrop-filter:blur(14px)!important;
+}
+.designly-app-page .card-lux::before,
+.designly-app-page .card-premium::before,
+.designly-surface::before{
+  content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;z-index:0!important;
+  background:
+    linear-gradient(180deg,rgba(156,238,229,.045),transparent 22%,transparent 78%,rgba(185,120,79,.035)),
+    url("/kor keret.png") center/cover no-repeat!important;
+  opacity:.22!important;mix-blend-mode:screen!important;
+}
+.designly-app-page .card-lux::after,
+.designly-app-page .card-premium::after,
+.designly-surface::after{
+  content:""!important;position:absolute!important;inset:7px!important;pointer-events:none!important;z-index:0!important;
+  border:1px solid rgba(156,238,229,.10)!important;border-radius:14px!important;
+  background:
+    linear-gradient(90deg,var(--df-copper) 0 34px,transparent 34px calc(100% - 34px),var(--df-copper) calc(100% - 34px)) top/100% 1px no-repeat,
+    linear-gradient(90deg,var(--df-copper) 0 34px,transparent 34px calc(100% - 34px),var(--df-copper) calc(100% - 34px)) bottom/100% 1px no-repeat!important;
+  opacity:.62!important;
+}
+.designly-app-page .card-lux>*,
+.designly-app-page .card-premium>*,
+.designly-surface>*{position:relative;z-index:2}
+.designly-app-page .card-lux:hover,
+.designly-app-page .card-premium:hover,
+.designly-surface:hover{
+  transform:translateY(-3px)!important;
+  border-color:rgba(156,238,229,.34)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 38px 96px rgba(0,0,0,.56),0 0 34px rgba(156,238,229,.07)!important;
+}
+
+/* 3D FORGED CONTROLS */
+.btn-gold,.odin-btn-hot{
+  position:relative!important;overflow:hidden!important;
+  border-radius:12px!important;
+  background:linear-gradient(145deg,#6d5b38 0%,#f0eee5 46%,#8d7b58 100%)!important;
+  color:#10120f!important;
+  border:1px solid rgba(250,247,238,.68)!important;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.40),
+    inset 0 -7px 16px rgba(0,0,0,.18),
+    0 14px 30px rgba(0,0,0,.40),
+    0 0 28px rgba(214,179,106,.12)!important;
+  text-shadow:0 1px rgba(255,255,255,.30)!important;
+  transform:translateZ(0)!important;
+}
+.btn-gold::before,.odin-btn-hot::before{
+  content:""!important;position:absolute!important;left:7%!important;right:7%!important;top:4px!important;height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent)!important;opacity:.72!important;
+}
+.btn-gold::after,.odin-btn-hot::after{
+  content:""!important;position:absolute!important;top:-140%!important;left:-35%!important;width:28%!important;height:360%!important;
+  transform:rotate(23deg)!important;background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent)!important;
+  transition:left .72s ease!important;pointer-events:none!important;
+}
+.btn-gold:hover,.odin-btn-hot:hover{transform:translateY(-3px)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -8px 17px rgba(0,0,0,.16),0 20px 38px rgba(0,0,0,.48),0 0 40px rgba(214,179,106,.18)!important}
+.btn-gold:hover::after,.odin-btn-hot:hover::after{left:118%!important}
+.btn-gold:active,.odin-btn-hot:active{transform:translateY(1px)!important}
+.btn-ghost,.odin-btn-dark{
+  border-radius:12px!important;
+  background:linear-gradient(145deg,rgba(18,38,36,.94),rgba(3,8,9,.98))!important;
+  border:1px solid rgba(156,238,229,.18)!important;
+  color:#e5eee9!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 12px 25px rgba(0,0,0,.28)!important;
+}
+.btn-ghost:hover,.odin-btn-dark:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(156,238,229,.38)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 16px 34px rgba(0,0,0,.42),0 0 28px rgba(156,238,229,.08)!important;
+}
+
+/* INPUTS / SELECTS */
+.designly-app-page .input-lux,.designly-app-page .input-premium{
+  min-height:46px!important;border-radius:12px!important;
+  background:
+    linear-gradient(180deg,rgba(2,7,8,.92),rgba(10,22,21,.94)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat!important;
+  border:1px solid rgba(156,238,229,.16)!important;color:#eef4ef!important;
+  box-shadow:inset 0 5px 18px rgba(0,0,0,.34),0 9px 20px rgba(0,0,0,.16)!important;
+}
+.designly-app-page .input-lux:focus,.designly-app-page .input-premium:focus{
+  border-color:rgba(156,238,229,.50)!important;
+  box-shadow:0 0 0 3px rgba(156,238,229,.065),inset 0 5px 18px rgba(0,0,0,.34),0 0 30px rgba(156,238,229,.11)!important;
+}
+
+/* FLOATING SURFACES / MODALS */
+.designly-app-page [role="dialog"],
+.designly-app-page [data-radix-popper-content-wrapper] > div{
+  border-color:rgba(156,238,229,.22)!important;
+  background:
+    linear-gradient(180deg,rgba(7,17,17,.96),rgba(2,7,8,.985)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  box-shadow:0 34px 90px rgba(0,0,0,.62),0 0 32px rgba(156,238,229,.08)!important;
+  border-radius:18px!important;
+}
+
+/* TITLES */
+.designly-app-page h1{
+  text-shadow:0 12px 34px rgba(0,0,0,.54)!important;
+}
+.designly-app-page h1::after{
+  content:""!important;display:block!important;width:150px!important;height:2px!important;margin-top:14px!important;
+  background:linear-gradient(90deg,var(--df-copper),var(--df-ice),transparent)!important;
+  box-shadow:0 0 18px rgba(156,238,229,.18)!important;
+}
+.designly-app-page .text-gold-100,
+.designly-app-page .text-gold-200,
+.designly-app-page .text-gold-300,
+.designly-app-page .text-gold-400,
+.designly-app-page .label-lux{color:var(--df-ice)!important}
+
+/* AGENTS — dedicated cinematic treatment */
+.designly-page-agents{
+  padding-top:24px!important;
+}
+.designly-agent-hub{
+  position:relative;
+  isolation:isolate;
+}
+.designly-agent-hero{
+  position:relative!important;overflow:hidden!important;min-height:340px!important;
+  border:1px solid rgba(156,238,229,.24)!important;border-radius:28px!important;
+  background:
+    linear-gradient(110deg,rgba(2,7,8,.83) 0%,rgba(4,11,11,.60) 48%,rgba(3,7,8,.78) 100%),
+    url("/designly-odin-hall-bg.svg") 48% 50%/cover no-repeat!important;
+  box-shadow:0 36px 100px rgba(0,0,0,.56),0 0 38px rgba(156,238,229,.06)!important;
+}
+.designly-agent-hero::before{
+  content:""!important;position:absolute!important;inset:0!important;pointer-events:none!important;
+  background:
+    radial-gradient(circle at 76% 18%,rgba(156,238,229,.15),transparent 24%),
+    radial-gradient(circle at 15% 70%,rgba(185,120,79,.08),transparent 20%),
+    linear-gradient(90deg,transparent,rgba(156,238,229,.02),transparent)!important;
+}
+.designly-agent-hero::after{
+  content:""!important;position:absolute!important;inset:10px!important;pointer-events:none!important;
+  border:1px solid rgba(156,238,229,.09)!important;border-radius:20px!important;
+  box-shadow:inset 0 0 80px rgba(156,238,229,.025)!important;
+}
+.designly-agent-copy{position:relative;z-index:4}
+.designly-agent-status{
+  position:relative!important;z-index:4!important;
+  background:rgba(3,8,9,.70)!important;
+  border:1px solid rgba(156,238,229,.17)!important;
+  backdrop-filter:blur(15px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 18px 40px rgba(0,0,0,.32)!important;
+}
+.designly-agent-orbit{
+  position:absolute!important;right:7%!important;top:12%!important;width:245px!important;height:245px!important;
+  border-radius:50%!important;border:1px solid rgba(156,238,229,.18)!important;
+  box-shadow:0 0 40px rgba(156,238,229,.06),inset 0 0 44px rgba(156,238,229,.03)!important;
+}
+.designly-agent-orbit::before{
+  content:"ᛟ ᚨ ᚾ ᚷ ᛃ ᚱ ᛉ ᛏ"!important;
+  position:absolute!important;inset:10px!important;border-radius:50%!important;
+  display:grid!important;place-items:center!important;color:rgba(214,179,106,.48)!important;
+  letter-spacing:.9em!important;font:700 19px/1 "Marcellus",serif!important;
+  transform:rotate(-18deg)!important;
+}
+.designly-agent-card{
+  position:relative!important;overflow:hidden!important;
+  min-height:220px!important;
+  border:1px solid rgba(156,238,229,.16)!important;border-radius:20px!important;
+  background:
+    linear-gradient(145deg,rgba(12,27,25,.92),rgba(2,7,8,.96)),
+    url("/kor keret.png") center/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  box-shadow:0 24px 58px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease!important;
+}
+.designly-agent-card::before{
+  content:""!important;position:absolute!important;inset:6px!important;pointer-events:none!important;
+  border:1px solid rgba(156,238,229,.07)!important;border-radius:14px!important;
+  background:
+    linear-gradient(90deg,var(--df-copper) 0 24px,transparent 24px calc(100% - 24px),var(--df-copper) calc(100% - 24px)) top/100% 1px no-repeat,
+    linear-gradient(90deg,var(--df-copper) 0 24px,transparent 24px calc(100% - 24px),var(--df-copper) calc(100% - 24px)) bottom/100% 1px no-repeat!important;
+}
+.designly-agent-card:hover{
+  transform:translateY(-6px)!important;
+  border-color:rgba(156,238,229,.34)!important;
+  box-shadow:0 34px 80px rgba(0,0,0,.56),0 0 34px rgba(156,238,229,.08)!important;
+}
+.designly-agent-card--raven{border-color:rgba(214,179,106,.34)!important;background:linear-gradient(145deg,rgba(40,30,17,.74),rgba(3,8,9,.96)),url("/kor keret.png") center/cover no-repeat!important}
+.designly-agent-card--core{border-color:rgba(143,183,214,.30)!important}
+.designly-agent-icon{
+  width:52px!important;height:52px!important;border-radius:15px!important;
+  display:grid!important;place-items:center!important;
+  background:linear-gradient(145deg,rgba(156,238,229,.15),rgba(2,9,9,.72))!important;
+  border:1px solid rgba(156,238,229,.24)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px rgba(0,0,0,.28),0 0 20px rgba(156,238,229,.07)!important;
+}
+.designly-agent-card--raven .designly-agent-icon{border-color:rgba(214,179,106,.42)!important;background:linear-gradient(145deg,rgba(214,179,106,.16),rgba(25,18,9,.75))!important;box-shadow:0 0 24px rgba(214,179,106,.08),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.designly-agent-pipeline{
+  position:relative!important;overflow:hidden!important;
+  border:1px solid rgba(156,238,229,.17)!important;border-radius:20px!important;
+  background:linear-gradient(180deg,rgba(7,18,17,.86),rgba(3,8,9,.95))!important;
+  box-shadow:0 28px 70px rgba(0,0,0,.42)!important;
+}
+.designly-agent-pipeline::before{
+  content:""!important;position:absolute!important;left:6%!important;right:6%!important;top:50%!important;height:1px!important;
+  background:linear-gradient(90deg,transparent,var(--df-copper),var(--df-ice),var(--df-copper),transparent)!important;
+  box-shadow:0 0 16px rgba(156,238,229,.10)!important;opacity:.55!important;
+}
+.designly-agent-step{
+  position:relative!important;z-index:2!important;
+  border:1px solid rgba(156,238,229,.11)!important;border-radius:15px!important;
+  background:linear-gradient(160deg,rgba(16,34,32,.78),rgba(3,9,10,.92))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 14px 28px rgba(0,0,0,.20)!important;
+}
+.designly-agent-step:hover{border-color:rgba(156,238,229,.28)!important;transform:translateY(-2px)!important}
+
+/* general route sections that are Tailwind gradient surfaces */
+.designly-page-agents > .designly-agent-hub > section:not(.designly-agent-hero),
+.designly-page-agents .designly-section-surface{
+  position:relative!important;
+}
+.designly-section-surface{
+  background:linear-gradient(145deg,rgba(7,17,17,.78),rgba(2,7,8,.91))!important;
+  border:1px solid rgba(156,238,229,.12)!important;
+  border-radius:20px!important;
+  box-shadow:0 22px 58px rgba(0,0,0,.34)!important;
+  backdrop-filter:blur(10px)!important;
+}
+
+@media(max-width:1023px){
+  .designly-app-page::before,.designly-app-page::after{left:0!important}
+  aside.hidden.lg\\:flex{width:280px!important}
+  .designly-agent-orbit{right:-55px!important;top:-25px!important;opacity:.55!important;transform:scale(.78)!important}
+}
+@media(max-width:720px){
+  .designly-app-page{padding-top:8px!important}
+  .designly-agent-hero{min-height:0!important}
+  .designly-agent-orbit{display:none!important}
+  .designly-agent-card{min-height:0!important}
+}
