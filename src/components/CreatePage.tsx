@@ -185,8 +185,8 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, [profile]);
 
   const cost = selectedType ? getCreditsForType(selectedType) : 0;
-  const hasEnoughCredits = !isUnlimited || (profile?.credits ?? 0) >= cost || isAdmin;
-  const canDownloadImages = isUnlimited || profile?.role === 'admin' || step === 4;
+  const hasEnoughCredits = (profile?.credits ?? 0) >= cost;
+  const canDownloadImages = profile?.role === 'owner' || profile?.role === 'admin' || step === 4;
 
   const protectImage = (event: SyntheticEvent<HTMLImageElement>) => {
     if (!canDownloadImages) {
@@ -333,8 +333,70 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       return;
     }
 
-    // Final generation is the only paid generation path.
-    // The preview path above never calls this endpoint.
+    // A website is a real site artifact, not an image generation.
+    // Its buildSpec is already produced by the free Designly Master preview.
+    // Finalization persists that structured site and consumes the configured credits.
+    if (selectedType === 'website') {
+      const { data: deducted, error: deductError } = await supabase.rpc('deduct_credits', {
+        p_user_id: profile.id,
+        p_amount: cost,
+        p_description: 'DESIGNLY website finalization',
+      });
+
+      if (deductError || deducted !== true) {
+        await supabase
+          .from('projects')
+          .update({ status: 'failed', updated_at: new Date().toISOString() })
+          .eq('id', projectData.id);
+        setError(deductError?.message || t('gen.insufficientCredits'));
+        setGenerating(false);
+        return;
+      }
+
+      const websiteSpec = {
+        version: 2,
+        kind: 'website',
+        name: vyronBlueprint?.businessName || projectData.name,
+        pages: Array.isArray(orchestration?.buildSpec?.pages) ? orchestration.buildSpec.pages : [{ path: '/', title: projectData.name, sections: [] }],
+        sections: Array.isArray(orchestration?.buildSpec?.sections) ? orchestration.buildSpec.sections : [],
+        components: Array.isArray(orchestration?.buildSpec?.components) ? orchestration.buildSpec.components : [],
+        content: orchestration?.buildSpec?.content || {},
+        interactions: Array.isArray(orchestration?.buildSpec?.interactions) ? orchestration.buildSpec.interactions : [],
+        responsiveRules: Array.isArray(orchestration?.buildSpec?.responsiveRules) ? orchestration.buildSpec.responsiveRules : [],
+        acceptanceCriteria: Array.isArray(orchestration?.buildSpec?.acceptanceCriteria) ? orchestration.buildSpec.acceptanceCriteria : [],
+        sourceBrief: brief,
+        finalizedAt: new Date().toISOString(),
+      };
+
+      await supabase
+        .from('projects')
+        .update({
+          status: 'completed',
+          updated_at: new Date().toISOString(),
+          config: {
+            ...(projectData.config || {}),
+            buildSpec: orchestration?.buildSpec || projectData.config?.buildSpec,
+            site: websiteSpec,
+            generation: {
+              kind: 'website',
+              finalizedAt: new Date().toISOString(),
+              creditsUsed: cost,
+            },
+          },
+        })
+        .eq('id', projectData.id);
+
+      await refreshProfile();
+      setGeneratedImageUrl(null);
+      setCreatedProject(projectData.id);
+      setGenStep(5);
+      await new Promise((r) => setTimeout(r, 500));
+      setGenerating(false);
+      setStep(4);
+      return;
+    }
+
+    // Non-website outputs continue through the image/asset generation endpoint.
     const genResult = await generateDesign({
       mode: 'final',
       type: selectedType,
@@ -362,7 +424,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     }
 
     const generatedImageUrlValue = (genResult.result?.imageUrl as string) || null;
-    const finalOrchestration = orchestration;
     await supabase
       .from('projects')
       .update({
@@ -409,8 +470,19 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           <Check className="w-10 h-10 text-green-400" />
         </div>
         <h2 className="text-2xl font-display font-bold text-cream-50 mb-2">{t('gen.success')}</h2>
-        <p className="text-sm text-cream-300/60 mb-6">{t('gen.successDesc')}</p>
-        {generatedImageUrl ? (
+        <p className="text-sm text-cream-300/60 mb-6">{selectedType === 'website' ? 'A teljes weboldal struktúrája elkészült. Most megnyithatod a valódi weboldal-szerkesztőt, ahol az összes oldalt és szekciót szerkesztheted, majd exportálhatod a működő weboldalt.' : t('gen.successDesc')}</p>
+        {selectedType === 'website' ? (
+          <div className="w-full max-w-4xl mb-8 rounded-2xl border border-gold-600/25 bg-ink-900/80 p-8 text-left">
+            <div className="text-xs uppercase tracking-[.2em] text-gold-400">FULL WEBSITE BUILD</div>
+            <h3 className="mt-2 text-2xl font-display font-bold text-cream-50">Valódi weboldal-projekt elkészült</h3>
+            <p className="mt-3 text-sm leading-7 text-cream-200/70">A DESIGNLY nem képet mentett el: a többoldalas buildSpec, a szekciók, komponensek, interakciók és reszponzív szabályok a projektben vannak. Nyisd meg a szerkesztőt a teljes weboldal megtekintéséhez és exportálásához.</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">OLDALAK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.pages?.length || 1}</div></div>
+              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">SZEKCIÓK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.sections?.length || 0}</div></div>
+              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">FUNKCIÓK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.interactions?.length || 0}</div></div>
+            </div>
+          </div>
+        ) : generatedImageUrl ? (
           <div className="relative w-full max-w-[1500px] mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-black shadow-2xl">
             <img
               src={generatedImageUrl}
@@ -433,7 +505,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         )}
         <div className="flex flex-wrap justify-center gap-3">
           <button onClick={() => { if (createdProject) localStorage.setItem('designly_selected_project', createdProject); onNavigate('editor'); }} className="btn-gold text-sm">
-            {t('common.open')}
+            {selectedType === 'website' ? 'WEBOLDAL SZERKESZTÉSE / EXPORT' : t('common.open')}
           </button>
           {generatedImageUrl && (
             <a href={generatedImageUrl} download target="_blank" rel="noreferrer" className="btn-ghost text-sm">
@@ -685,18 +757,18 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-sm text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-xl font-display font-bold gold-text">{isUnlimited ? '∞' : cost} credits</span>
+                  <span className="text-xl font-display font-bold gold-text">{cost} credits</span>
                 </div>
                 <div className="text-right">
                   <span className="text-sm text-cream-300/60 block">{t('credits.currentBalance')}</span>
-                  <span className="text-xl font-display font-bold text-cream-50">{isUnlimited ? '∞' : profile?.credits ?? 0}</span>
+                  <span className="text-xl font-display font-bold text-cream-50">{profile?.credits ?? 0}</span>
                 </div>
               </div>
               <div className="rounded-lg border border-gold-600/20 bg-gold-500/5 p-3 text-sm text-cream-200/70">
                 <span className="font-semibold text-gold-200">INGYENES ELŐNÉZET:</span> a jóváhagyás önmagában nem von le kreditet. Kredit csak a végleges generálás indításakor kerül levonásra.
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {!isUnlimited && (
+                {(profile?.credits ?? 0) < cost && (
                   <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
                     KREDIT VÁSÁRLÁS · 1–10 000
                   </button>
@@ -723,11 +795,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
               <div className="flex items-center justify-between rounded-lg border border-gold-600/20 bg-ink-900/60 p-4">
                 <div>
                   <span className="text-xs text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-2xl font-display font-bold gold-text">{isUnlimited ? '∞' : cost} kredit</span>
+                  <span className="text-2xl font-display font-bold gold-text">{cost} kredit</span>
                 </div>
                 <div className="text-right">
                   <span className="text-xs text-cream-300/60 block">{t('designer.remaining')}</span>
-                  <span className="text-lg font-display font-bold text-cream-50">{isUnlimited ? '∞' : Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
+                  <span className="text-lg font-display font-bold text-cream-50">{Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -743,7 +815,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                     disabled={!hasEnoughCredits}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
-                    {t('designer.continue').replace('{credits}', isUnlimited ? '∞' : String(cost))}
+                    {t('designer.continue').replace('{credits}', String(cost))}
                   </button>
                 </div>
               </div>
