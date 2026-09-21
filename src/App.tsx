@@ -56,9 +56,9 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-// Brand system - two files, one layer, no !important on the landing.
-//   index.css          Tailwind base + shared primitives (imported in main.tsx)
-//   designly-brand     public landing: black + gold Celtic knotwork
+// Brand system - two files, one layer.
+//   index.css             Tailwind base + shared primitives (imported in main.tsx)
+//   designly-brand        public landing: black + gold Celtic knotwork
 //   designly-brand-shell  app chrome: CommandDeck, NordicHeader, app background
 import './designly-brand.css';
 import './designly-brand-shell.css';
@@ -89,7 +89,7 @@ function pageFromHash(): Page {
 type CheckoutItem = { type: 'subscription' | 'credit_package'; itemId: string };
 
 function AppInner() {
-  const { user, loading, authKnown, isAdmin } = useAuth();
+  const { user, authKnown, isAdmin } = useAuth();
   const [page, setPage] = useState<Page>(pageFromHash);
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItem | null>(null);
   const pendingScrollRef = useRef<string | null>(null);
@@ -215,8 +215,11 @@ function AppInner() {
     }
   };
 
-  const authPending = loading && !authKnown;
-  const isPublic = authPending || PUBLIC_PAGES.includes(page);
+  // The public landing renders immediately: it needs no session, so gating it
+  // behind authKnown only produced a spinner under the finished page. That
+  // spinner used to be rendered inside this branch, which left a stray
+  // animate-spin div in the DOM beneath every landing view.
+  const isPublic = PUBLIC_PAGES.includes(page);
   const isDashboard = !isPublic;
   const isEditor = page === 'editor-workspace' || page === 'websites';
 
@@ -254,16 +257,7 @@ function AppInner() {
         )}
         {isPublic && (
           <main className={`designly-public-page designly-page-${page} ${page === 'landing' ? '' : 'pt-16 lg:pt-20'}`}>
-            {authPending ? (
-              <div className="relative">
-                <LandingPage onNavigate={navigate} />
-                <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-                  <div className="w-8 h-8 border-2 border-gold-600/30 border-t-gold-400 rounded-full animate-spin" />
-                </div>
-              </div>
-            ) : (
-              renderPublicPage()
-            )}
+            {renderPublicPage()}
           </main>
         )}
 
