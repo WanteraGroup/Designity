@@ -165,6 +165,13 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
   }, []);
 
   useEffect(() => {
+    const storedBrief = localStorage.getItem('designly_forge_brief');
+    if (!storedBrief) return;
+    localStorage.removeItem('designly_forge_brief');
+    setBrief((current) => current.trim() ? current : storedBrief);
+  }, []);
+
+  useEffect(() => {
     async function loadBrands() {
       if (!profile) return;
       const { data } = await supabase
