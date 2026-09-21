@@ -1100,3 +1100,19 @@ button:active{transform:translateY(1px)}
 @media (prefers-reduced-motion: reduce) {
   .animate-[sidebarMorphFade_var(--sidebar-morph-duration)_ease-in-out_forwards] { animation:none!important; opacity:1!important; transform:none!important; }
 }
+
+
+/* Slow Celtic / Viking texture morph used inside ForgedPanel surfaces */
+@keyframes panelTextureMorph {
+  0% { opacity: 0; transform: scale(1.025); }
+  18% { opacity: .08; }
+  55% { opacity: .14; }
+  100% { opacity: .16; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-[panelTextureMorph_var(--panel-morph-duration)_ease-in-out_forwards] {
+    animation: none !important;
+    opacity: .12 !important;
+    transform: none !important;
+  }
+}
