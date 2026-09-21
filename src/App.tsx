@@ -95,6 +95,7 @@ function AppInner() {
   const [page, setPage] = useState<Page>(pageFromHash);
   const [checkoutItem, setCheckoutItem] = useState<CheckoutItem | null>(null);
   const pendingScrollRef = useRef<string | null>(null);
+  const isAdminRef = useRef(isAdmin);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -143,12 +144,21 @@ function AppInner() {
     };
   }, []);
 
+  // Keep the ref in step with the auth state on every render. The context menu
+  // handler reads it at fire time, so it never needs to be re-bound when the
+  // profile arrives - which is what stranded the guard on the document before.
+  isAdminRef.current = isAdmin;
+
   useEffect(() => {
-    if (isAdmin) return;
-    const preventContextMenu = (event: MouseEvent) => { event.preventDefault(); };
+    // Right-click stays enabled for owners/admins: they need the browser menu
+    // for devtools and diagnostics. Everyone else keeps the content guard.
+    const preventContextMenu = (event: MouseEvent) => {
+      if (isAdminRef.current) return;
+      event.preventDefault();
+    };
     document.addEventListener('contextmenu', preventContextMenu, true);
     return () => document.removeEventListener('contextmenu', preventContextMenu, true);
-  }, [isAdmin]);
+  }, []);
 
   useEffect(() => {
     if (!authKnown) return;
