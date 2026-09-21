@@ -29,6 +29,7 @@ const TemplatesPage = lazy(() => import('@/components/TemplatesPage').then((m) =
 import { AssetsPage } from '@/components/AssetsPage';
 import { SettingsPage } from '@/components/SettingsPage';
 import { AdvertisingStudio } from '@/components/AdvertisingStudio';
+import Campaigns from '@/pages/Campaigns';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
 import { HuginnAgent } from '@/components/HuginnAgent';
@@ -48,14 +49,14 @@ const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ def
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
-  | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
+  | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
-  'dashboard', 'forge', 'create', 'advertising', 'campaign', 'projects', 'brands',
+  'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
   'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify', 'cnc', 'diagnostics',
 ];
@@ -177,7 +178,8 @@ function AppInner() {
       case 'forge': return <ForgeStudio onNavigate={navigate} />;
       case 'create': return <CreatePage onNavigate={navigate} />;
       case 'advertising': return <AdvertisingStudio onNavigate={navigate} />;
-      case 'campaign': return <CampaignGenerator onNavigate={navigate} />;
+      case 'campaign': return <Campaigns onNavigate={navigate} />;
+      case 'campaign-workspace': return <CampaignGenerator onNavigate={navigate} />;
       case 'projects': return <ProjectsPage onNavigate={navigate} />;
       case 'brands': return <BrandsPage onNavigate={navigate} />;
       case 'templates': return <TemplatesPage onNavigate={navigate} />;
@@ -219,7 +221,8 @@ function AppInner() {
     forge: 'FORGE STUDIO',
     create: 'FORGE WORKSPACE',
     advertising: 'ADVERTISING STUDIO',
-    campaign: 'CAMPAIGN FORGE',
+    campaign: 'STRATEGIC WAR ROOM',
+    'campaign-workspace': 'CAMPAIGN GENERATOR',
     projects: 'PROJECTS',
     brands: 'BRAND VAULT',
     templates: 'TEMPLATE HALL',
