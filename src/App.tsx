@@ -29,6 +29,7 @@ import Settings from '@/pages/Settings';
 import Admin from '@/pages/Admin';
 import Diagnostics from '@/pages/Diagnostics';
 import Projects from '@/pages/Projects';
+import Editor from '@/pages/Editor';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
@@ -65,14 +66,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
+  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'editor-workspace' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'admin-workspace', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
+  'settings', 'admin', 'admin-workspace', 'editor', 'editor-workspace', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
 ];
 
 function pageFromHash(): Page {
@@ -207,7 +208,8 @@ function AppInner() {
       case 'settings': return <Settings onNavigate={navigate} />;
       case 'admin': return <Admin onNavigate={navigate} />;
       case 'admin-workspace': return <AdminPage onNavigate={navigate} />;
-      case 'editor': return <EditorPage onNavigate={navigate} />;
+      case 'editor': return <Editor onNavigate={navigate} />;
+      case 'editor-workspace': return <EditorPage onNavigate={navigate} />;
       case 'music': return <Music onNavigate={navigate} />;
       case 'music-workspace': return <MusicPage onNavigate={navigate} />;
       case 'agents': return <Agents onNavigate={navigate} />;
@@ -233,7 +235,7 @@ function AppInner() {
   const authPending = loading && !authKnown;
   const isPublic = authPending || PUBLIC_PAGES.includes(page);
   const isDashboard = !isPublic;
-  const isEditor = page === 'editor';
+  const isEditor = page === 'editor-workspace';
 
   const contentWrapperClass = isDashboard
     ? 'lg:pl-72 pt-14 lg:pt-0'
@@ -275,6 +277,8 @@ function AppInner() {
     cnc: 'CNC CAM',
     diagnostics: 'SYSTEM DIAGNOSTICS',
     'diagnostics-workspace': 'QA CENTER',
+    editor: 'ARTIFACT EDITOR',
+    'editor-workspace': 'EDITOR WORKSPACE',
   };
   const dashboardTitle = pageTitles[page] ?? 'DESIGNLY';
 
