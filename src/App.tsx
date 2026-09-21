@@ -62,7 +62,7 @@ const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout']
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'diagnostics',
+  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'diagnostics',
 ];
 
 function pageFromHash(): Page {
@@ -206,7 +206,6 @@ function AppInner() {
       case 'shopify-workspace': return <ShopifyStudioPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
-      case 'shopify': return <ShopifyStudioPage onNavigate={navigate} />;
       case 'cnc': return <CncCamPage />;
       case 'diagnostics': return <DiagnosticsPage />;
       default: return <DashboardHome onNavigate={navigate} />;
@@ -253,7 +252,6 @@ function AppInner() {
     'shopify-workspace': 'SHOPIFY STUDIO',
     creator: 'CREATOR MERCH',
     streamer: 'STREAMER STUDIO',
-    shopify: 'SHOPIFY STUDIO',
     cnc: 'CNC CAM',
     diagnostics: 'QA CENTER',
   };
