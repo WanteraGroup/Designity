@@ -84,7 +84,25 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
       setError(preview.message || 'Az ingyenes merch előnézet nem készült el.');
       return;
     }
-    setPreviewImage(preview.previewImageUrl || null);
+    let resolvedPreviewImage = preview.previewImageUrl || null;
+    if (!resolvedPreviewImage && preview.previewId) {
+      const { data: previewRow } = await supabase
+        .from('design_previews')
+        .select('image_url')
+        .eq('id', preview.previewId)
+        .eq('user_id', profile.id)
+        .maybeSingle();
+      resolvedPreviewImage = previewRow?.image_url || null;
+    }
+
+    if (!resolvedPreviewImage) {
+      setError('Az előnézet rekord létrejött, de a kép nem érhető el. Kérlek próbáld újra.');
+      setPreviewImage(null);
+      setPreviewId(null);
+      return;
+    }
+
+    setPreviewImage(resolvedPreviewImage);
     setPreviewId(preview.previewId || null);
   };
 
@@ -122,7 +140,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
     }
 
     const nextImage = (result.result?.imageUrl as string) || null;
-    const { data: savedProject } = await supabase.from('projects').insert({
+    const { data: savedProject, error: projectError } = await supabase.from('projects').insert({
       user_id: profile.id,
       name: `${creatorName} · ${product.label} Merch`,
       type: 'custom',
@@ -141,9 +159,17 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
       },
     }).select().single();
 
+    if (projectError || !savedProject) {
+      console.error('Creator merch project save failed:', projectError);
+      setError(projectError?.message || 'A merch elkészült, de a projekt mentése nem sikerült.');
+      setStatus('');
+      setGenerating(false);
+      return;
+    }
+
     await refreshProfile();
     setImageUrl(nextImage);
-    setProjectId(savedProject?.id || null);
+    setProjectId(savedProject.id);
     setStatus('Kész · gyártásra előkészíthető');
     setGenerating(false);
     setShowSpec(true);
