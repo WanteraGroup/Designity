@@ -1,173 +1,339 @@
 
-/* ==================== B) SHARED UI CONTRACT + ANIMATIONS ==================== */
-.nordic-header{
-  position:relative;
-  z-index:40;
-  width:100%;
-  min-height:64px;
-  display:grid;
-  grid-template-columns:minmax(150px,.72fr) minmax(240px,1.5fr) minmax(210px,.9fr);
-  align-items:center;
-  gap:18px;
-  padding:10px 22px;
-  border-bottom:1px solid rgba(156,238,229,.14);
+/* ==================== C) COMPONENT SKIN ==================== */
+
+/* SIDEBAR (Tailwind aside) + COMMAND DECK */
+aside.hidden.lg\\:flex{
+  width:252px;
   background:
-    linear-gradient(180deg,rgba(2,8,9,.96),rgba(4,12,12,.84)),
-    url("/designly-odin-hall-bg.svg") 76% 47%/cover no-repeat;
-  box-shadow:0 12px 38px rgba(0,0,0,.28), inset 0 -1px 0 rgba(214,179,106,.06);
+    linear-gradient(180deg,rgba(4,10,10,.98),rgba(2,6,7,.985)),
+    url("/designly-odin-hall-bg.svg") 76% 50%/cover no-repeat;
+  background-blend-mode:normal,soft-light;
+  border-right:1px solid rgba(156,238,229,.15);
+  box-shadow:24px 0 70px rgba(0,0,0,.56);
+}
+aside.hidden.lg\\:flex::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(156,238,229,.045),transparent 16%,transparent 76%,rgba(185,120,79,.045));
+}
+aside.hidden.lg\\:flex::after{
+  content:"";position:absolute;right:0;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,transparent,var(--dl-copper),var(--dl-ice),transparent);
+  box-shadow:0 0 15px rgba(156,238,229,.30);
+}
+aside.hidden.lg\\:flex nav button{
+  min-height:44px;border-radius:12px;
+  transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+aside.hidden.lg\\:flex nav button:hover{transform:translateX(3px);background:rgba(156,238,229,.055);border-color:rgba(156,238,229,.10)}
+aside.hidden.lg\\:flex nav button[class*="bg-gold"]{
+  background:linear-gradient(90deg,rgba(156,238,229,.13),rgba(156,238,229,.025));
+  border-color:rgba(156,238,229,.22);
+  color:var(--dl-ice-hi);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 12px 26px rgba(0,0,0,.20),0 0 22px rgba(156,238,229,.05);
+}
+
+.designly-command-deck{
+  width:288px;
+  position:fixed;left:0;top:0;bottom:0;
+  z-index:50;
+  flex-direction:column;overflow:hidden;
+  color:var(--dl-bone);
+  border-right:1px solid rgba(214,179,106,.22);
+  background:
+    linear-gradient(180deg,rgba(2,7,8,.92),rgba(2,6,7,.985)),
+    url("/designly-odin-hall-bg.svg") 73% 50%/cover no-repeat;
+  background-blend-mode:normal,soft-light;
+  box-shadow:18px 0 65px rgba(0,0,0,.72),inset -1px 0 0 rgba(156,238,229,.08);
   backdrop-filter:blur(18px);
 }
-.nordic-header::before{
+.designly-command-deck::before{
   content:"";position:absolute;inset:0;pointer-events:none;
   background:
-    radial-gradient(circle at 12% 50%,rgba(156,238,229,.08),transparent 24%),
-    linear-gradient(90deg,transparent,rgba(214,179,106,.045),transparent);
+    linear-gradient(180deg,rgba(2,7,8,.36),rgba(2,7,8,.58) 42%,rgba(2,7,8,.92)),
+    url("/kor keret.png") center/cover no-repeat,
+    radial-gradient(circle at 30% 10%,rgba(214,179,106,.12),transparent 26%);
+  background-blend-mode:normal,soft-light,normal;
+  opacity:1;
 }
-.nordic-header::after{
-  content:"ᛉ ᛟ ᚱ ᚦ ᚷ";
-  position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);
-  padding:2px 10px;
-  border:1px solid rgba(214,179,106,.20);
-  border-radius:999px;
-  background:#040b0b;
-  color:rgba(214,179,106,.50);
-  font:700 7px/1 "Marcellus",serif;
-  letter-spacing:.20em;
+.designly-command-deck::after{
+  content:"";position:absolute;right:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,transparent 2%,var(--dl-gold) 18%,var(--dl-ice) 50%,var(--dl-copper) 78%,transparent 98%);
+  opacity:.75;
+  box-shadow:0 0 20px rgba(214,179,106,.24),0 0 24px rgba(156,238,229,.18);
 }
-.nordic-header-title{
-  position:relative;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font:700 14px/1 "Marcellus","Cormorant Garamond",Georgia,serif;
-  letter-spacing:.15em;color:#e3fffb;
-  text-shadow:0 0 18px rgba(156,238,229,.08);
+.designly-command-deck > *{position:relative;z-index:10}
+.designly-command-deck nav{scrollbar-width:thin;scrollbar-color:rgba(214,179,106,.28) transparent}
+.designly-command-deck nav::-webkit-scrollbar{width:5px}
+.designly-command-deck nav::-webkit-scrollbar-thumb{
+  border-radius:99px;
+  background:linear-gradient(180deg,rgba(156,238,229,.18),rgba(214,179,106,.34));
 }
-.nordic-header-search{position:relative;min-width:0}
-.nordic-header-search-rune{
-  position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  color:rgba(214,179,106,.52);font:700 13px/1 "Marcellus",serif;pointer-events:none;
+.designly-command-deck nav button{
+  min-height:42px;border-radius:11px;
+  border-color:rgba(214,179,106,.17);
+  background:linear-gradient(180deg,rgba(7,19,17,.78),rgba(2,5,5,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 18px rgba(0,0,0,.24);
 }
-.nordic-header-input{
-  width:100%;height:38px;padding:0 16px 0 36px;
-  border:1px solid rgba(156,238,229,.13);border-radius:999px;outline:none;
-  background:rgba(7,19,17,.72);color:#e3fffb;
-  font:600 11px/1 "Manrope","Inter",system-ui,sans-serif;letter-spacing:.02em;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 25px rgba(0,0,0,.18);
-  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+.designly-command-deck nav button:hover{
+  transform:translateX(4px);
+  border-color:rgba(156,238,229,.36);
+  background:linear-gradient(90deg,rgba(214,179,106,.08),rgba(7,19,17,.82));
 }
-.nordic-header-input::placeholder{color:rgba(238,232,220,.34)}
-.nordic-header-input:focus{
-  border-color:rgba(156,238,229,.34);background:rgba(7,20,19,.86);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 3px rgba(156,238,229,.055),0 12px 28px rgba(0,0,0,.22);
-}
-.nordic-header-meta{
-  position:relative;min-width:0;
-  display:flex;align-items:center;justify-content:flex-end;gap:12px;
-  color:rgba(238,232,220,.62);
-  font:700 8px/1 "Manrope","Inter",system-ui,sans-serif;
-  letter-spacing:.10em;text-transform:uppercase;
-}
-.nordic-header-status{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-.nordic-header-status-dot{
-  width:7px;height:7px;border-radius:50%;background:#7ff5c7;
-  box-shadow:0 0 12px rgba(127,245,199,.72);
-}
-.nordic-header-language{white-space:nowrap;color:rgba(156,238,229,.52)}
-.nordic-header-avatar{
-  width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;
-  border:1px solid rgba(214,179,106,.30);border-radius:10px;
-  background:radial-gradient(circle at 50% 30%,rgba(156,238,229,.12),rgba(2,8,9,.90));
-  color:rgba(214,179,106,.76);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 24px rgba(0,0,0,.35);
-  font:700 14px/1 "Marcellus",serif;
-}
-
-/* ForgedButton / ForgedPanel aliases — legacy classes share one language. */
-.forged-button-primary{
-  min-height:40px;border-radius:14px;
-  border:1px solid rgba(244,232,199,.30);
-  background:linear-gradient(180deg,#E3C985 0%,#D6B36A 48%,#A96D49 100%);
-  color:#020505;
-  box-shadow:0 8px 20px rgba(0,0,0,.60), inset 0 1px 0 rgba(255,255,255,.18);
-  text-shadow:0 1px 0 rgba(255,255,255,.18);
-}
-.forged-button-primary:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(0,0,0,.80), inset 0 1px 0 rgba(255,255,255,.20)}
-.forged-button-secondary{
-  min-height:40px;border-radius:14px;
-  border:1px solid rgba(156,238,229,.22);
-  background:linear-gradient(180deg,rgba(38,54,54,.84),rgba(7,19,17,.90));
-  color:#E3FFFB;
-  box-shadow:0 8px 20px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.045);
-}
-.forged-button-secondary:hover{background:#071311;border-color:rgba(156,238,229,.45)}
-button:active{transform:translateY(1px)}
-
-.forged-panel{
-  position:relative;overflow:hidden;
-  border-radius:18px;
-  border:1px solid rgba(214,179,106,.20);
-  background:
-    linear-gradient(145deg,rgba(10,21,20,.90),rgba(2,6,7,.94)),
-    radial-gradient(circle at 50% 0%,rgba(156,238,229,.07),transparent 42%);
+.designly-command-deck nav button[aria-current="page"]{
+  border-color:rgba(214,179,106,.56);
+  background:linear-gradient(90deg,rgba(214,179,106,.18),rgba(7,19,17,.82) 62%,rgba(2,5,5,.74));
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    inset 0 -24px 60px rgba(0,0,0,.20),
-    0 20px 52px rgba(0,0,0,.48);
+    inset 0 1px 0 rgba(242,217,154,.09),
+    inset 0 0 0 1px rgba(214,179,106,.05),
+    0 10px 28px rgba(0,0,0,.35),
+    0 0 22px rgba(214,179,106,.07);
 }
-.forged-panel::before{
-  content:"";position:absolute;inset:1px;pointer-events:none;
-  border:1px solid rgba(156,238,229,.08);border-radius:16px;
+.designly-command-brand{position:relative;z-index:2;padding:22px 20px 12px;border-bottom:1px solid rgba(156,238,229,.10);background:linear-gradient(180deg,rgba(12,25,24,.52),rgba(2,7,8,.08))}
+.designly-command-brand-button{width:100%;display:flex;align-items:center;gap:12px;text-align:left}
+.designly-command-mark{
+  width:52px;height:52px;display:grid;place-items:center;border-radius:16px;
+  border:1px solid rgba(214,179,106,.28);
+  background:radial-gradient(circle at 50% 30%,rgba(156,238,229,.10),rgba(2,8,9,.72));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 14px 30px rgba(0,0,0,.36),0 0 22px rgba(156,238,229,.05);
 }
-.forged-panel::after{
-  content:"";position:absolute;inset:0;pointer-events:none;
+.designly-command-brand-copy{min-width:0}
+.designly-command-title{font:700 23px/1 "Marcellus",serif;letter-spacing:.16em;color:#f5efe1;text-shadow:0 0 20px rgba(156,238,229,.07)}
+.designly-command-subtitle{margin-top:7px;font:800 7px/1 "Manrope",sans-serif;letter-spacing:.22em;color:rgba(156,238,229,.62)}
+.designly-command-rune-separator{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(214,179,106,.48);font:700 9px/1 "Marcellus",serif}
+.designly-command-rune-separator i{width:32px;height:1px;background:linear-gradient(90deg,transparent,rgba(156,238,229,.45),transparent);display:block}
+.designly-command-section-label{position:relative;z-index:2;padding:15px 18px 7px;font:800 7px/1 "Manrope",sans-serif;letter-spacing:.26em;color:rgba(156,238,229,.38)}
+.designly-command-nav{position:relative;z-index:2;display:flex;flex-direction:column;gap:2px;padding:4px 10px;overflow-y:auto;min-height:0}
+.designly-command-item{
+  position:relative;display:flex;align-items:center;gap:10px;
+  min-height:40px;width:100%;padding:7px 9px;border-radius:10px;
+  border:1px solid transparent;background:transparent;
+  color:rgba(238,232,220,.58);text-align:left;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease;
+}
+.designly-command-item:hover{
+  transform:translateX(3px);
+  background:linear-gradient(90deg,rgba(156,238,229,.075),rgba(156,238,229,.015));
+  color:#e3fffb;border-color:rgba(156,238,229,.09);
+}
+.designly-command-item.is-active{
+  color:#f0ffff;
+  border-color:rgba(156,238,229,.24);
   background:
-    radial-gradient(circle at 50% 0%,rgba(156,238,229,.08),transparent 38%),
-    linear-gradient(135deg,transparent 72%,rgba(214,179,106,.05));
+    linear-gradient(90deg,rgba(156,238,229,.14),rgba(156,238,229,.035)),
+    linear-gradient(145deg,rgba(17,37,35,.88),rgba(2,8,9,.84));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 12px 25px rgba(0,0,0,.22),0 0 20px rgba(156,238,229,.045);
 }
-.forged-panel > *{position:relative;z-index:2}
-.forged-panel .pointer-events-none{z-index:3}
-.forged-panel:hover{
-  border-color:rgba(214,179,106,.34);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 28px 60px rgba(0,0,0,.56),0 0 26px rgba(156,238,229,.045);
+.designly-command-item.is-active::before{
+  content:"";position:absolute;left:-1px;top:7px;bottom:7px;width:2px;
+  background:linear-gradient(180deg,transparent,var(--dl-ice),transparent);
+  box-shadow:0 0 13px rgba(156,238,229,.52);
+}
+.designly-command-item-icon{
+  width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;
+  border:1px solid rgba(156,238,229,.09);border-radius:8px;
+  background:rgba(2,8,9,.44);color:rgba(156,238,229,.60);
+}
+.designly-command-item.is-active .designly-command-item-icon{
+  border-color:rgba(156,238,229,.22);
+  background:rgba(156,238,229,.08);color:var(--dl-ice-hi);
+  box-shadow:0 0 15px rgba(156,238,229,.05);
+}
+.designly-command-item-label{font:700 10px/1 "Manrope",sans-serif;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.designly-command-active-rune{margin-left:auto;color:rgba(214,179,106,.74);font-size:10px;text-shadow:0 0 12px rgba(214,179,106,.28)}
+.designly-command-privileged{position:relative;z-index:2;margin-top:4px;padding-top:3px;border-top:1px solid rgba(156,238,229,.06)}
+.designly-command-item--control .designly-command-item-icon{color:rgba(214,179,106,.70);border-color:rgba(214,179,106,.10)}
+.designly-command-spacer{flex:1;min-height:8px;position:relative;z-index:2}
+.designly-command-huginn{
+  position:relative;z-index:2;margin:10px 12px 8px;padding:13px;
+  border-radius:15px;border:1px solid rgba(156,238,229,.16);
+  background:
+    linear-gradient(145deg,rgba(12,28,26,.76),rgba(2,8,9,.88)),
+    url("/kor keret.png") center/cover no-repeat;
+  background-blend-mode:normal,soft-light;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 18px 42px rgba(0,0,0,.34);
+}
+.designly-command-huginn-head{display:flex;align-items:center;gap:8px}
+.designly-command-huginn-name{font:800 9px/1 "Manrope",sans-serif;letter-spacing:.18em;color:#e3fffb}
+.designly-command-huginn-status{margin-top:4px;font:700 7px/1 "Manrope",sans-serif;letter-spacing:.15em;color:rgba(156,238,229,.46)}
+.designly-command-huginn-glyph{margin-left:auto;color:rgba(214,179,106,.62);font-size:16px}
+.designly-command-huginn-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:12px}
+.designly-command-huginn-stats > div{min-width:0;padding:7px 4px;border:1px solid rgba(156,238,229,.065);border-radius:8px;background:rgba(2,8,9,.40);text-align:center}
+.designly-command-huginn-stats strong{display:block;font:700 11px/1 "Marcellus",serif;color:#eff8f5}
+.designly-command-huginn-stats span{display:block;margin-top:4px;font:700 5px/1.2 "Manrope",sans-serif;letter-spacing:.10em;color:rgba(156,238,229,.36)}
+.designly-command-user{position:relative;z-index:2;padding:10px 12px 14px;border-top:1px solid rgba(156,238,229,.09);background:linear-gradient(180deg,rgba(2,8,9,.22),rgba(1,5,6,.64))}
+.designly-command-user-email{font-size:9px;color:rgba(238,232,220,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.designly-command-user-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.designly-command-user-meta .chip{font-size:7px;padding:4px 7px}
+.designly-command-logout{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:8px;min-height:34px;
+  border-radius:9px;border:1px solid rgba(156,238,229,.10);background:rgba(3,9,10,.48);
+  color:rgba(238,232,220,.42);font:700 8px/1 "Manrope",sans-serif;letter-spacing:.09em;transition:.2s;
+}
+.designly-command-logout:hover{color:#ffd5d0;border-color:rgba(244,118,109,.25);background:rgba(120,32,25,.14)}
+
+/* PANELS */
+.designly-app-page .card-lux,
+.designly-app-page .card-premium,
+.designly-surface{
+  position:relative;overflow:hidden;
+  border:1px solid rgba(156,238,229,.18);
+  border-radius:20px;
+  background:linear-gradient(145deg,rgba(12,26,25,.90),rgba(3,8,9,.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -20px 50px rgba(0,0,0,.16),
+    0 30px 80px rgba(0,0,0,.48);
+  backdrop-filter:blur(14px);
+}
+.designly-app-page .card-lux::before,
+.designly-app-page .card-premium::before,
+.designly-surface::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    linear-gradient(180deg,rgba(156,238,229,.045),transparent 22%,transparent 78%,rgba(185,120,79,.035)),
+    url("/kor keret.png") center/cover no-repeat;
+  opacity:.22;mix-blend-mode:screen;
+}
+.designly-app-page .card-lux::after,
+.designly-app-page .card-premium::after,
+.designly-surface::after{
+  content:"";position:absolute;inset:7px;pointer-events:none;z-index:0;
+  border:1px solid rgba(156,238,229,.10);border-radius:14px;
+  background:
+    linear-gradient(90deg,var(--dl-copper) 0 34px,transparent 34px calc(100% - 34px),var(--dl-copper) calc(100% - 34px)) top/100% 1px no-repeat,
+    linear-gradient(90deg,var(--dl-copper) 0 34px,transparent 34px calc(100% - 34px),var(--dl-copper) calc(100% - 34px)) bottom/100% 1px no-repeat;
+  opacity:.62;
+}
+.designly-app-page .card-lux>*,
+.designly-app-page .card-premium>*,
+.designly-surface>*{position:relative;z-index:2}
+.designly-app-page .card-lux:hover,
+.designly-app-page .card-premium:hover,
+.designly-surface:hover{
+  transform:translateY(-3px);
+  border-color:rgba(156,238,229,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 38px 96px rgba(0,0,0,.56),0 0 34px rgba(156,238,229,.07);
 }
 
-@media(max-width:900px){
-  .nordic-header{grid-template-columns:1fr auto;min-height:58px;padding:8px 14px;border-radius:0;border-left:0;border-right:0}
-  .nordic-header-search{grid-column:1 / -1;grid-row:2}
-  .nordic-header-meta{grid-column:2;grid-row:1}
-  .nordic-header-status,
-  .nordic-header-language{display:none}
-  .nordic-header-title{font-size:12px}
+/* 3D FORGED CONTROLS */
+.btn-gold,.odin-btn-hot{
+  position:relative;overflow:hidden;border-radius:12px;
+  background:linear-gradient(145deg,#6d5b38 0%,#f0eee5 46%,#8d7b58 100%);
+  color:#10120f;
+  border:1px solid rgba(250,247,238,.68);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.40),
+    inset 0 -7px 16px rgba(0,0,0,.18),
+    0 14px 30px rgba(0,0,0,.40),
+    0 0 28px rgba(214,179,106,.12);
+  text-shadow:0 1px rgba(255,255,255,.30);
+  transform:translateZ(0);
+}
+.btn-gold::before,.odin-btn-hot::before{
+  content:"";position:absolute;left:7%;right:7%;top:4px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);opacity:.72;
+}
+.btn-gold::after,.odin-btn-hot::after{
+  content:"";position:absolute;top:-140%;left:-35%;width:28%;height:360%;
+  transform:rotate(23deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+  transition:left .72s ease;pointer-events:none;
+}
+.btn-gold:hover,.odin-btn-hot:hover{transform:translateY(-3px);box-shadow:inset 0 2px 0 rgba(255,255,255,.45),inset 0 -8px 17px rgba(0,0,0,.16),0 20px 38px rgba(0,0,0,.48),0 0 40px rgba(214,179,106,.18)}
+.btn-gold:hover::after,.odin-btn-hot:hover::after{left:118%}
+.btn-gold:active,.odin-btn-hot:active{transform:translateY(1px)}
+.btn-ghost,.odin-btn-dark{
+  border-radius:12px;
+  background:linear-gradient(145deg,rgba(18,38,36,.94),rgba(3,8,9,.98));
+  border:1px solid rgba(156,238,229,.18);
+  color:#e5eee9;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 12px 25px rgba(0,0,0,.28);
+}
+.btn-ghost:hover,.odin-btn-dark:hover{
+  transform:translateY(-2px);
+  border-color:rgba(156,238,229,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 16px 34px rgba(0,0,0,.42),0 0 28px rgba(156,238,229,.08);
 }
 
-/* Animations */
-@keyframes celtic-gold-pulse{
-  0%,100%{opacity:.2;transform:scale(1)}
-  50%{opacity:1;transform:scale(1.25)}
+/* INPUTS / SELECTS / MODALS / TITLES */
+.designly-app-page .input-lux,.designly-app-page .input-premium{
+  min-height:46px;border-radius:12px;
+  background:
+    linear-gradient(180deg,rgba(2,7,8,.92),rgba(10,22,21,.94)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat;
+  border:1px solid rgba(156,238,229,.16);color:#eef4ef;
+  box-shadow:inset 0 5px 18px rgba(0,0,0,.34),0 9px 20px rgba(0,0,0,.16);
 }
-.celtic-gold-pulse{transform-origin:center;animation:celtic-gold-pulse 3.2s ease-in-out infinite}
-@keyframes fogMove{
-  0%{transform:translateX(0)}
-  100%{transform:translateX(-200px)}
+.designly-app-page .input-lux:focus,.designly-app-page .input-premium:focus{
+  border-color:rgba(156,238,229,.50);
+  box-shadow:0 0 0 3px rgba(156,238,229,.065),inset 0 5px 18px rgba(0,0,0,.34),0 0 30px rgba(156,238,229,.11);
 }
-@keyframes embersFloat{
-  0%{transform:translateY(0);opacity:.2}
-  50%{opacity:.4}
-  100%{transform:translateY(-80px);opacity:.2}
+.designly-app-page input,
+.designly-app-page textarea,
+.designly-app-page select,
+.input-lux{
+  border-color:rgba(156,238,229,.16);
+  background:linear-gradient(180deg,rgba(7,18,17,.86),rgba(2,7,8,.82));
+  color:var(--dl-ice-hi);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 8px 18px rgba(0,0,0,.20);
 }
-@keyframes sidebarMorphFade{
-  0%{opacity:0;transform:scale(1.035)}
-  18%{opacity:.2}
-  100%{opacity:1;transform:scale(1)}
+.designly-app-page input:focus,
+.designly-app-page textarea:focus,
+.designly-app-page select:focus,
+.input-lux:focus{
+  outline:none;
+  border-color:rgba(214,179,106,.48);
+  box-shadow:0 0 0 3px rgba(214,179,106,.055),0 0 24px rgba(156,238,229,.05);
 }
-@keyframes panelTextureMorph{
-  0%{opacity:0;transform:scale(1.025)}
-  18%{opacity:.08}
-  55%{opacity:.14}
-  100%{opacity:.16;transform:scale(1)}
+.designly-app-page [role="dialog"],
+.designly-app-page [data-radix-popper-content-wrapper] > div{
+  border-color:rgba(156,238,229,.22);
+  background:
+    linear-gradient(180deg,rgba(7,17,17,.96),rgba(2,7,8,.985)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat;
+  background-blend-mode:normal,soft-light;
+  box-shadow:0 34px 90px rgba(0,0,0,.62),0 0 32px rgba(156,238,229,.08);
+  border-radius:18px;
 }
-@keyframes pageTransitionEnter{
-  0%{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
-  55%{opacity:.78;transform:translate3d(0,3px,0) scale(.997);filter:blur(1.5px)}
-  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+.designly-app-page h1{text-shadow:0 12px 34px rgba(0,0,0,.54)}
+.designly-app-page h1::after{
+  content:"";display:block;width:150px;height:2px;margin-top:14px;
+  background:linear-gradient(90deg,var(--dl-copper),var(--dl-ice),transparent);
+  box-shadow:0 0 18px rgba(156,238,229,.18);
 }
-.page-transition-preparing{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
-.page-transition-entered{animation:pageTransitionEnter var(--page-transition-duration,650ms) cubic-bezier(.22,1,.36,1) both}
+.designly-app-page .text-gold-100,
+.designly-app-page .text-gold-200,
+.designly-app-page .text-gold-300,
+.designly-app-page .text-gold-400,
+.designly-app-page .label-lux{color:var(--dl-ice)}
+.designly-app-page .chip{border-color:rgba(214,179,106,.18);background:rgba(2,7,8,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.designly-page-dashboard .forged-panel:first-child{min-height:520px}
+
+/* PUBLIC BRAND LOCKUP */
+.designly-public-brand{display:flex;align-items:center;gap:11px}
+.designly-public-brand-title{font:700 16px/1 "Marcellus",serif;letter-spacing:.18em;color:#f1eadc}
+.designly-public-brand-sub{margin-top:5px;font:800 6px/1 "Manrope",sans-serif;letter-spacing:.22em;color:rgba(156,238,229,.62)}
+
+@media(max-width:1279px) and (min-width:1024px){.designly-command-deck{width:258px}}
+@media (min-width:1280px){.designly-page-dashboard .forged-panel{backdrop-filter:blur(12px) saturate(1.02)}}
+@media (max-width:1100px){.designly-app-page{padding-left:18px;padding-right:18px}}
+
+/* ==================== ACCESSIBILITY ==================== */
+@media (prefers-reduced-motion: reduce){
+  .celtic-gold-pulse,
+  .page-transition-entered,
+  .designly-core-ring-outer,
+  .designly-core-ring-inner,
+  .celtic-header .nav-link,
+  .designly-command-deck nav button:hover,
+  .forged-panel:hover,
+  .designly-app-page .card-lux:hover,
+  .designly-app-page .card-premium:hover,
+  .designly-agent-card:hover,
+  .designly-core-module:hover,
+  .designly-world-card:hover,
+  .designly-agent-step:hover{
+    animation: none;
+    transform: none;
+  }
+  .page-transition-preparing{opacity:1;transform:none;filter:none}
+}
