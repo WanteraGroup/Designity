@@ -183,6 +183,77 @@ function buildFallbackPreviewSvg(brief: DesignBrief, originalBrief: string): str
   `)}`;
 }
 
+function normalizeBuildSpec(raw: any, brief: DesignBrief, originalBrief: string): {
+  pages: Array<{ path: string; title: string; sections: string[] }>;
+  sections: Array<{ id: string; type: string; title: string; content?: string }>;
+  components: Array<{ name: string; purpose: string }>;
+  content: Record<string, unknown>;
+  interactions: string[];
+  responsiveRules: string[];
+  acceptanceCriteria: string[];
+} {
+  const isWebsite = brief.requiredOutputs.includes("website");
+  const slug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9áéíóöőúüű\s-]/gi, "").replace(/\s+/g, "-") || "page";
+  const pageInput = Array.isArray(raw?.pages) ? raw.pages : [];
+  const sectionInput = Array.isArray(raw?.sections) ? raw.sections : [];
+  const componentInput = Array.isArray(raw?.components) ? raw.components : [];
+  const pageObjects = pageInput.map((p: any, i: number) => {
+    if (typeof p === "object" && p) {
+      return { path: typeof p.path === "string" ? p.path : (i === 0 ? "/" : `/${slug(String(p.title || `page-${i + 1}`))}`), title: typeof p.title === "string" ? p.title : `Page ${i + 1}`, sections: Array.isArray(p.sections) ? p.sections.map(String) : [] };
+    }
+    const title = String(p || `Page ${i + 1}`);
+    return { path: i === 0 ? "/" : `/${slug(title)}`, title, sections: [] };
+  });
+  const websiteDefaults = [
+    { path: "/", title: "Főoldal", sections: ["Hero", "Bizalom", "Szolgáltatások", "CTA"] },
+    { path: "/szolgaltatasok", title: "Szolgáltatások", sections: ["Services", "Process", "CTA"] },
+    { path: "/rolunk", title: "Rólunk", sections: ["Story", "Values", "Team"] },
+    { path: "/referenciak", title: "Referenciák", sections: ["Portfolio", "Testimonials", "CTA"] },
+    { path: "/kapcsolat", title: "Kapcsolat", sections: ["Contact", "FAQ", "CTA"] },
+  ];
+  const pages = isWebsite
+    ? (pageObjects.length >= 3 ? pageObjects : websiteDefaults)
+    : (pageObjects.length ? pageObjects : [{ path: "/", title: brief.businessName || "DESIGNLY", sections: ["Hero", "Content", "CTA"] }]);
+
+  const sectionObjects = sectionInput.map((x: any, i: number) => {
+    if (typeof x === "object" && x) return { id: String(x.id || `section-${i + 1}`), type: String(x.type || "content"), title: String(x.title || `Section ${i + 1}`), ...(x.content ? { content: String(x.content) } : {}) };
+    return { id: `section-${i + 1}`, type: "content", title: String(x || `Section ${i + 1}`) };
+  });
+  const defaults = isWebsite
+    ? [
+        { id: "hero", type: "hero", title: brief.businessName || "Prémium digitális jelenlét", content: "Erős értékajánlat, elsődleges CTA és márkaígéret." },
+        { id: "services", type: "cards", title: "Szolgáltatások", content: "A legfontosabb szolgáltatások és előnyök." },
+        { id: "proof", type: "testimonials", title: "Bizalom és referenciák", content: "Bizonyítékok, eredmények és ügyfélvélemények." },
+        { id: "contact", type: "contact", title: "Kapcsolat", content: "Ajánlatkérés és kapcsolatfelvétel." },
+      ]
+    : [{ id: "hero", type: "hero", title: brief.businessName || "DESIGNLY", content: originalBrief.slice(0, 300) }];
+  const sections = sectionObjects.length ? sectionObjects : defaults;
+  const components = componentInput.length
+    ? componentInput.map((x: any, i: number) => typeof x === "object" && x ? { name: String(x.name || `Component ${i + 1}`), purpose: String(x.purpose || "") } : { name: String(x), purpose: "Reusable project component" })
+    : (isWebsite
+      ? [
+          { name: "SiteHeader", purpose: "Global navigation and primary CTA" },
+          { name: "Hero", purpose: "Value proposition and primary conversion action" },
+          { name: "ServiceGrid", purpose: "Service/product presentation" },
+          { name: "ProofSection", purpose: "Trust, results and testimonials" },
+          { name: "ContactForm", purpose: "Lead capture and contact" },
+          { name: "SiteFooter", purpose: "Secondary navigation and legal links" },
+        ]
+      : [{ name: "Header", purpose: "Project navigation" }, { name: "Hero", purpose: "Primary visual and message" }, { name: "CTA", purpose: "Primary conversion action" }]);
+  const content = raw?.content && typeof raw.content === "object" && !Array.isArray(raw.content)
+    ? raw.content
+    : { businessName: brief.businessName, industry: brief.industry, audience: brief.targetAudience, sourceBrief: originalBrief.slice(0, 1200) };
+  const interactions = Array.isArray(raw?.interactions) ? raw.interactions.map(String) : [];
+  const responsiveRules = Array.isArray(raw?.responsiveRules) ? raw.responsiveRules.map(String) : [];
+  const acceptanceCriteria = Array.isArray(raw?.acceptanceCriteria) ? raw.acceptanceCriteria.map(String) : [];
+  if (isWebsite) {
+    interactions.push("Global navigation works on every page", "Primary CTAs route to a relevant action", "Contact form validates required fields", "Mobile navigation is usable");
+    responsiveRules.push("Mobile-first layout", "Tablet and desktop breakpoints preserve hierarchy", "Images and cards resize without horizontal overflow");
+    acceptanceCriteria.push("At least 5 navigable pages", "No dead primary navigation links", "Contact form has validation", "Responsive at mobile/tablet/desktop", "All major sections have meaningful content");
+  }
+  return { pages, sections, components, content, interactions: [...new Set(interactions)], responsiveRules: [...new Set(responsiveRules)], acceptanceCriteria: [...new Set(acceptanceCriteria)] };
+}
+
 function normalizeBrief(raw: Record<string, unknown>, language: string, fallbackOutputs: DesignOutput[]): DesignBrief {
   const arr = (value: unknown): string[] =>
     Array.isArray(value)
@@ -419,7 +490,7 @@ Return one coherent structured result.`;
       teamPlan = await callGroqTeam(
         Deno.env.get("GROQ_API_KEY") || apiKey,
         teamModel,
-        "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. Produce actionable, concrete outputs. Never claim external actions were performed. Return only JSON.",
+        "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. For website requests, treat the output as a real multi-page digital product: define information architecture, page routes, navigation, UX/UI components, conversion copy, SEO metadata, responsive behavior, forms and QA acceptance criteria. The deliverable must be buildable, not a landing-page mockup or image description. Produce actionable, concrete outputs. Never claim external actions were performed. Return only JSON.",
         JSON.stringify({
           brief: structured,
           selectedAgents: orchestration.agents,
@@ -619,7 +690,7 @@ Return one coherent structured result.`;
         reasons: orchestration.reasons,
         teamExecuted: true,
         specialistOutputs: teamPlan.specialistOutputs || [],
-        buildSpec: reviewedTeam.buildSpec,
+        buildSpec: normalizedBuildSpec,
         qaStatus: reviewedTeam.status,
         blockers: reviewedTeam.blockers || [],
       },
