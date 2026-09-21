@@ -13,7 +13,7 @@ import { CreditPurchaseModal } from './CreditPurchaseModal';
 import type { ProjectType, BrandKit } from '@/types';
 
 
-interface VyronBlueprint {
+export interface VyronBlueprint {
   source: 'VYRON';
   businessName: string;
   businessType: string;
@@ -80,6 +80,7 @@ interface CreatePageProps {
 export function CreatePage({ onNavigate }: CreatePageProps) {
   const { t, lang } = useI18n();
   const { profile, isUnlimited, isAdmin, refreshProfile } = useAuth();
+  const billableAccount = !isUnlimited && profile?.role !== 'owner';
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedType, setSelectedType] = useState<ProjectType | null>(null);
   const [brief, setBrief] = useState('');
@@ -134,7 +135,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         const allowed = GENERATION_COSTS.some((item) => item.type === tpl.type);
         if (allowed) {
           setSelectedType(tpl.type as ProjectType);
-          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
+          setBrief((current) => current.trim() ? current : `Use the \"${tpl.name || 'DESIGNLY template'}\" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
           setStep(2);
         }
         localStorage.removeItem('designly_selected_template');
@@ -288,7 +289,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!profile || !selectedType || !approved) return;
     setError(null);
 
-    if ((isAdmin || !isUnlimited) && (profile.credits ?? 0) < cost) {
+    if (billableAccount && (profile.credits ?? 0) < cost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
       return;
@@ -364,518 +365,232 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         interactions: Array.isArray(orchestration?.buildSpec?.interactions) ? orchestration.buildSpec.interactions : [],
         responsiveRules: Array.isArray(orchestration?.buildSpec?.responsiveRules) ? orchestration.buildSpec.responsiveRules : [],
         acceptanceCriteria: Array.isArray(orchestration?.buildSpec?.acceptanceCriteria) ? orchestration.buildSpec.acceptanceCriteria : [],
-        sourceBrief: brief,
-        finalizedAt: new Date().toISOString(),
       };
 
       await supabase
         .from('projects')
         .update({
           status: 'completed',
+          config: { type: selectedType, brief, brand_kit_id: selectedBrand, site: websiteSpec, buildSpec: orchestration?.buildSpec || null, orchestration, qaStatus: orchestration?.qaStatus, updatedAt: new Date().toISOString() },
           updated_at: new Date().toISOString(),
-          config: {
-            ...(projectData.config || {}),
-            buildSpec: orchestration?.buildSpec || projectData.config?.buildSpec,
-            site: websiteSpec,
-            generation: {
-              kind: 'website',
-              finalizedAt: new Date().toISOString(),
-              creditsUsed: cost,
-            },
-          },
         })
         .eq('id', projectData.id);
 
-      await refreshProfile();
-      setGeneratedImageUrl(null);
+      localStorage.setItem('designly_selected_project', projectData.id);
       setCreatedProject(projectData.id);
-      setGenStep(5);
-      await new Promise((r) => setTimeout(r, 500));
+      await refreshProfile();
       setGenerating(false);
       setStep(4);
       return;
     }
 
-    // Non-website outputs continue through the image/asset generation endpoint.
-    const genResult = await generateDesign({
-      mode: 'final',
-      type: selectedType,
-      brief,
-      brandKitId: selectedBrand ?? undefined,
-      projectId: projectData.id,
-      previewId: previewId ?? undefined,
-    });
-
-    if (!genResult.success) {
-      await supabase
-        .from('projects')
-        .update({ status: 'failed', updated_at: new Date().toISOString() })
-        .eq('id', projectData.id);
-
-      if (genResult.providerNotConfigured) {
-        setError(genResult.message || t('ad.providerNotConfigured'));
-      } else if (genResult.errorCode === 'INSUFFICIENT_CREDITS') {
-        setError(t('gen.insufficientCredits'));
-      } else {
-        setError(genResult.message || t('gen.failed'));
+    // Non-website artifacts still run through the image/design pipeline.
+    if (billableAccount) {
+      const { data: deducted, error: deductError } = await supabase.rpc('deduct_credits', {
+        p_user_id: profile.id,
+        p_amount: cost,
+        p_description: `DESIGNLY generation: ${selectedType}`,
+      });
+      if (deductError || deducted !== true) {
+        await supabase.from('projects').update({ status: 'failed', updated_at: new Date().toISOString() }).eq('id', projectData.id);
+        setError(deductError?.message || t('gen.insufficientCredits'));
+        setGenerating(false);
+        return;
       }
-      setGenerating(false);
-      return;
     }
 
-    const generatedImageUrlValue = (genResult.result?.imageUrl as string) || null;
-    await supabase
-      .from('projects')
-      .update({
-        status: 'completed',
-        preview_url: generatedImageUrlValue,
-        updated_at: new Date().toISOString(),
-        config: {
-          ...(projectData.config || {}),
-          ...(vyronBlueprint ? {
-            source: 'VYRON',
-            websiteBlueprint: {
-              ...vyronBlueprint,
-              buildStatus: 'generated',
-              generatedAt: new Date().toISOString(),
-            },
-          } : {}),
-          generation: {
-            ...(projectData.config?.generation || {}),
-            imageUrl: generatedImageUrlValue,
-            generatedAt: new Date().toISOString(),
-          },
-        },
-      })
-      .eq('id', projectData.id);
-
-    await refreshProfile();
-
-    setGeneratedImageUrl(generatedImageUrlValue);
-    setCreatedProject(projectData.id);
-    setGenStep(5);
-    await new Promise((r) => setTimeout(r, 800));
-    setGenerating(false);
-    setStep(4);
+    try {
+      const design = await generateDesign({
+        type: selectedType,
+        brief,
+        brandKitId: selectedBrand,
+      } as never);
+      const result = design as { imageUrl?: string; previewUrl?: string };
+      const imageUrl = result.imageUrl || result.previewUrl || null;
+      setGeneratedImageUrl(imageUrl);
+      await supabase
+        .from('projects')
+        .update({ status: 'completed', preview_url: imageUrl, config: { type: selectedType, brief, brand_kit_id: selectedBrand, orchestration, updatedAt: new Date().toISOString() }, updated_at: new Date().toISOString() })
+        .eq('id', projectData.id);
+      localStorage.setItem('designly_selected_project', projectData.id);
+      setCreatedProject(projectData.id);
+      await refreshProfile();
+      setGenerating(false);
+      setStep(4);
+    } catch (genError) {
+      await supabase.from('projects').update({ status: 'failed', updated_at: new Date().toISOString() }).eq('id', projectData.id);
+      setError(genError instanceof Error ? genError.message : t('gen.failed'));
+      setGenerating(false);
+    }
   };
 
-  if (generating) {
-    return <GenerationOverlay step={genStep} t={t} />;
-  }
-
-  if (step === 4 && createdProject) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-20 h-20 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mb-6">
-          <Check className="w-10 h-10 text-green-400" />
-        </div>
-        <h2 className="text-2xl font-display font-bold text-cream-50 mb-2">{t('gen.success')}</h2>
-        <p className="text-sm text-cream-300/60 mb-6">{selectedType === 'website' ? 'A teljes weboldal struktúrája elkészült. Most megnyithatod a valódi weboldal-szerkesztőt, ahol az összes oldalt és szekciót szerkesztheted, majd exportálhatod a működő weboldalt.' : t('gen.successDesc')}</p>
-        {selectedType === 'website' ? (
-          <div className="w-full max-w-4xl mb-8 rounded-2xl border border-gold-600/25 bg-ink-900/80 p-8 text-left">
-            <div className="text-xs uppercase tracking-[.2em] text-gold-400">FULL WEBSITE BUILD</div>
-            <h3 className="mt-2 text-2xl font-display font-bold text-cream-50">Valódi weboldal-projekt elkészült</h3>
-            <p className="mt-3 text-sm leading-7 text-cream-200/70">A DESIGNLY nem képet mentett el: a többoldalas buildSpec, a szekciók, komponensek, interakciók és reszponzív szabályok a projektben vannak. Nyisd meg a szerkesztőt a teljes weboldal megtekintéséhez és exportálásához.</p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">OLDALAK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.pages?.length || 1}</div></div>
-              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">SZEKCIÓK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.sections?.length || 0}</div></div>
-              <div className="rounded-lg border border-gold-600/15 bg-black/20 p-4"><div className="text-xs text-gold-400">FUNKCIÓK</div><div className="mt-1 text-2xl font-display text-cream-50">{orchestration?.buildSpec?.interactions?.length || 0}</div></div>
-            </div>
-          </div>
-        ) : generatedImageUrl ? (
-          <div className="relative w-full max-w-[1500px] mb-8 rounded-2xl overflow-hidden border border-gold-600/25 bg-black shadow-2xl">
-            <img
-              src={generatedImageUrl}
-              alt="DESIGNLY AI generated design"
-              draggable={canDownloadImages}
-              onContextMenu={protectImage}
-              onDragStart={protectImage}
-              className={`block w-full h-auto ${canDownloadImages ? '' : 'select-none'}`}
-            />
-            <PreviewWatermark
-              hidden={canDownloadImages}
-              projectName={vyronBlueprint?.businessName || projectName}
-              label="DESIGNLY · FINAL PREVIEW"
-            />
-          </div>
-        ) : (
-          <div className="w-full max-w-2xl mb-8 rounded-xl border border-gold-600/20 bg-ink-900/70 px-5 py-4 text-sm text-cream-300/70">
-            A generálás sikerült, de a kép nem érkezett vissza. Ezt a projektben még ellenőrizhetjük.
-          </div>
-        )}
-        <div className="flex flex-wrap justify-center gap-3">
-          <button onClick={() => { if (createdProject) localStorage.setItem('designly_selected_project', createdProject); onNavigate('editor'); }} className="btn-gold text-sm">
-            {selectedType === 'website' ? 'WEBOLDAL SZERKESZTÉSE / EXPORT' : t('common.open')}
-          </button>
-          {generatedImageUrl && (
-            <a href={generatedImageUrl} download target="_blank" rel="noreferrer" className="btn-ghost text-sm">
-              LETÖLTÉS · VÉGLEGES
-            </a>
-          )}
-          <button onClick={() => { setStep(1); setSelectedType(null); setBrief(''); setCreatedProject(null); setGeneratedImageUrl(null); setPreview(null); setPreviewImageUrl(null); setPreviewId(null); setApproved(false); }} className="btn-ghost text-sm">
-            {t('common.createAnother')}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const resetCreate = () => {
+    setStep(1);
+    setSelectedType(null);
+    setBrief('');
+    setSelectedBrand(null);
+    setGeneratedImageUrl(null);
+    setError(null);
+    setCreatedProject(null);
+    setPreview(null);
+    setPreviewImageUrl(null);
+    setPreviewId(null);
+    setApproved(false);
+    setActiveAgents([]);
+    setOrchestration(null);
+    setVyronBlueprint(null);
+    setAutoBuildMode(false);
+    setAutoBuildStatus(null);
+  };
 
   return (
-    <>
-      <div className={`designly-create-forge w-full mx-auto space-y-8 ${step === 3 ? 'max-w-[1700px]' : 'max-w-5xl'}`}>
-      {/* Stepper */}
-      <div className="flex items-center justify-center gap-2">
-        {[1, 2, 3].map((s) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-              step >= s ? 'bg-gold-gradient text-ink-950' : 'bg-ink-700 text-cream-400/40'
-            }`}>
-              {s}
-            </div>
-            {s < 3 && <div className={`w-12 h-px ${step > s ? 'bg-gold-500' : 'bg-ink-600'}`} />}
-          </div>
-        ))}
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-gold-600/15 border border-gold-600/20 flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-gold-400" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-display font-bold text-cream-50">{t('create.title')}</h1>
+          <p className="text-xs text-cream-300/50">{t('create.subtitle')}</p>
+        </div>
+        {autoBuildStatus && (
+          <span className="ml-auto chip border-gold-600/40 bg-gold-600/15 text-gold-300 text-[10px]">{autoBuildStatus}</span>
+        )}
       </div>
 
-      {/* Step 1: Choose type */}
+      {/* Step 1: Type selection */}
       {step === 1 && (
-        <div className="animate-fade-in">
-          <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">{t('cw.whatCreate')}</h2>
-          <p className="text-sm text-cream-300/50 text-center mb-8">{t('cw.whatCreateDesc')}</p>
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <div className="text-xs uppercase tracking-[.2em] text-gold-400/80">Sablonok</div>
-              <p className="text-sm text-cream-300/55 mt-1">Indulj kész prémium dizájnról, majd alakítsd teljesen egyedire.</p>
-            </div>
-            <button onClick={() => onNavigate('templates')} className="btn-ghost text-xs whitespace-nowrap">Összes sablon →</button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
-            {DESIGNLY_TEMPLATE_INDEXES.slice(0, 12).map((index) => { const tpl = getDesignlyTemplate(index); return (
-              <button key={tpl.id} onClick={() => {
-                setSelectedType(tpl.type as ProjectType);
-                setBrief(`Use the "${tpl.name}" template as the starting point. ${tpl.description} Style: ${tpl.style}. Effect: ${tpl.effect}. Typography: ${tpl.fontPair}. Palette: ${tpl.palette.join(', ')}.`);
-                setStep(2);
-              }} className="group rounded-xl border border-gold-600/15 bg-ink-950/70 p-3 text-left hover:border-gold-500/40 hover:bg-gold-600/5 transition-all">
-                <div className="aspect-[16/9] rounded-lg overflow-hidden border border-gold-600/10 mb-3" style={{ background: `linear-gradient(135deg, ${tpl.palette[0]}, ${tpl.palette[1]}66, ${tpl.palette[0]})` }}>
-                  <div className="h-full p-3 flex flex-col justify-between">
-                    <div className="w-7 h-7 rounded-full border border-gold-400/40 flex items-center justify-center text-gold-300 font-display text-xs">D</div>
-                    <div>
-                      <div className="text-[8px] uppercase tracking-widest text-gold-300/70">{tpl.category}</div>
-                      <div className="text-sm font-display text-cream-50 truncate">{tpl.name}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-xs font-medium text-cream-100 truncate">{tpl.name}</div>
-                <div className="text-[10px] text-gold-400/70 mt-1">{tpl.type}</div>
-              </button>
-            ); })}
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {GENERATION_COSTS.map((item) => (
-              <button
-                key={item.type}
-                onClick={() => { setSelectedType(item.type); setStep(2); }}
-                className={`card-lux p-5 text-center group hover:scale-105 transition-all duration-300 ${
-                  selectedType === item.type ? 'border-gold-600/50 bg-gold-600/5' : ''
-                }`}
-              >
-                <div className="w-10 h-10 rounded-lg bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-gold-600/20 transition-all">
-                  <Sparkles className="w-5 h-5 text-gold-400" />
-                </div>
-                <div className="text-xs font-medium text-cream-100">{item.label}</div>
-                <div className="text-[10px] text-gold-400 mt-1">{billableAccount ? `${item.credits} credits` : (isUnlimited ? '∞' : `${item.credits} credits`)}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Brief */}
-      {step === 2 && selectedType && (
-        <div className="animate-fade-in">
-          <h2 className="text-xl font-display font-bold text-cream-50 text-center mb-2">
-            {autoBuildMode ? 'Az AI felépíti az üzletedet' : t('cw.describeVision')}
-          </h2>
-          <p className="text-sm text-cream-300/50 text-center mb-8">
-            {autoBuildMode ? 'Az Automatic Business Builder a teljes weboldal/app struktúrát automatikusan megtervezi.' : t('cw.describeVisionDesc')}
-          </p>
-
-          {autoBuildMode ? (
-            <div className="rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/10 via-ink-950 to-black p-7 text-center shadow-2xl">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-full border border-gold-400/40 bg-gold-500/10 flex items-center justify-center text-2xl text-gold-300">◆</div>
-              <div className="text-sm font-semibold uppercase tracking-[.18em] text-gold-300">Automatic Business Builder</div>
-              <p className="mt-3 text-sm leading-6 text-cream-200/70">
-                Nem kell promptot írnod. A DESIGNLY AI automatikusan elkészíti az üzleti struktúrát, a vizuális irányt, a funkciókat és az első előnézetet.
-              </p>
-              {autoBuildStatus && (
-                <div className="mt-5 rounded-lg border border-gold-600/20 bg-black/30 px-4 py-3 text-xs text-gold-200/90" role="status">
-                  {autoBuildStatus}
-                </div>
-              )}
-            </div>
-          ) : (
-            <textarea
-              value={brief}
-              onChange={(e) => {
-                setBrief(e.target.value);
-                if (previewError) setPreviewError(null);
-              }}
-              rows={6}
-              className="input-lux resize-none"
-              placeholder={t('cw.briefPlaceholder')}
-            />
-          )}
-
-          {previewError && (
-            <div
-              role="alert"
-              className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200"
-            >
-              <div className="font-medium mb-1">AI előnézet hiba</div>
-              <div className="text-red-200/80 break-words">{previewError}</div>
-              <button
-                type="button"
-                onClick={handlePreview}
-                disabled={brief.trim().length < 5 || previewLoading}
-                className="mt-3 underline text-gold-200 disabled:opacity-40"
-              >
-                Újrapróbálom
-              </button>
-            </div>
-          )}
-
-          <div className="flex justify-between items-center mt-6">
-            <button onClick={() => setStep(1)} className="btn-ghost text-sm">
-              {t('common.back')}
-            </button>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {GENERATION_COSTS.map((item) => (
             <button
-              onClick={handlePreview}
-              disabled={brief.trim().length < 5 || previewLoading}
-              className="btn-gold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              key={item.type}
+              onClick={() => { setSelectedType(item.type); }}
+              className={`card-lux p-4 text-left transition-all ${selectedType === item.type ? 'border-gold-500/60 bg-gold-600/10' : 'hover:border-gold-600/40'}`}
             >
-              {previewLoading ? t('common.loading') : t('designer.previewFree')}
+              <div className="w-9 h-9 rounded-lg bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mb-3">
+                <Sparkles className="w-5 h-5 text-gold-400" />
+              </div>
+              <div className="text-xs font-medium text-cream-100">{item.label}</div>
+              <div className="text-[10px] text-gold-400 mt-1">{billableAccount ? `${item.credits} credits` : (isUnlimited ? '∞' : `${item.credits} credits`)}</div>
             </button>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Step 3: Free AI preview -> explicit approval -> paid final generation */}
-      {step === 3 && selectedType && (
-        <div className="animate-fade-in space-y-6">
-          <div className="text-center">
-            <h2 className="text-xl font-display font-bold text-cream-50 mb-2">{t('designer.previewTitle')}</h2>
-            <p className="text-sm text-cream-300/50">{t('designer.previewDesc')}</p>
+      {/* Step 2 */}
+      {step === 2 && (
+        <div className="card-lux p-6 space-y-4">
+          <div className="text-sm font-medium text-cream-100">
+            {selectedType ? t('create.brief') : ''}
+          </div>
+          <textarea
+            value={brief}
+            onChange={(e) => setBrief(e.target.value)}
+            rows={6}
+            className="input-lux resize-none text-sm"
+            placeholder={t('create.briefPlaceholder')}
+          />
+          {brands.length > 0 && (
+            <div className="grid md:grid-cols-3 gap-3">
+              {brands.map((brand) => (
+                <button
+                  key={brand.id}
+                  onClick={() => setSelectedBrand(brand.id)}
+                  className={`p-3 rounded-lg border text-left text-xs transition-all ${selectedBrand === brand.id ? 'border-gold-500/60 bg-gold-600/10' : 'border-ink-600/40 hover:border-gold-600/40'}`}
+                >
+                  <div className="font-medium text-cream-100">{brand.name}</div>
+                  <div className="text-cream-300/50 mt-1">{brand.industry}</div>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => void handlePreview()}
+              disabled={brief.trim().length < 5 || previewLoading}
+              className="btn-gold disabled:opacity-40"
+            >
+              {previewLoading ? t('create.previewLoading') : t('create.preview')}
+            </button>
+            <button onClick={resetCreate} className="btn-ghost">{t('common.cancel')}</button>
           </div>
 
           {previewError && (
-            <div className="card-lux p-4 border-red-500/30 bg-red-500/5 text-sm text-red-300">
+            <div className="rounded-lg border border-red-500/25 bg-red-500/10 p-3 text-xs text-red-300 flex gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
               {previewError}
             </div>
           )}
+        </div>
+      )}
 
-          {previewImageUrl && (
-            <div className="card-lux overflow-hidden border-gold-600/30 bg-black shadow-2xl">
-              <div className="px-5 py-3 border-b border-gold-600/15 flex items-center justify-between bg-ink-900/90 sticky top-0 z-10">
-                <div>
-                  <span className="text-xs uppercase tracking-[.18em] text-gold-400">AI eredmény · nagy előnézet</span>
-                  <div className="text-[10px] text-cream-300/40 mt-1">A kész művet nagy, fókuszált vásznon látod.</div>
-                </div>
-                <span className="chip border-gold-600/20 bg-black/30 text-cream-300/50 text-[10px]">0 kredit</span>
+      {/* Step 3: Preview approval */}
+      {step === 3 && preview && (
+        <div className="space-y-4">
+          <div className="card-lux p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-xs text-gold-300 uppercase tracking-wider">{t('create.previewTitle')}</div>
+                <div className="text-lg font-display text-cream-50 mt-1">{preview.title || projectName}</div>
               </div>
-              <div className="bg-[#020303] p-2 sm:p-4 lg:p-6">
-                <div className="relative mx-auto w-full max-w-[1500px] overflow-hidden rounded-xl border border-gold-600/15 bg-black shadow-[0_0_80px_rgba(0,0,0,.6)]">
-                  <img
-                    src={previewImageUrl}
-                    alt="DESIGNLY AI preview"
-                    draggable={canDownloadImages}
-                    onContextMenu={protectImage}
-                    onDragStart={protectImage}
-                    className={`block w-full h-auto object-contain ${canDownloadImages ? '' : 'select-none'}`}
-                  />
-                  <PreviewWatermark
-                    hidden={canDownloadImages}
-                    projectName={vyronBlueprint?.businessName || undefined}
-                  />
-                </div>
+              <div className="chip border-gold-600/30 bg-gold-600/10 text-gold-300 text-[10px]">
+                {activeAgents.length} {t('create.agents')}
               </div>
+            </div>
+            {preview.summary && (
+              <p className="text-xs text-cream-300/60 mt-3 leading-relaxed">{preview.summary}</p>
+            )}
+            {previewImageUrl && (
+              <div className="mt-4 rounded-lg overflow-hidden border border-gold-600/20">
+                <img src={previewImageUrl} alt={preview.title || projectName} onContextMenu={protectImage} className="w-full" />
+                <PreviewWatermark />
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-3 items-center">
+            <button onClick={() => setApproved(true)} disabled={approved} className="btn-gold disabled:opacity-50">
+              <Check className="w-4 h-4" /> {approved ? t('create.approved') : t('create.approve')}
+            </button>
+            {approved && (
+              <button onClick={() => void handleGenerate()} disabled={generating} className="btn-gold disabled:opacity-50">
+                {generating ? `${t('create.generating')} ${stepsLabel(genStep, t)}` : `${t('create.finalize')} · ${cost} ${t('misc.creditsShort')}`}
+              </button>
+            )}
+            <button onClick={() => setStep(2)} className="btn-ghost">{t('common.back')}</button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Result */}
+      {step === 4 && (
+        <div className="card-lux p-6 space-y-4">
+          <div className="flex items-center gap-2 text-emerald-300">
+            <Check className="w-5 h-5" />
+            <span className="text-sm font-medium">{t('create.success')}</span>
+          </div>
+          {generatedImageUrl && (
+            <div className="rounded-lg overflow-hidden border border-gold-600/20">
+              <img src={generatedImageUrl} alt={projectName} className="w-full" />
             </div>
           )}
-
-          {preview && (
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="card-lux p-5 space-y-4">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Visual direction</span>
-                  <p className="text-sm text-cream-100 mt-1">{preview.visualStyle || 'Premium'}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Mood</span>
-                  <p className="text-sm text-cream-100 mt-1">{preview.mood || 'Refined and distinctive'}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Typography</span>
-                  <p className="text-sm text-cream-100 mt-1">{preview.typographyDirection || 'Premium modern typography'}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Imagery</span>
-                  <p className="text-sm text-cream-100 mt-1">{preview.imageryDirection || 'Brand-consistent imagery'}</p>
-                </div>
-              </div>
-
-              <div className="card-lux p-5 space-y-4">
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Color palette</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {[...preview.primaryColors, ...preview.secondaryColors].slice(0, 8).map((color, i) => (
-                      <span key={i} className="px-2.5 py-1 rounded-full border border-gold-600/20 bg-ink-800/70 text-xs text-cream-200">
-                        {color}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Outputs</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {preview.requiredOutputs.map((output) => (
-                      <span key={output} className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize">
-                        {output.replace(/_/g, ' ')}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="pt-3 border-t border-ink-600/40">
-                  <span className="text-[10px] uppercase tracking-wider text-gold-400/70">Preview cost</span>
-                  <p className="text-lg font-display font-bold text-gold-300 mt-1">0 credits</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!approved ? (
-            <div className="card-lux p-6 space-y-4 border-gold-600/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-xl font-display font-bold gold-text">{cost} credits</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-sm text-cream-300/60 block">{t('credits.currentBalance')}</span>
-                  <span className="text-xl font-display font-bold text-cream-50">{profile?.credits ?? 0}</span>
-                </div>
-              </div>
-              <div className="rounded-lg border border-gold-600/20 bg-gold-500/5 p-3 text-sm text-cream-200/70">
-                <span className="font-semibold text-gold-200">INGYENES ELŐNÉZET:</span> a jóváhagyás önmagában nem von le kreditet. Kredit csak a végleges generálás indításakor kerül levonásra.
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {(profile?.credits ?? 0) < cost && (
-                  <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
-                    KREDIT VÁSÁRLÁS · 1–10 000
-                  </button>
-                )}
-                <div className="flex justify-between items-center gap-3 sm:ml-auto">
-                  <button onClick={() => setStep(2)} className="btn-ghost text-sm">{t('common.back')}</button>
-                  <button
-                    onClick={() => setApproved(true)}
-                    disabled={!preview || !previewId}
-                    className="btn-gold text-sm disabled:opacity-40"
-                  >
-                    KÉREM · {cost} KREDIT
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="card-lux p-6 space-y-5 border-gold-500/40 bg-gold-500/5">
-              <div className="text-center">
-                <div className="text-[10px] uppercase tracking-wider text-gold-400/70">{t('designer.finalConfirm')}</div>
-                <h3 className="text-lg font-display font-bold text-cream-50 mt-1">{t('designer.finalConfirm')}</h3>
-                <p className="text-sm text-cream-300/60 mt-2">{t('designer.finalConfirmDesc')}</p>
-              </div>
-              <div className="flex items-center justify-between rounded-lg border border-gold-600/20 bg-ink-900/60 p-4">
-                <div>
-                  <span className="text-xs text-cream-300/60 block">{t('designer.finalCost')}</span>
-                  <span className="text-2xl font-display font-bold gold-text">{cost} kredit</span>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-cream-300/60 block">{t('designer.remaining')}</span>
-                  <span className="text-lg font-display font-bold text-cream-50">{Math.max(0, (profile?.credits ?? 0) - cost)} kredit</span>
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {(profile?.credits ?? 0) < cost && (
-                  <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
-                    KREDIT VÁSÁRLÁS · 1–10 000
-                  </button>
-                )}
-                <div className="flex justify-between items-center gap-3 sm:ml-auto">
-                  <button onClick={() => setApproved(false)} className="btn-ghost text-sm">{t('designer.modify')}</button>
-                  <button
-                    onClick={handleGenerate}
-                    disabled={!hasEnoughCredits}
-                    className="btn-gold text-sm disabled:opacity-40"
-                  >
-                    {t('designer.continue').replace('{credits}', String(cost))}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-3">
+            {createdProject && (
+              <button onClick={() => onNavigate('editor')} className="btn-gold">
+                {t('create.openEditor')}
+              </button>
+            )}
+            <button onClick={resetCreate} className="btn-ghost">{t('create.newProject')}</button>
+          </div>
         </div>
       )}
     </div>
-
-      <CreditPurchaseModal
-        open={showCreditModal}
-        onClose={() => setShowCreditModal(false)}
-        onNavigate={onNavigate}
-        currentCredits={profile?.credits}
-        onCreditsUpdated={refreshProfile}
-        reason="A végleges generáláshoz nincs elegendő kredit. A kreditfeltöltés innen, a szerkesztő elhagyása nélkül indítható."
-      />
-    </>
   );
 }
 
-function GenerationOverlay({ step, t }: { step: number; t: (k: any) => string }) {
-  const steps = [
-    t('gen.analyzing'),
-    t('gen.direction'),
-    t('gen.layout'),
-    t('gen.brand'),
-    t('gen.optimizing'),
-  ];
-  const done = step >= 5;
-
-  return (
-    <div className="fixed inset-0 z-[100] bg-ink-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-6">
-      <div className="absolute top-5 left-1/2 -translate-x-1/2 chip border-gold-500/20 bg-black/30 text-gold-200 text-[10px] uppercase tracking-[.2em]">
-        AUTOMATIC BUILD · NAGY MUNKATÉR
-      </div>
-      <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="relative flex flex-col items-center">
-        <CelticEmblem size={200} animate showD />
-        <div className="font-display text-2xl font-bold text-cream-50 tracking-wide mt-8 mb-2">DESIGNLY STUDIO</div>
-        <div className="text-sm text-gold-200 mb-8">{done ? t('gen.reveal') : t('gen.creating')}</div>
-
-        <div className="w-full max-w-xl space-y-2 rounded-2xl border border-gold-600/10 bg-black/20 p-5">
-          {steps.map((s, i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-3 text-sm transition-all duration-500 ${
-                i < step ? 'text-gold-300' : i === step ? 'text-cream-100' : 'text-cream-400/30'
-              }`}
-            >
-              <div className={`w-4 h-4 rounded-full border transition-all ${
-                i < step ? 'border-gold-400 bg-gold-400' : i === step ? 'border-gold-400 animate-pulse' : 'border-ink-600'
-              }`}>
-                {i < step && <Check className="w-3 h-3 text-ink-950 mx-auto" />}
-              </div>
-              <span>{s}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+function stepsLabel(index: number, t: (key: string) => string): string {
+  const keys = ['gen.analyzing', 'gen.direction', 'gen.layout', 'gen.brand', 'gen.optimizing'];
+  return t(keys[index] || 'gen.analyzing');
 }
+
+export default CreatePage;
