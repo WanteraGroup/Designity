@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Sparkles, Download, Save, Plus, Trash2, Wand2, Eye, RefreshCw, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Sparkles, Download, Save, Plus, Trash2, Wand2, Eye, RefreshCw, FileText, FolderOpen } from 'lucide-react';
 import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
@@ -14,9 +14,17 @@ import {
   type SiteSection,
   type SiteSpec,
 } from '@/lib/site-builder';
+import type { Project } from '@/types';
 
 interface WebsitesProps {
   onNavigate: (page: string) => void;
+}
+
+interface SavedSiteRow {
+  id: string;
+  name: string;
+  updated_at: string | null;
+  config: Record<string, unknown> | null;
 }
 
 export default function Websites({ onNavigate }: WebsitesProps) {
@@ -31,8 +39,40 @@ export default function Websites({ onNavigate }: WebsitesProps) {
   const [activePage, setActivePage] = useState(0);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [savedSites, setSavedSites] = useState<SavedSiteRow[]>([]);
 
   const currentPage = site.pages[activePage] || site.pages[0];
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      if (!profile) return;
+      const { data } = await supabase
+        .from('projects')
+        .select('id,name,updated_at,config')
+        .eq('user_id', profile.id)
+        .eq('type', 'website')
+        .order('updated_at', { ascending: false })
+        .limit(12);
+      if (active) setSavedSites((data as SavedSiteRow[]) || []);
+    }
+    void load();
+    return () => { active = false; };
+  }, [profile]);
+
+  const openSaved = (row: SavedSiteRow) => {
+    const config = (row.config || {}) as Record<string, unknown>;
+    const saved = config.site as SiteSpec | undefined;
+    if (saved && Array.isArray(saved.pages)) {
+      setSite(saved);
+      setProjectName(saved.name || row.name);
+      setBrief(String(config.brief || ''));
+      setSavedId(row.id);
+      setActivePage(0);
+      setStatus('Betoltve: ' + row.name);
+      localStorage.setItem('designly_selected_project', row.id);
+    }
+  };
 
   const generate = async () => {
     setError(null);
@@ -111,7 +151,7 @@ export default function Websites({ onNavigate }: WebsitesProps) {
     if (savedId) {
       await supabase.from('projects').update({
         name: site.name,
-        config: { type: 'website', site: payload },
+        config: { type: 'website', site: payload, brief: brief.slice(0, 500) },
         updated_at: new Date().toISOString(),
       }).eq('id', savedId);
     } else {
@@ -121,16 +161,26 @@ export default function Websites({ onNavigate }: WebsitesProps) {
         type: 'website',
         status: 'completed',
         brief: brief.slice(0, 500),
-        config: { type: 'website', site: payload },
+        config: { type: 'website', site: payload, brief: brief.slice(0, 500) },
       }).select().single();
       if (data) {
-        setSavedId(data.id);
-        localStorage.setItem('designly_selected_project', data.id);
+        setSavedId((data as Project).id);
+        localStorage.setItem('designly_selected_project', (data as Project).id);
       }
     }
 
     setSaving(false);
     await refreshProfile();
+
+    const { data } = await supabase
+      .from('projects')
+      .select('id,name,updated_at,config')
+      .eq('user_id', profile.id)
+      .eq('type', 'website')
+      .order('updated_at', { ascending: false })
+      .limit(12);
+    setSavedSites((data as SavedSiteRow[]) || []);
+
     setStatus('A weboldal elmentve a projektjeid koze.');
   };
 
@@ -193,6 +243,28 @@ export default function Websites({ onNavigate }: WebsitesProps) {
 
         <div className="grid lg:grid-cols-[320px_1fr] gap-6">
           <div className="space-y-4">
+            <ForgedPanel>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] uppercase tracking-[.2em] text-[#EEE8DC]/45">Mentett weboldalak</span>
+                <span className="text-[10px] text-[#D6B36A]/70">{savedSites.length}</span>
+              </div>
+              <div className="space-y-1">
+                {savedSites.map((row) => (
+                  <button
+                    key={row.id}
+                    onClick={() => openSaved(row)}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs transition-all ${savedId === row.id ? 'bg-[#D6B36A]/15 text-[#F5DFA3] border border-[#D6B36A]/25' : 'text-[#EEE8DC]/55 hover:bg-white/5'}`}
+                  >
+                    <FolderOpen className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{row.name}</span>
+                  </button>
+                ))}
+                {savedSites.length === 0 && (
+                  <div className="text-[11px] text-[#EEE8DC]/35 px-1">Meg nincs mentett weboldal.</div>
+                )}
+              </div>
+            </ForgedPanel>
+
             <ForgedPanel>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[10px] uppercase tracking-[.2em] text-[#EEE8DC]/45">Oldalak</span>
