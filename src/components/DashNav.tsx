@@ -61,85 +61,92 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-60 fixed left-0 top-0 bottom-0 border-r border-gold-600/10 bg-ink-900/90 backdrop-blur-xl z-40">
-        <div className="designly-nav-brand">
-          <button onClick={() => onNavigate('landing')} className="designly-nav-brand-button">
-            <Logo size={40} />
-            <div className="designly-nav-brand-copy">
-              <span className="designly-nav-brand-title">DESIGNLY</span>
-              <span className="designly-nav-brand-sub">CREATIVE OPERATING SYSTEM</span>
+      {/* Desktop Command Deck */}
+      <aside className="designly-command-deck hidden lg:flex">
+        <div className="designly-command-brand">
+          <button onClick={() => onNavigate('landing')} className="designly-command-brand-button">
+            <div className="designly-command-mark">
+              <Logo size={46} />
+            </div>
+            <div className="designly-command-brand-copy">
+              <div className="designly-command-title">DESIGNLY</div>
+              <div className="designly-command-subtitle">CREATIVE OPERATING SYSTEM</div>
             </div>
           </button>
-          <div className="designly-nav-rune-line">ᛉ · ᛟ · ᚱ · ᚦ · ᚷ · ᛏ</div>
+          <div className="designly-command-rune-separator">
+            <span>ᛉ</span><i /><span>ᛟ</span><i /><span>ᚱ</span><i /><span>ᚦ</span><i /><span>ᚷ</span>
+          </div>
         </div>
 
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-          {primaryNavItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNav(item.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                currentPage === item.id
-                  ? 'bg-gold-600/15 text-gold-200 border border-gold-600/20'
-                  : 'text-cream-300/70 hover:text-gold-200 hover:bg-ink-700/40 border border-transparent'
-              }`}
-            >
-              <item.icon className="w-4 h-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-              {item.id === 'admin' && isOwner && (
-                <InfinityIcon className="w-3.5 h-3.5 text-gold-400 ml-auto" />
-              )}
-            </button>
-          ))}
-        </nav>
+        <div className="designly-command-section-label">COMMAND DECK</div>
 
-        {privilegedNavItems.length > 0 && (
-          <div className="px-3 pb-3 pt-2 border-t border-gold-600/10 space-y-1">
-            {privilegedNavItems.map((item) => (
+        <nav className="designly-command-nav">
+          {primaryNavItems.map((item) => {
+            const active = currentPage === item.id;
+            return (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-300 ${
-                  currentPage === item.id
-                    ? 'bg-gold-600/15 text-gold-200 border border-gold-600/20'
-                    : 'text-gold-200/75 hover:text-gold-100 hover:bg-gold-600/10 border border-gold-600/10'
-                }`}
+                className={`designly-command-item ${active ? 'is-active' : ''}`}
+                aria-current={active ? 'page' : undefined}
               >
-                <item.icon className="w-4 h-4 shrink-0" />
-                <span className="truncate">{item.label}</span>
-                {item.id === 'admin' && isOwner && <InfinityIcon className="w-3.5 h-3.5 text-gold-400 ml-auto" />}
+                <span className="designly-command-item-icon"><item.icon className="w-4 h-4" /></span>
+                <span className="designly-command-item-label">{item.label}</span>
+                {active && <span className="designly-command-active-rune">◈</span>}
               </button>
-            ))}
+            );
+          })}
+        </nav>
+
+        {privilegedNavItems.length > 0 && (
+          <div className="designly-command-privileged">
+            <div className="designly-command-section-label">CONTROL</div>
+            {privilegedNavItems.map((item) => {
+              const active = currentPage === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNav(item.id)}
+                  className={`designly-command-item designly-command-item--control ${active ? 'is-active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <span className="designly-command-item-icon"><item.icon className="w-4 h-4" /></span>
+                  <span className="designly-command-item-label">{item.label}</span>
+                  {item.id === 'admin' && isOwner && <InfinityIcon className="w-3.5 h-3.5 text-amber-200 ml-auto" />}
+                  {active && <span className="designly-command-active-rune">◈</span>}
+                </button>
+              );
+            })}
           </div>
         )}
 
-        {/* User card */}
-        <div className="designly-nav-user">
-          <div className="designly-nav-huginn">
+        <div className="designly-command-spacer" />
+
+        <div className="designly-command-huginn">
+          <div className="designly-command-huginn-head">
             <span className="designly-online-dot" />
-            <div><strong>HUGINN</strong><small>AI SYSTEM ONLINE</small></div>
-          </div>
-        <div className="p-3 border-t border-gold-600/10">
-          <div className="px-3 py-2 mb-2">
-            <div className="text-xs text-cream-400/50 truncate">{profile?.email}</div>
-            <div className="flex items-center gap-2 mt-1 flex-wrap">
-              <span className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize">
-                {isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}
-              </span>
-              <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300">
-                {isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}
-              </span>
+            <div>
+              <div className="designly-command-huginn-name">HUGINN</div>
+              <div className="designly-command-huginn-status">AI SYSTEM ONLINE</div>
             </div>
+            <span className="designly-command-huginn-glyph">◈</span>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-cream-300/60 hover:text-red-300 hover:bg-red-500/10 transition-all duration-300"
-          >
-            <LogOut className="w-4 h-4" />
-            {t('nav.logout')}
-          </button>
+          <div className="designly-command-huginn-stats">
+            <div><strong>{isUnlimited ? '14' : '—'}</strong><span>AGENTS CONNECTED</span></div>
+            <div><strong>∞</strong><span>AUTOMATION ROUTES</span></div>
+            <div><strong>LIVE</strong><span>CORE STATUS</span></div>
+          </div>
         </div>
+
+        <div className="designly-command-user">
+          <div className="designly-command-user-email">{profile?.email}</div>
+          <div className="designly-command-user-meta">
+            <span className="chip">{isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}</span>
+            <span className="chip">{isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}</span>
+          </div>
+          <button onClick={handleSignOut} className="designly-command-logout">
+            <LogOut className="w-4 h-4" /> {t('nav.logout')}
+          </button>
         </div>
       </aside>
 
