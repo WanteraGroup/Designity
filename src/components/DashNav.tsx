@@ -63,10 +63,15 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     <>
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-60 fixed left-0 top-0 bottom-0 border-r border-gold-600/10 bg-ink-900/90 backdrop-blur-xl z-40">
-        <div className="h-16 flex items-center px-5 border-b border-gold-600/10">
-          <button onClick={() => onNavigate('landing')}>
-            <div className="flex items-center gap-2"><Logo size={32} /><span className="text-[9px] tracking-[0.22em] text-gold-300/70">CREATIVE OS</span></div>
+        <div className="designly-nav-brand">
+          <button onClick={() => onNavigate('landing')} className="designly-nav-brand-button">
+            <Logo size={40} />
+            <div className="designly-nav-brand-copy">
+              <span className="designly-nav-brand-title">DESIGNLY</span>
+              <span className="designly-nav-brand-sub">CREATIVE OPERATING SYSTEM</span>
+            </div>
           </button>
+          <div className="designly-nav-rune-line">ᛉ · ᛟ · ᚱ · ᚦ · ᚷ · ᛏ</div>
         </div>
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
@@ -110,6 +115,11 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
         )}
 
         {/* User card */}
+        <div className="designly-nav-user">
+          <div className="designly-nav-huginn">
+            <span className="designly-online-dot" />
+            <div><strong>HUGINN</strong><small>AI SYSTEM ONLINE</small></div>
+          </div>
         <div className="p-3 border-t border-gold-600/10">
           <div className="px-3 py-2 mb-2">
             <div className="text-xs text-cream-400/50 truncate">{profile?.email}</div>
@@ -129,6 +139,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
             <LogOut className="w-4 h-4" />
             {t('nav.logout')}
           </button>
+        </div>
         </div>
       </aside>
 
