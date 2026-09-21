@@ -121,7 +121,7 @@ function escapeSvgText(value: string): string {
 function buildFallbackBrief(request: string, language: string, outputs: DesignOutput[]): DesignBrief {
   const lower = request.toLowerCase();
   const businessName =
-    request.match(/(?:projekt|márka|brand|cég|vállalkozás)\s*[:\-]\s*([^\n]+)/i)?.[1]?.trim() || null;
+    request.match(/(?:projekt|márka|brand|cég|vállalkozás)\s*[:-]\s*([^\n]+)/i)?.[1]?.trim() || null;
   const visualStyle =
     /(luxury|prémium|premium|luxus)/i.test(request) ? "premium luxury"
       : /(nordic|északi|viking|kelta|celtic)/i.test(request) ? "nordic celtic"
