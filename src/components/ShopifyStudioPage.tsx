@@ -39,9 +39,39 @@ export function ShopifyStudioPage({ onNavigate }: Props) {
   const load = async () => {
     setLoading(true);
     setError(null);
+
+    // First run a safe connection diagnostic so configuration/auth failures
+    // are shown precisely instead of the generic Supabase non-2xx message.
+    const { data: health, error: healthError } = await supabase.functions.invoke('shopify-studio', {
+      body: { action: 'health' },
+    });
+
+    if (health?.connected === false && health?.config?.configured === false) {
+      const missing: string[] = [];
+      if (!health.config?.hasShop) missing.push('SHOPIFY_SHOP');
+      if (!health.config?.hasStaticToken && !health.config?.hasClientId) missing.push('SHOPIFY_ACCESS_TOKEN vagy SHOPIFY_CLIENT_ID');
+      if (!health.config?.hasStaticToken && health.config?.hasClientId && !health.config?.hasClientSecret) missing.push('SHOPIFY_CLIENT_SECRET');
+      setError(`Shopify konfiguráció hiányos: ${missing.join(', ')}.`);
+      setLoading(false);
+      return;
+    }
+
+    if (healthError && !health) {
+      setError(healthError.message || 'A Shopify kapcsolat diagnosztikája sikertelen.');
+      setLoading(false);
+      return;
+    }
+
+    if (health?.connected === false) {
+      setError(health.message || 'A Shopify hitelesítés nem sikerült.');
+      setLoading(false);
+      return;
+    }
+
     const { data, error: invokeError } = await supabase.functions.invoke('shopify-studio', {
       body: { action: 'list' },
     });
+
     if (invokeError || data?.error) {
       setError(data?.message || invokeError?.message || 'A Shopify kapcsolat még nincs konfigurálva.');
     } else {
@@ -108,7 +138,13 @@ export function ShopifyStudioPage({ onNavigate }: Props) {
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="card-lux p-5"><Store className="w-5 h-5 text-gold-400 mb-3" /><div className="text-xs text-cream-400/50">SHOP</div><div className="font-semibold text-cream-100 mt-1">{shop?.name || 'Shopify'}</div><div className="text-xs text-cream-400/50 mt-1">{shop?.domain || 'Kapcsolat ellenőrzése…'}</div></div>
+        <div className="card-lux p-5">
+          <Store className="w-5 h-5 text-gold-400 mb-3" />
+          <div className="text-xs text-cream-400/50">SHOP</div>
+          <div className="font-semibold text-cream-100 mt-1">{shop?.name || 'Shopify'}</div>
+          <div className="text-xs text-cream-400/50 mt-1">{shop?.domain || 'Kapcsolat ellenőrzése…'}</div>
+          {shop && <div className="mt-2 text-[10px] uppercase tracking-wider text-green-300/70">Kapcsolat: OK</div>}
+        </div>
         <div className="card-lux p-5"><Package className="w-5 h-5 text-gold-400 mb-3" /><div className="text-xs text-cream-400/50">TERMÉKEK</div><div className="text-2xl font-bold text-cream-50 mt-1">{products.length}</div></div>
         <div className="card-lux p-5"><Sparkles className="w-5 h-5 text-gold-400 mb-3" /><div className="text-xs text-cream-400/50">AKTÍV</div><div className="text-2xl font-bold text-cream-50 mt-1">{activeCount}</div></div>
       </div>
