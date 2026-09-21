@@ -103,7 +103,7 @@ export function CommandDeck({
   controlItems = [],
 }: CommandDeckProps) {
   const { t } = useI18n();
-  const { profile, isOwner, isUnlimited, signOut } = useAuth();
+  const { profile, isOwner, isUnlimited, isAdmin, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -192,8 +192,8 @@ export function CommandDeck({
           {profile?.email}
         </div>
         <div className="flex gap-1.5 flex-wrap mt-2 px-2">
-          <span className="chip text-[7px]">{isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}</span>
-          <span className="chip text-[7px]">{isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}</span>
+          <span className="chip text-[7px]">{isOwner ? 'OWNER · BILLABLE TEST' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}</span>
+          <span className="chip text-[7px]">{isAdmin ? `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT` : isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}</span>
         </div>
         <button
           onClick={handleSignOut}
