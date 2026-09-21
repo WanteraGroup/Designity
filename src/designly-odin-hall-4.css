@@ -1,0 +1,240 @@
+/* DESIGNLY / ODIN HALL — FULL BRAND SYSTEM 4.0
+   Applies to every public + dashboard surface, not only the landing.
+   Material language: forged metal, weathered stone, ice glow, oxidized copper,
+   Celtic frame geometry, Nordic atmosphere.
+*/
+:root{
+  --d4-bg:#030607;
+  --d4-bg2:#071110;
+  --d4-panel:#0b1716;
+  --d4-panel2:#10211f;
+  --d4-ice:#8fe7df;
+  --d4-ice-hi:#d6fff8;
+  --d4-copper:#b8744c;
+  --d4-copper-hi:#e1ab81;
+  --d4-bone:#eee8dc;
+  --d4-muted:#8f9a95;
+  --d4-line:rgba(143,231,223,.16);
+  --d4-line-hi:rgba(143,231,223,.34);
+  --d4-shadow:0 30px 90px rgba(0,0,0,.48);
+}
+
+/* FONT + GLOBAL SURFACE */
+html,body,#root{background:linear-gradient(180deg,#020506,#06100f 50%,#020506)!important;color:var(--d4-bone)!important}
+body{font-family:"Manrope","Inter",system-ui,sans-serif!important}
+h1,h2,h3,h4,h5,h6,.font-display{font-family:"Marcellus","Cormorant Garamond",Georgia,serif!important}
+button,input,textarea,select{font-family:inherit!important}
+body::selection{background:rgba(143,231,223,.24)!important;color:#fff!important}
+#root{position:relative;isolation:isolate}
+#root::before{content:"";position:fixed;inset:0;z-index:-20;pointer-events:none;background:
+  radial-gradient(circle at 10% 12%,rgba(86,156,133,.08),transparent 23%),
+  radial-gradient(circle at 88% 16%,rgba(143,231,223,.08),transparent 27%),
+  radial-gradient(circle at 50% 95%,rgba(184,116,76,.05),transparent 28%);
+}
+#root::after{content:"";position:fixed;inset:0;z-index:-19;pointer-events:none;opacity:.13;background:
+  linear-gradient(rgba(143,231,223,.024) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(143,231,223,.018) 1px,transparent 1px);
+  background-size:76px 76px;
+}
+
+/* HEADER = FORGED COMMAND BAR */
+.celtic-header{height:82px!important;background:rgba(2,7,8,.86)!important;border-bottom:1px solid rgba(143,231,223,.12)!important;box-shadow:0 20px 60px rgba(0,0,0,.42)!important}
+.celtic-header::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(circle at 12% 50%,rgba(143,231,223,.08),transparent 19%),
+  linear-gradient(90deg,transparent 0 27%,rgba(143,231,223,.018) 50%,transparent 73%)}
+.celtic-header::after{content:"";position:absolute;left:3%;right:3%;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--d4-ice),var(--d4-copper-hi),var(--d4-ice),transparent);opacity:.52;box-shadow:0 0 16px rgba(143,231,223,.15)}
+.celtic-header-accent{display:none!important}
+.celtic-header nav{max-width:1660px!important;height:82px!important}
+.celtic-header nav > button:first-child{padding:7px 11px!important;border:1px solid rgba(143,231,223,.10)!important;border-radius:14px!important;background:linear-gradient(145deg,rgba(15,31,30,.72),rgba(3,8,9,.55))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 10px 26px rgba(0,0,0,.22)!important}
+.celtic-header .nav-link{font-family:"Manrope","Inter",sans-serif!important;font-size:10px!important;font-weight:800!important;letter-spacing:.16em!important;text-transform:uppercase;color:rgba(238,232,220,.60)!important}
+.celtic-header .nav-link:hover,.celtic-header .nav-link--active{color:var(--d4-ice)!important}
+.celtic-header .nav-link::after{background:linear-gradient(90deg,transparent,var(--d4-ice),transparent)!important;box-shadow:0 0 14px rgba(143,231,223,.45)!important}
+.celtic-header a[href*="VYRON"]{border-color:rgba(184,116,76,.26)!important;background:linear-gradient(180deg,rgba(28,18,14,.56),rgba(7,10,10,.75))!important;color:var(--d4-copper-hi)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important}
+.celtic-header .btn-gold{min-height:50px!important;border-radius:12px!important;background:linear-gradient(135deg,#35514c 0%,#e6ede7 48%,#728680 100%)!important;color:#071110!important;border:1px solid rgba(232,241,236,.62)!important;box-shadow:0 14px 34px rgba(0,0,0,.36),0 0 28px rgba(143,231,223,.08)!important}
+.celtic-header .btn-gold:hover{transform:translateY(-2px)!important}
+
+/* 3D BUTTON SYSTEM */
+.btn-gold,.odin-btn-hot{
+  position:relative!important;overflow:hidden!important;border-radius:11px!important;
+  background:linear-gradient(145deg,#3a5852 0%,#f0f4ef 48%,#657873 100%)!important;
+  color:#071110!important;border:1px solid rgba(236,244,240,.66)!important;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.28),inset 0 -5px 14px rgba(0,0,0,.15),0 12px 22px rgba(0,0,0,.38),0 0 24px rgba(143,231,223,.08)!important;
+  transform:translateZ(0);
+}
+.btn-gold::before,.odin-btn-hot::before{
+  content:"";position:absolute;left:7%;right:7%;top:4px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.80),transparent);
+  opacity:.6;pointer-events:none;
+}
+.btn-gold::after,.odin-btn-hot::after{
+  content:"";position:absolute;top:-140%;left:-30%;width:28%;height:360%;
+  transform:rotate(24deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  transition:left .65s ease;pointer-events:none;
+}
+.btn-gold:hover::after,.odin-btn-hot:hover::after{left:115%}
+.btn-gold:hover,.odin-btn-hot:hover{transform:translateY(-3px)!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.34),inset 0 -6px 15px rgba(0,0,0,.15),0 18px 34px rgba(0,0,0,.48),0 0 34px rgba(143,231,223,.16)!important}
+.btn-gold:active,.odin-btn-hot:active{transform:translateY(1px)!important;box-shadow:inset 0 2px 0 rgba(0,0,0,.16),0 5px 16px rgba(0,0,0,.42)!important}
+.btn-ghost,.odin-btn-dark{
+  border-radius:11px!important;background:linear-gradient(145deg,rgba(15,32,30,.94),rgba(4,9,10,.98))!important;
+  border:1px solid rgba(143,231,223,.16)!important;color:#dfe8e5!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 24px rgba(0,0,0,.28)!important;
+}
+.btn-ghost:hover,.odin-btn-dark:hover{border-color:rgba(143,231,223,.36)!important;background:linear-gradient(145deg,rgba(20,43,40,.96),rgba(5,11,12,.98))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 15px 30px rgba(0,0,0,.36),0 0 26px rgba(143,231,223,.08)!important;transform:translateY(-2px)!important}
+
+/* EVERY APP PAGE gets a Nordic image atmosphere */
+.designly-app-page{min-height:calc(100vh - 76px)!important;position:relative!important;isolation:isolate}
+.designly-app-page::before{
+  content:"";position:fixed;inset:0 0 0 252px;z-index:-10;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(3,7,8,.74),rgba(4,9,10,.88) 58%,rgba(2,5,6,.96)),
+    url('/designly-odin-hall-bg.svg') center center/cover no-repeat;
+  background-blend-mode:normal,screen;
+  opacity:.48;
+  filter:saturate(.78) contrast(1.08);
+}
+.designly-app-page::after{
+  content:"";position:fixed;inset:0 0 0 252px;z-index:-9;pointer-events:none;
+  background:
+    radial-gradient(circle at 70% 20%,rgba(143,231,223,.09),transparent 24%),
+    linear-gradient(rgba(143,231,223,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(143,231,223,.015) 1px,transparent 1px);
+  background-size:auto,84px 84px,84px 84px;
+  opacity:.55;
+}
+/* route personalities */
+.designly-page-advertising::before{background:linear-gradient(180deg,rgba(11,8,7,.72),rgba(4,10,10,.88),rgba(2,5,6,.95)),url('/designly-odin-hall-bg.svg') 64% center/cover no-repeat;background-blend-mode:normal,screen;opacity:.44}
+.designly-page-music::before{background:linear-gradient(180deg,rgba(10,8,8,.72),rgba(4,10,10,.88),rgba(2,5,6,.96)),url('/designly-odin-hall-bg.svg') 22% center/cover no-repeat;background-blend-mode:normal,screen;opacity:.42}
+.designly-page-agents::before{background:linear-gradient(180deg,rgba(3,9,9,.68),rgba(4,11,11,.90),rgba(2,5,6,.96)),url('/designly-odin-hall-bg.svg') 50% 38%/cover no-repeat;background-blend-mode:normal,screen;opacity:.46}
+.designly-page-admin::before{background:linear-gradient(180deg,rgba(12,9,7,.74),rgba(7,11,10,.90),rgba(2,5,6,.97)),url('/designly-odin-hall-bg.svg') 78% center/cover no-repeat;background-blend-mode:normal,screen;opacity:.40}
+.designly-page-cnc::before{background:linear-gradient(180deg,rgba(10,8,6,.74),rgba(6,11,10,.90),rgba(2,5,6,.97)),url('/designly-odin-hall-bg.svg') 50% 72%/cover no-repeat;background-blend-mode:normal,screen;opacity:.38}
+
+/* PANELS / CELTIC FRAME */
+.designly-app-page .card-lux,.designly-app-page .card-premium{
+  position:relative!important;overflow:hidden!important;
+  border:1px solid rgba(143,231,223,.15)!important;border-radius:18px!important;
+  background:
+    linear-gradient(145deg,rgba(12,25,24,.92),rgba(3,8,9,.97))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(242,248,243,.035),
+    inset 0 0 0 1px rgba(255,255,255,.006),
+    0 28px 72px rgba(0,0,0,.42)!important;
+}
+.designly-app-page .card-lux::before,.designly-app-page .card-premium::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(143,231,223,.035),transparent 20%,transparent 78%,rgba(184,116,76,.025)),
+    url('/kor keret.png') center/cover no-repeat;
+  opacity:.12;mix-blend-mode:screen;
+}
+.designly-app-page .card-lux::after,.designly-app-page .card-premium::after{
+  content:"";position:absolute;inset:6px;z-index:1;pointer-events:none;border:1px solid rgba(143,231,223,.055);border-radius:12px;
+  background:
+    linear-gradient(90deg,var(--d4-copper) 0 26px,transparent 26px calc(100% - 26px),var(--d4-copper) calc(100% - 26px)),
+    linear-gradient(90deg,var(--d4-copper) 0 26px,transparent 26px calc(100% - 26px),var(--d4-copper) calc(100% - 26px));
+  background-size:100% 1px,100% 1px;background-position:top,bottom;background-repeat:no-repeat;
+  opacity:.36;
+  box-shadow:inset 0 0 32px rgba(143,231,223,.02);
+}
+.designly-app-page .card-lux>* ,.designly-app-page .card-premium>*{position:relative;z-index:2}
+.designly-app-page .card-lux:hover,.designly-app-page .card-premium:hover{
+  border-color:rgba(143,231,223,.34)!important;
+  transform:translateY(-4px)!important;
+  box-shadow:inset 0 1px 0 rgba(242,248,243,.05),0 34px 90px rgba(0,0,0,.50),0 0 34px rgba(143,231,223,.06)!important;
+}
+.designly-app-page .card-lux:hover::after,.designly-app-page .card-premium:hover::after{opacity:.62;box-shadow:inset 0 0 36px rgba(143,231,223,.04),0 0 18px rgba(143,231,223,.05)}
+
+/* surface selectors for dialogs/dropdowns */
+.designly-app-page [role="dialog"],
+.designly-app-page [data-radix-popper-content-wrapper] > div,
+.designly-app-page .absolute.rounded-xl.border,
+.designly-app-page .absolute.rounded-2xl.border{
+  border-color:rgba(143,231,223,.18)!important;
+  background:
+    linear-gradient(180deg,rgba(8,18,18,.97),rgba(3,8,9,.985)),
+    url('/designly-odin-hall-bg.svg') center/cover no-repeat!important;
+  background-blend-mode:normal,soft-light;
+  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 28px rgba(143,231,223,.05)!important;
+  border-radius:16px!important;
+}
+
+/* INPUTS */
+.designly-app-page .input-lux,.designly-app-page .input-premium{
+  min-height:46px;border-radius:11px!important;
+  background:
+    linear-gradient(180deg,rgba(2,7,8,.96),rgba(10,21,20,.95)),
+    url('/designly-odin-hall-bg.svg') center/cover no-repeat!important;
+  border:1px solid rgba(143,231,223,.14)!important;
+  color:#edf4ef!important;
+  box-shadow:inset 0 4px 18px rgba(0,0,0,.34),0 8px 18px rgba(0,0,0,.15)!important;
+}
+.designly-app-page .input-lux:focus,.designly-app-page .input-premium:focus{
+  border-color:rgba(143,231,223,.46)!important;
+  box-shadow:0 0 0 3px rgba(143,231,223,.055),inset 0 4px 18px rgba(0,0,0,.34),0 0 30px rgba(143,231,223,.09)!important;
+}
+
+/* TITLES / LABELS */
+.designly-app-page h1{font-size:clamp(2.5rem,4.2vw,4.4rem)!important;letter-spacing:.015em!important;text-shadow:0 10px 30px rgba(0,0,0,.46)!important}
+.designly-app-page h1::after{content:"";display:block;width:140px;height:2px;margin-top:15px;background:linear-gradient(90deg,var(--d4-copper),var(--d4-ice),transparent);box-shadow:0 0 16px rgba(143,231,223,.12)}
+.designly-app-page h2{font-size:clamp(1.8rem,3vw,3rem)!important}
+.designly-app-page .label-lux,.designly-app-page .text-gold-100,.designly-app-page .text-gold-200,.designly-app-page .text-gold-300,.designly-app-page .text-gold-400{color:var(--d4-ice)!important}
+.designly-app-page .chip{border-color:rgba(143,231,223,.18)!important;background:linear-gradient(180deg,rgba(143,231,223,.06),rgba(143,231,223,.018))!important;color:#d5e8e4!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.02)!important}
+
+/* TABLES / LIST ROWS */
+.designly-app-page table{border-color:rgba(143,231,223,.11)!important;border-radius:14px;overflow:hidden}
+.designly-app-page thead{background:linear-gradient(180deg,rgba(143,231,223,.045),rgba(143,231,223,.012))!important}
+.designly-app-page th{color:var(--d4-ice)!important;font:700 9px Manrope,sans-serif!important;letter-spacing:.14em;text-transform:uppercase}
+.designly-app-page td{border-color:rgba(143,231,223,.07)!important;color:rgba(238,232,220,.68)!important}
+.designly-app-page tbody tr:hover{background:rgba(143,231,223,.025)!important}
+
+/* SIDEBAR = SHIELD WALL */
+aside.hidden.lg\\:flex{
+  width:252px!important;background:
+    linear-gradient(180deg,rgba(7,15,15,.98),rgba(2,7,8,.995)),
+    url('/designly-odin-hall-bg.svg') 72% center/cover no-repeat!important;
+  background-blend-mode:normal,soft-light!important;
+  border-right:1px solid rgba(143,231,223,.13)!important;
+  box-shadow:25px 0 70px rgba(0,0,0,.48)!important;
+}
+aside.hidden.lg\\:flex::after{content:"";position:absolute;right:0;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--d4-ice),var(--d4-copper),transparent);opacity:.45}
+aside.hidden.lg\\:flex > div:first-child{height:76px!important;border-bottom-color:rgba(143,231,223,.10)!important;background:linear-gradient(180deg,rgba(143,231,223,.035),transparent)!important}
+aside.hidden.lg\\:flex nav button{min-height:44px!important;border-radius:11px!important;font-weight:700!important;color:rgba(238,232,220,.60)!important;transition:.25s!important}
+aside.hidden.lg\\:flex nav button:hover{background:rgba(143,231,223,.045)!important;color:#dff9f4!important}
+aside.hidden.lg\\:flex nav button[class*="bg-gold"]{background:linear-gradient(90deg,rgba(143,231,223,.12),rgba(143,231,223,.02))!important;border-color:rgba(143,231,223,.20)!important;color:var(--d4-ice)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.02),0 8px 22px rgba(0,0,0,.20)!important}
+aside.hidden.lg\\:flex nav button[class*="bg-gold"]::after{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2px;background:linear-gradient(180deg,transparent,var(--d4-ice),transparent);box-shadow:0 0 14px rgba(143,231,223,.42)}
+aside.hidden.lg\\:flex .chip{border-color:rgba(184,116,76,.27)!important;background:rgba(184,116,76,.065)!important;color:var(--d4-copper-hi)!important}
+
+/* PUBLIC NON-LANDING */
+.designly-public-page:not(.designly-page-landing){min-height:100vh;position:relative;isolation:isolate}
+.designly-public-page:not(.designly-page-landing)::before{
+  content:"";position:fixed;inset:0;z-index:-10;pointer-events:none;
+  background:linear-gradient(180deg,rgba(3,7,8,.80),rgba(5,10,10,.92)),url('/designly-odin-hall-bg.svg') center/cover no-repeat;
+  background-blend-mode:normal,soft-light;opacity:.55;
+}
+.designly-page-login::before{background:linear-gradient(135deg,rgba(3,8,8,.78),rgba(9,23,20,.90)),url('/designly-odin-hall-bg.svg') 25% center/cover no-repeat!important}
+.designly-page-signup::before{background:linear-gradient(135deg,rgba(10,8,6,.80),rgba(4,12,12,.90)),url('/designly-odin-hall-bg.svg') 75% center/cover no-repeat!important}
+.designly-page-checkout::before{background:linear-gradient(180deg,rgba(3,8,8,.82),rgba(6,14,13,.92)),url('/designly-odin-hall-bg.svg') 50% bottom/cover no-repeat!important}
+
+/* LANDING */
+.designly-page-landing .odin-tool-card,.designly-page-landing .odin-zone,.designly-page-landing .odin-price-card{backdrop-filter:blur(9px)!important}
+.designly-page-landing .odin-tool-card{border-radius:17px!important;box-shadow:0 24px 62px rgba(0,0,0,.36)!important}
+.designly-page-landing .odin-tool-card:hover{box-shadow:0 34px 78px rgba(0,0,0,.48),0 0 32px rgba(143,231,223,.06)!important}
+.designly-page-landing .odin-final{border-top-color:rgba(143,231,223,.13)!important}
+
+/* HUGINN floating agent */
+.huginn-agent{filter:drop-shadow(0 18px 42px rgba(0,0,0,.62))!important}
+.huginn-agent .chip{border-color:rgba(143,231,223,.20)!important;background:rgba(4,12,12,.82)!important;color:var(--d4-ice)!important}
+
+/* RESPONSIVE */
+@media(max-width:1023px){
+  .designly-app-page::before,.designly-app-page::after{left:0}
+  aside.hidden.lg\\:flex{width:280px!important}
+}
+@media(max-width:720px){
+  .celtic-header,.celtic-header nav{height:66px!important}
+  .designly-app-page h1{font-size:2.3rem!important}
+  .designly-app-page .card-lux,.designly-app-page .card-premium{border-radius:14px!important}
+  .designly-app-page .card-lux::after,.designly-app-page .card-premium::after{inset:4px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;animation:none!important;transition-duration:.01ms!important}
+}
