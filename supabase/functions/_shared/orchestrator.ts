@@ -17,6 +17,10 @@ const rules: Array<{ id: string; terms: RegExp[]; reason: string }> = [
   { id: "procurement", terms: [/beszerzés/i,/procurement/i,/supplier/i,/beszállító/i,/b2b/i], reason: "B2B procurement folyamat szükséges" },
   { id: "recruitment", terms: [/toborz/i,/recruit/i,/állás/i,/jelölt/i,/talent/i], reason: "recruitment/talent folyamat szükséges" },
   { id: "social-publisher", terms: [/közzététel/i,/publish/i,/tiktok.*közz/i,/social.*publish/i], reason: "engedélyezett social publishing workflow szükséges" },
+  { id: "web-architect", terms: [/weboldal/i,/website/i,/honlap/i,/webshop/i,/webáruház/i,/site/i], reason: "teljes, többoldalas és működő weboldal-architektúra szükséges" },
+  { id: "ux-ui", terms: [/weboldal/i,/website/i,/honlap/i,/webshop/i,/webáruház/i,/ui/i,/ux/i], reason: "webes UX/UI, komponensek és reszponzív interakciók szükségesek" },
+  { id: "seo-content", terms: [/weboldal/i,/website/i,/honlap/i,/seo/i,/google/i,/kereső/i], reason: "webes tartalom, SEO és konverziós szövegezés szükséges" },
+  { id: "web-qa", terms: [/weboldal/i,/website/i,/honlap/i,/webshop/i,/webáruház/i], reason: "linkek, űrlapok, reszponzivitás és build-elfogadási kritériumok ellenőrzése szükséges" },
 ];
 
 export function buildOrchestrationPlan(brief: string, requestedOutputs: string[] = []): OrchestrationPlan {
