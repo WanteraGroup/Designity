@@ -19,6 +19,7 @@ import Music from '@/pages/Music';
 import Voice from '@/pages/Voice';
 import Translator from '@/pages/Translator';
 import Shopify from '@/pages/Shopify';
+import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -55,14 +56,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'diagnostics',
+  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics',
 ];
 
 function pageFromHash(): Page {
@@ -206,7 +207,8 @@ function AppInner() {
       case 'shopify-workspace': return <ShopifyStudioPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
-      case 'cnc': return <CncCamPage />;
+      case 'cnc': return <CNC onNavigate={navigate} />;
+      case 'cnc-workspace': return <CncCamPage />;
       case 'diagnostics': return <DiagnosticsPage />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
@@ -250,6 +252,8 @@ function AppInner() {
     'translator-workspace': 'REALTIME TRANSLATOR WORKSPACE',
     shopify: 'MERCHANT HALL',
     'shopify-workspace': 'SHOPIFY STUDIO',
+    cnc: 'ENGINEERING FORGE',
+    'cnc-workspace': 'CNC CAM WORKSPACE',
     creator: 'CREATOR MERCH',
     streamer: 'STREAMER STUDIO',
     cnc: 'CNC CAM',
