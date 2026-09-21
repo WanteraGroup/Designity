@@ -53,17 +53,15 @@ export function SidebarMorphingBackground({
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `url("${resolve(sidebarImages[previousIndex])}")`,
-          opacity: index === previousIndex ? 1 : 1,
-          transition: `opacity ${transitionMs}ms ease-in-out`,
         }}
       />
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        key={index}
+        className="absolute inset-0 bg-cover bg-center animate-[sidebarMorphFade_var(--sidebar-morph-duration)_ease-in-out_forwards]"
         style={{
           backgroundImage: `url("${resolve(sidebarImages[index])}")`,
-          opacity: index === previousIndex ? 0 : 1,
-          transition: `opacity ${transitionMs}ms ease-in-out`,
-        }}
+          '--sidebar-morph-duration': `${transitionMs}ms`,
+        } as React.CSSProperties}
       />
 
       <div className="absolute inset-0 bg-gradient-to-b from-[#020505]/72 via-[#020505]/78 to-[#020505]/96" />
