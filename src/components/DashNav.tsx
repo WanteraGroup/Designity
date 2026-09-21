@@ -80,43 +80,67 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
         <div className="designly-command-section-label">COMMAND DECK</div>
 
-        <nav className="designly-command-nav">
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
           {primaryNavItems.map((item) => {
-            const active = currentPage === item.id;
+            const isActive = currentPage === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleNav(item.id)}
-                className={`designly-command-item ${active ? 'is-active' : ''}`}
-                aria-current={active ? 'page' : undefined}
+                aria-current={isActive ? 'page' : undefined}
+                className={`
+                  relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]
+                  transition-all duration-200
+                  ${isActive
+                    ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
+                    : 'border border-transparent hover:bg-[#071311]/40'
+                  }
+                `}
               >
-                <span className="designly-command-item-icon"><item.icon className="w-4 h-4" /></span>
-                <span className="designly-command-item-label">{item.label}</span>
-                {active && <span className="designly-command-active-rune">◈</span>}
+                <item.icon className={`w-5 h-5 ${isActive ? 'text-[#9CEEE5]' : 'text-[#EEE8DC]/60'}`} />
+                <span className={`text-sm tracking-wide ${isActive ? 'text-[#E3FFFB]' : 'text-[#EEE8DC]/70'}`}>
+                  {item.label}
+                </span>
+                {isActive && (
+                  <div className="absolute left-0 top-0 h-full w-[3px] bg-[#9CEEE5] rounded-r-md shadow-[0_0_10px_rgba(156,238,229,0.55)]" />
+                )}
               </button>
             );
           })}
         </nav>
 
         {privilegedNavItems.length > 0 && (
-          <div className="designly-command-privileged">
-            <div className="designly-command-section-label">CONTROL</div>
-            {privilegedNavItems.map((item) => {
-              const active = currentPage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNav(item.id)}
-                  className={`designly-command-item designly-command-item--control ${active ? 'is-active' : ''}`}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <span className="designly-command-item-icon"><item.icon className="w-4 h-4" /></span>
-                  <span className="designly-command-item-label">{item.label}</span>
-                  {item.id === 'admin' && isOwner && <InfinityIcon className="w-3.5 h-3.5 text-amber-200 ml-auto" />}
-                  {active && <span className="designly-command-active-rune">◈</span>}
-                </button>
-              );
-            })}
+          <div className="px-4 pt-2 pb-1">
+            <div className="designly-command-section-label px-0">CONTROL</div>
+            <div className="space-y-1">
+              {privilegedNavItems.map((item) => {
+                const isActive = currentPage === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNav(item.id)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`
+                      relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]
+                      transition-all duration-200
+                      ${isActive
+                        ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
+                        : 'border border-transparent hover:bg-[#071311]/40'
+                      }
+                    `}
+                  >
+                    <item.icon className={`w-5 h-5 ${isActive ? 'text-[#9CEEE5]' : 'text-[#EEE8DC]/60'}`} />
+                    <span className={`text-sm tracking-wide ${isActive ? 'text-[#E3FFFB]' : 'text-[#EEE8DC]/70'}`}>
+                      {item.label}
+                    </span>
+                    {item.id === 'admin' && isOwner && <InfinityIcon className="w-3.5 h-3.5 text-amber-200 ml-auto" />}
+                    {isActive && (
+                      <div className="absolute left-0 top-0 h-full w-[3px] bg-[#9CEEE5] rounded-r-md shadow-[0_0_10px_rgba(156,238,229,0.55)]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 
