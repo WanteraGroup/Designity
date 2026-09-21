@@ -95,11 +95,11 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
           className="flex items-center shrink-0 transition-opacity hover:opacity-90"
           aria-label="DESIGNLY STUDIO home"
         >
-          <div className="flex items-center gap-2.5">
+          <div className="designly-public-brand">
             <Logo size={42} showText={false} />
             <div className="hidden sm:flex flex-col leading-none text-left">
-              <span className="font-display text-[15px] tracking-[0.22em] text-cream-50">DESIGNLY</span>
-              <span className="text-[9px] tracking-[0.34em] text-gold-300/80 mt-1">CREATIVE OS</span>
+              <span className="designly-public-brand-title">DESIGNLY</span>
+              <span className="designly-public-brand-sub">CREATIVE OPERATING SYSTEM</span>
             </div>
           </div>
         </button>
