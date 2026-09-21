@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
 import { PublicNav } from '@/components/PublicNav';
 import Landing from '@/pages/Landing';
+import ForgeStudio from '@/pages/ForgeStudio';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -47,14 +48,14 @@ const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ def
 
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
-  | 'dashboard' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
+  | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'editor' | 'music' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
-  'dashboard', 'create', 'advertising', 'campaign', 'projects', 'brands',
+  'dashboard', 'forge', 'create', 'advertising', 'campaign', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
   'settings', 'admin', 'editor', 'music', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify', 'cnc', 'diagnostics',
 ];
@@ -173,6 +174,7 @@ function AppInner() {
   const renderDashboardPage = (): ReactNode => {
     switch (page) {
       case 'dashboard': return <DashboardHome onNavigate={navigate} />;
+      case 'forge': return <ForgeStudio onNavigate={navigate} />;
       case 'create': return <CreatePage onNavigate={navigate} />;
       case 'advertising': return <AdvertisingStudio onNavigate={navigate} />;
       case 'campaign': return <CampaignGenerator onNavigate={navigate} />;
@@ -214,7 +216,8 @@ function AppInner() {
 
   const pageTitles: Partial<Record<Page, string>> = {
     dashboard: 'DESIGNLY CORE',
-    create: 'FORGE STUDIO',
+    forge: 'FORGE STUDIO',
+    create: 'FORGE WORKSPACE',
     advertising: 'ADVERTISING STUDIO',
     campaign: 'CAMPAIGN FORGE',
     projects: 'PROJECTS',
