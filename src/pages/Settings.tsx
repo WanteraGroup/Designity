@@ -329,7 +329,7 @@ export default function Settings({ onNavigate }: SettingsProps) {
             <div className="font-serif text-2xl mt-1">{isOwner ? 'OWNER' : 'ADMIN'}</div>
             <p className="mt-2 text-sm text-[#EEE8DC]/45">
               {isOwner ? 'Tulajdonosi hozzáférés; a végleges generálások és AI szerkesztések a saját kreditkeretet használják.' : 'Adminisztrációs hozzáférés és rendszerfelügyelet.'}
-              {isUnlimited ? ' Final generations and AI editor actions use the owner's credit balance.' : ''}
+              {isUnlimited ? ' A végleges generálások és az AI szerkesztő műveletei a tulajdonosi kreditegyenleget használják.' : ''}
             </p>
           </ForgedPanel>
         )}
