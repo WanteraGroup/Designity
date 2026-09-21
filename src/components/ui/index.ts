@@ -3,3 +3,4 @@ export * from './ForgedPanel';
 export * from './NordicHeader';
 export * from './CelticGoldFrame';
 export * from './RunePulse';
+export * from './FogAndEmbers';
