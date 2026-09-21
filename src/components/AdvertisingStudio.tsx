@@ -50,6 +50,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
   }, [profile]);
 
   const cost = getCreditsForType('advertisement');
+  const finalCost = isUnlimited ? 0 : cost;
   const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
@@ -77,12 +78,12 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     setPreviewId(result.previewId || null);
   };
 
-  const handleGenerate = async () => {
-    if (!profile || !selectedFormat || !previewId) return;
+  const handleGenerate = async (): Promise<boolean> => {
+    if (!profile || !selectedFormat || !previewId) return false;
     setError(null);
     if (!isUnlimited && (profile.credits ?? 0) < cost) {
       setShowCreditModal(true);
-      return;
+      return false;
     }
     setProviderNotConfigured(false);
 
@@ -123,7 +124,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         setError(genResult.message || t('gen.failed'));
       }
       setGenerating(false);
-      return;
+      return false;
     }
 
     await refreshProfile();
@@ -132,6 +133,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
     await new Promise((r) => setTimeout(r, 600));
     setGenerating(false);
     setStep(5);
+    return true;
   };
 
   const handleVariation = async (command: string) => {
@@ -369,7 +371,7 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
             <div className="flex justify-between items-center">
               <div>
                 <span className="text-sm text-cream-300/60 block">{t('cw.creditCost')}</span>
-                <span className="text-lg font-display font-bold gold-text">{isUnlimited ? '∞' : cost}</span>
+                <span className="text-lg font-display font-bold gold-text">{isUnlimited ? '0 · OWNER' : cost}</span>
               </div>
               <div className="text-right">
                 <span className="text-sm text-cream-300/60 block">{t('cw.currentBalance')}</span>
@@ -399,10 +401,13 @@ export function AdvertisingStudio({ onNavigate }: AdvertisingStudioProps) {
         title={AD_FORMATS.find((f) => f.id === selectedFormat)?.label || 'AI Reklám'}
         imageUrl={previewImage}
         loading={previewLoading}
-        cost={cost}
+        cost={finalCost}
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
-        onApprove={() => void handleGenerate().then(() => setPreviewOpen(false))}
+        onApprove={async () => {
+          const ok = await handleGenerate();
+          if (ok) setPreviewOpen(false);
+        }}
         onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); setGenerationBrief(''); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
