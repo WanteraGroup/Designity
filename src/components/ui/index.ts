@@ -7,3 +7,4 @@ export * from './FogAndEmbers';
 export * from './HuginnPanel';
 export * from './MorphingBackground';
 export * from './SidebarMorphingBackground';
+export * from './PanelMorphingOverlay';
