@@ -1,0 +1,50 @@
+/* ============================================================================
+   DESIGNLY — BRAND SYSTEM, part 3: dashboard panel recolour
+   ----------------------------------------------------------------------------
+   Dashboard.tsx and HuginnPanel.tsx were written against the OLD brand. They
+   hardcode the old cyan (#9CEEE5) and the old panel ground (#020505) as inline
+   Tailwind arbitrary values, in roughly a dozen places:
+
+     <span class="text-[#9CEEE5]">READY</span>
+     <div class="font-serif text-xl text-[#9CEEE5]">
+     <div class="border-[#263636] bg-[#020505]/70">
+
+   Rather than edit a dozen call sites across three components, the recolouring
+   is done here: one place that owns the old-to-new mapping.
+
+   Scope: everything under .designly-app-page, so it cannot reach the public
+   landing. The rules use attribute selectors on the literal values, so they only
+   touch elements still carrying the old colour.
+
+   DELETE THIS FILE once Dashboard.tsx and HuginnPanel.tsx use the brand tokens
+   directly. It buys that migration time without shipping the old palette.
+   ============================================================================ */
+
+/* old cyan -> new gold */
+.designly-app-page [class*="text-[#9CEEE5]"] { color: var(--gd-2) !important; }
+.designly-app-page [class*="text-[#9CEEE5]/"] { color: rgba(217,180,95,.8) !important; }
+
+/* old panel ground -> new near-black */
+.designly-app-page [class*="bg-[#020505]/"] { background-color: rgba(12,12,19,.76) !important; }
+
+/* old borders -> new gold rule */
+.designly-app-page [class*="border-[#263636]"] { border-color: var(--bk-line) !important; }
+.designly-app-page [class*="border-[#9CEEE5]/"] { border-color: var(--bk-line) !important; }
+
+/* forged panel surfaces */
+.designly-app-page .forged-panel { border-color: var(--bk-line) !important; background-color: rgba(12,12,19,.72) !important; }
+
+/* core ring module buttons */
+.designly-app-page button[class*="border-[#D6B36A]/50"] { border-color: var(--bk-line-2) !important; background-color: rgba(10,10,16,.84) !important; }
+.designly-app-page button[class*="border-[#D6B36A]/50"]:hover { border-color: var(--gd-2) !important; }
+
+/* central DESIGNLY MAG core */
+.designly-app-page button[class*="border-[#D6B36A]/60"] { border-color: var(--gd-3) !important; background-color: rgba(16,14,9,.9) !important; }
+
+/* gold kickers and labels */
+.designly-app-page [class*="text-[#D6B36A]/"] { color: rgba(217,180,95,.68) !important; }
+.designly-app-page [class*="text-[#D6B36A]"] { color: var(--gd-2) !important; }
+.designly-app-page [class*="text-[#F2D99A]"] { color: var(--gd-1) !important; }
+
+/* body copy inside panels */
+.designly-app-page [class*="text-[#EEE8DC]/"] { color: var(--tx-2) !important; }
