@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer, Globe2,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -21,6 +21,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
   const navItems = [
     { id: 'dashboard', label: 'COMMAND', icon: LayoutDashboard },
     { id: 'forge', label: 'FORGE', icon: Hammer },
+    { id: 'websites', label: 'WEBSITES', icon: Globe2 },
     { id: 'projects', label: 'PROJECTS', icon: FolderOpen },
     { id: 'agents', label: 'AGENTS', icon: Network },
     { id: 'campaign', label: 'CAMPAIGNS', icon: Layers },
@@ -62,14 +63,13 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
         onNavigate={handleNav}
       />
 
-      {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 border-b border-gold-600/10 bg-ink-900/90 backdrop-blur-xl z-50 flex items-center justify-between px-4">
         <button onClick={() => onNavigate('landing')}>
           <Logo size={28} showText={false} />
         </button>
         <div className="flex items-center gap-3">
           <span className="chip border-gold-600/30 bg-gold-600/10 text-gold-200 capitalize text-[10px]">
-            {isOwner ? 'OWNER ∞' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}
+            {isOwner ? 'OWNER INF' : isUnlimited ? 'FULL UNLOCK INF' : profile?.plan_id}
           </span>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-cream-200">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -77,7 +77,6 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
         </div>
       </div>
 
-      {/* Mobile drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 pt-14" onClick={() => setMobileOpen(false)}>
           <div className="absolute inset-0 bg-ink-950/80 backdrop-blur-sm" />
