@@ -780,7 +780,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                     disabled={!preview || !previewId}
                     className="btn-gold text-sm disabled:opacity-40"
                   >
-                    KÉREM · {isUnlimited ? '∞' : cost} KREDIT
+                    KÉREM · {cost} KREDIT
                   </button>
                 </div>
               </div>
@@ -803,7 +803,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                {!isUnlimited && (
+                {(profile?.credits ?? 0) < cost && (
                   <button type="button" onClick={() => setShowCreditModal(true)} className="btn-ghost text-xs px-4 py-2">
                     KREDIT VÁSÁRLÁS · 1–10 000
                   </button>
