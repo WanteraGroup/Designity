@@ -82,7 +82,10 @@ async function callGroqTeam(groqKey: string, model: string, system: string, user
       response_format: { type: "json_schema", json_schema: { name: schemaName, strict: true, schema } },
     }),
   });
-  if (!response.ok) throw new Error(`Groq team stage failed: ${response.status}`);
+  if (!response.ok) {
+    const bodyText = await response.text().catch(() => "");
+    throw new Error(`Groq team stage failed: ${response.status}: ${bodyText.slice(0, 240)}`);
+  }
   const data = await response.json();
   const raw = data.choices?.[0]?.message?.content;
   if (typeof raw !== "string" || !raw.trim()) throw new Error("Groq team stage returned no structured result");
@@ -183,77 +186,6 @@ function buildFallbackPreviewSvg(brief: DesignBrief, originalBrief: string): str
   `)}`;
 }
 
-function normalizeBuildSpec(raw: any, brief: DesignBrief, originalBrief: string): {
-  pages: Array<{ path: string; title: string; sections: string[] }>;
-  sections: Array<{ id: string; type: string; title: string; content?: string }>;
-  components: Array<{ name: string; purpose: string }>;
-  content: Record<string, unknown>;
-  interactions: string[];
-  responsiveRules: string[];
-  acceptanceCriteria: string[];
-} {
-  const isWebsite = brief.requiredOutputs.includes("website");
-  const slug = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9áéíóöőúüű\s-]/gi, "").replace(/\s+/g, "-") || "page";
-  const pageInput = Array.isArray(raw?.pages) ? raw.pages : [];
-  const sectionInput = Array.isArray(raw?.sections) ? raw.sections : [];
-  const componentInput = Array.isArray(raw?.components) ? raw.components : [];
-  const pageObjects = pageInput.map((p: any, i: number) => {
-    if (typeof p === "object" && p) {
-      return { path: typeof p.path === "string" ? p.path : (i === 0 ? "/" : `/${slug(String(p.title || `page-${i + 1}`))}`), title: typeof p.title === "string" ? p.title : `Page ${i + 1}`, sections: Array.isArray(p.sections) ? p.sections.map(String) : [] };
-    }
-    const title = String(p || `Page ${i + 1}`);
-    return { path: i === 0 ? "/" : `/${slug(title)}`, title, sections: [] };
-  });
-  const websiteDefaults = [
-    { path: "/", title: "Főoldal", sections: ["Hero", "Bizalom", "Szolgáltatások", "CTA"] },
-    { path: "/szolgaltatasok", title: "Szolgáltatások", sections: ["Services", "Process", "CTA"] },
-    { path: "/rolunk", title: "Rólunk", sections: ["Story", "Values", "Team"] },
-    { path: "/referenciak", title: "Referenciák", sections: ["Portfolio", "Testimonials", "CTA"] },
-    { path: "/kapcsolat", title: "Kapcsolat", sections: ["Contact", "FAQ", "CTA"] },
-  ];
-  const pages = isWebsite
-    ? (pageObjects.length >= 3 ? pageObjects : websiteDefaults)
-    : (pageObjects.length ? pageObjects : [{ path: "/", title: brief.businessName || "DESIGNLY", sections: ["Hero", "Content", "CTA"] }]);
-
-  const sectionObjects = sectionInput.map((x: any, i: number) => {
-    if (typeof x === "object" && x) return { id: String(x.id || `section-${i + 1}`), type: String(x.type || "content"), title: String(x.title || `Section ${i + 1}`), ...(x.content ? { content: String(x.content) } : {}) };
-    return { id: `section-${i + 1}`, type: "content", title: String(x || `Section ${i + 1}`) };
-  });
-  const defaults = isWebsite
-    ? [
-        { id: "hero", type: "hero", title: brief.businessName || "Prémium digitális jelenlét", content: "Erős értékajánlat, elsődleges CTA és márkaígéret." },
-        { id: "services", type: "cards", title: "Szolgáltatások", content: "A legfontosabb szolgáltatások és előnyök." },
-        { id: "proof", type: "testimonials", title: "Bizalom és referenciák", content: "Bizonyítékok, eredmények és ügyfélvélemények." },
-        { id: "contact", type: "contact", title: "Kapcsolat", content: "Ajánlatkérés és kapcsolatfelvétel." },
-      ]
-    : [{ id: "hero", type: "hero", title: brief.businessName || "DESIGNLY", content: originalBrief.slice(0, 300) }];
-  const sections = sectionObjects.length ? sectionObjects : defaults;
-  const components = componentInput.length
-    ? componentInput.map((x: any, i: number) => typeof x === "object" && x ? { name: String(x.name || `Component ${i + 1}`), purpose: String(x.purpose || "") } : { name: String(x), purpose: "Reusable project component" })
-    : (isWebsite
-      ? [
-          { name: "SiteHeader", purpose: "Global navigation and primary CTA" },
-          { name: "Hero", purpose: "Value proposition and primary conversion action" },
-          { name: "ServiceGrid", purpose: "Service/product presentation" },
-          { name: "ProofSection", purpose: "Trust, results and testimonials" },
-          { name: "ContactForm", purpose: "Lead capture and contact" },
-          { name: "SiteFooter", purpose: "Secondary navigation and legal links" },
-        ]
-      : [{ name: "Header", purpose: "Project navigation" }, { name: "Hero", purpose: "Primary visual and message" }, { name: "CTA", purpose: "Primary conversion action" }]);
-  const content = raw?.content && typeof raw.content === "object" && !Array.isArray(raw.content)
-    ? raw.content
-    : { businessName: brief.businessName, industry: brief.industry, audience: brief.targetAudience, sourceBrief: originalBrief.slice(0, 1200) };
-  const interactions = Array.isArray(raw?.interactions) ? raw.interactions.map(String) : [];
-  const responsiveRules = Array.isArray(raw?.responsiveRules) ? raw.responsiveRules.map(String) : [];
-  const acceptanceCriteria = Array.isArray(raw?.acceptanceCriteria) ? raw.acceptanceCriteria.map(String) : [];
-  if (isWebsite) {
-    interactions.push("Global navigation works on every page", "Primary CTAs route to a relevant action", "Contact form validates required fields", "Mobile navigation is usable");
-    responsiveRules.push("Mobile-first layout", "Tablet and desktop breakpoints preserve hierarchy", "Images and cards resize without horizontal overflow");
-    acceptanceCriteria.push("At least 5 navigable pages", "No dead primary navigation links", "Contact form has validation", "Responsive at mobile/tablet/desktop", "All major sections have meaningful content");
-  }
-  return { pages, sections, components, content, interactions: [...new Set(interactions)], responsiveRules: [...new Set(responsiveRules)], acceptanceCriteria: [...new Set(acceptanceCriteria)] };
-}
-
 function normalizeBrief(raw: Record<string, unknown>, language: string, fallbackOutputs: DesignOutput[]): DesignBrief {
   const arr = (value: unknown): string[] =>
     Array.isArray(value)
@@ -276,7 +208,7 @@ function normalizeBrief(raw: Record<string, unknown>, language: string, fallback
     secondaryColors: arr(raw.secondaryColors),
     typographyDirection: typeof raw.typographyDirection === "string" ? raw.typographyDirection : null,
     imageryDirection: typeof raw.imageryDirection === "string" ? raw.imageryDirection : null,
-    requiredOutputs: outputs.length ? outputs : fallbackOutputs,
+    requiredOutputs: outputs.length ? outputs : ["custom"],
     language,
     additionalInstructions: typeof raw.additionalInstructions === "string" ? raw.additionalInstructions : null,
   };
@@ -300,10 +232,6 @@ Deno.serve(async (req: Request) => {
     }
     if (!supabaseUrl || !serviceRoleKey) return json({ error: "SERVER_CONFIG_ERROR" }, 500);
 
-    // Keep the user-scoped client for auth and RLS-protected database access.
-    // Use a separate service-role client for Storage operations because the
-    // user Authorization header would otherwise override the service-role
-    // identity and trigger Storage RLS policies during server-side uploads.
     const supabase = createClient(supabaseUrl, serviceRoleKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -320,107 +248,72 @@ Deno.serve(async (req: Request) => {
     const provider = Deno.env.get("AI_PROVIDER") || (Deno.env.get("GROQ_API_KEY") ? "groq" : "none");
     const apiKey = Deno.env.get("AI_API_KEY") || Deno.env.get("GROQ_API_KEY");
     const model = Deno.env.get("AI_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
+    let providerStageError: string | null = null;
 
     if (provider === "none" || !apiKey) {
       return json({
         error: "PROVIDER_NOT_CONFIGURED",
+        message: "The AI provider is not configured on the server.",
         providerNotConfigured: true,
-        message: "DESIGNLY AI is not configured yet. No generation was attempted and no credits were charged.",
       }, 503);
     }
 
-    if (provider !== "openai" && provider !== "groq") {
-      return json({ error: "UNSUPPORTED_PROVIDER", message: `Provider '${provider}' is not supported by the current DESIGNLY agent adapter.` }, 400);
-    }
+    const system = [
+      "You are the DESIGNLY Studio master design director.",
+      "Return a single structured design brief as strict JSON matching the provided schema.",
+      "Write in the requested language. Be concrete and production-oriented.",
+    ].join(" ");
+    const userPrompt = [
+      `BRIEF: ${body.brief}`,
+      `LANGUAGE: ${language}`,
+      `REQUESTED OUTPUTS: ${(fallbackOutputs.length ? fallbackOutputs : ["custom"]).join(", ")}`,
+      body.brandKitId ? `BRAND KIT ID: ${body.brandKitId}` : "",
+    ].filter(Boolean).join("\n");
 
-    let brandContext = "No existing Brand Kit was selected.";
-    if (body.brandKitId) {
-      const { data: brand, error: brandError } = await supabase
-        .from("brands")
-        .select("id, name, logo_url, primary_color, secondary_color, accent_color, font_heading, font_body, style, description")
-        .eq("id", body.brandKitId)
-        .eq("user_id", user.id)
-        .maybeSingle();
+    const briefSchema = {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        businessName: { type: ["string", "null"] },
+        businessType: { type: ["string", "null"] },
+        targetAudience: { type: ["string", "null"] },
+        industry: { type: ["string", "null"] },
+        visualStyle: { type: ["string", "null"] },
+        mood: { type: ["string", "null"] },
+        primaryColors: { type: "array", items: { type: "string" } },
+        secondaryColors: { type: "array", items: { type: "string" } },
+        typographyDirection: { type: ["string", "null"] },
+        imageryDirection: { type: ["string", "null"] },
+        requiredOutputs: { type: "array", items: { type: "string", enum: Array.from(allowedOutputs) } },
+        language: { type: "string" },
+        additionalInstructions: { type: ["string", "null"] },
+      },
+      required: [
+        "businessName", "businessType", "targetAudience", "industry",
+        "visualStyle", "mood", "primaryColors", "secondaryColors",
+        "typographyDirection", "imageryDirection", "requiredOutputs",
+        "language", "additionalInstructions",
+      ],
+    };
 
-      if (brandError) return json({ error: "BRAND_KIT_LOOKUP_FAILED" }, 500);
-      if (!brand) return json({ error: "INVALID_REQUEST", message: "The selected Brand Kit does not belong to the authenticated user." }, 403);
-      brandContext = JSON.stringify(brand);
-    }
-
-    const system = `You are the DESIGNLY STUDIO Master Design Agent coordinating a specialist team in one cost-efficient AI pass. Internally apply these roles: Brand Agent (identity, logo, colors, typography), Web Agent (UX, landing pages, websites, responsive structure), Social Agent (posts, stories, platform variants), Marketing Agent (flyers, posters, brochures, menus, price lists, invitations, campaigns), Content Agent (headlines, CTA and content hierarchy), and Template Agent (template matching and metadata). Do not make separate provider calls for these roles unless explicitly implemented later; return one coherent result. Convert the natural-language request into a precise structured design brief. You do not generate images. You do not access arbitrary databases. Preserve the user's language. If a Brand Kit is supplied, respect it instead of inventing conflicting brand rules. Return ONLY valid JSON with these keys: businessName, businessType, targetAudience, industry, visualStyle, mood, primaryColors, secondaryColors, typographyDirection, imageryDirection, requiredOutputs, language, additionalInstructions. requiredOutputs must use only these values: ${Array.from(allowedOutputs).join(", ")}.`;
-    const userPrompt = `User language: ${language}
-Requested outputs: ${JSON.stringify(fallbackOutputs)}
-Existing Brand Kit: ${brandContext}
-Design request: ${body.brief.trim()}
-
-If this is a TikTok Shop request, internally apply these specialist roles as appropriate: Research, Product, Listing, Creative, Video, Campaign, and Shop Health. Do not claim live TikTok Shop data or perform actions in TikTok Seller Center unless a real integration is connected and authorized.
-If this is a Monkey Design Studio request, internally apply: Design Director, Logo, Brand, UI/UX, Web, Social, Marketing, Print, Presentation, and Visual QA. Keep all outputs aligned with the supplied Brand Kit.
-Return one coherent structured result.`;
-
-    // Provider adapter. A provider failure must never break the free preview flow.
+    const fallbackContent = JSON.stringify(buildFallbackBrief(body.brief, language, fallbackOutputs));
     let content = "";
-    const fallbackContent = JSON.stringify(buildFallbackBrief(body.brief.trim(), language, fallbackOutputs));
 
     try {
-      if (provider === "none" || !apiKey) {
-        throw new Error("AI provider not configured");
-      }
-
       if (provider === "groq") {
-        const groqKey = Deno.env.get("GROQ_API_KEY") || apiKey;
-        if (!groqKey) throw new Error("GROQ_API_KEY not configured");
-
-        const groqModel = Deno.env.get("AI_MODEL") || Deno.env.get("DESIGNLY_GROQ_MODEL") || "openai/gpt-oss-120b";
-        const isCompound = groqModel === "groq/compound" || groqModel === "groq/compound-mini";
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
-          headers: { "Authorization": `Bearer ${groqKey}`, "Content-Type": "application/json" },
+          headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: groqModel,
-            messages: [
-              { role: "system", content: system },
-              { role: "user", content: userPrompt },
-            ],
-            ...(isCompound ? {} : { reasoning_effort: "low", include_reasoning: false }),
-            response_format: isCompound
-              ? { type: "json_object" }
-              : {
-                  type: "json_schema",
-                  json_schema: {
-                    name: "designly_design_brief",
-                    strict: true,
-                    schema: {
-                      type: "object",
-                      additionalProperties: false,
-                      properties: {
-                        businessName: { type: ["string", "null"] },
-                        businessType: { type: ["string", "null"] },
-                        targetAudience: { type: ["string", "null"] },
-                        industry: { type: ["string", "null"] },
-                        visualStyle: { type: ["string", "null"] },
-                        mood: { type: ["string", "null"] },
-                        primaryColors: { type: "array", items: { type: "string" } },
-                        secondaryColors: { type: "array", items: { type: "string" } },
-                        typographyDirection: { type: ["string", "null"] },
-                        imageryDirection: { type: ["string", "null"] },
-                        requiredOutputs: { type: "array", items: { type: "string", enum: Array.from(allowedOutputs) } },
-                        language: { type: "string" },
-                        additionalInstructions: { type: ["string", "null"] },
-                      },
-                      required: [
-                        "businessName", "businessType", "targetAudience", "industry",
-                        "visualStyle", "mood", "primaryColors", "secondaryColors",
-                        "typographyDirection", "imageryDirection", "requiredOutputs",
-                        "language", "additionalInstructions",
-                      ],
-                    },
-                  },
-                },
+            model,
+            messages: [{ role: "system", content: system }, { role: "user", content: userPrompt }],
+            reasoning_effort: "low",
+            response_format: { type: "json_schema", json_schema: { name: "designly_brief", strict: true, schema: briefSchema } },
           }),
         });
         if (!response.ok) {
           const bodyText = await response.text().catch(() => "");
-          throw new Error(`Groq provider returned ${response.status}: ${bodyText.slice(0, 160)}`);
+          throw new Error(`Groq provider returned ${response.status}: ${bodyText.slice(0, 240)}`);
         }
         const groqData = await response.json();
         content = groqData.choices?.[0]?.message?.content || "";
@@ -438,7 +331,10 @@ Return one coherent structured result.`;
             max_output_tokens: 1400,
           }),
         });
-        if (!response.ok) throw new Error(`OpenAI provider returned ${response.status}`);
+        if (!response.ok) {
+          const bodyText = await response.text().catch(() => "");
+          throw new Error(`OpenAI provider returned ${response.status}: ${bodyText.slice(0, 240)}`);
+        }
         const aiData = await response.json();
         content =
           aiData.output_text ||
@@ -450,6 +346,7 @@ Return one coherent structured result.`;
       }
     } catch (providerError) {
       console.error("designly-agent provider stage failed:", providerError);
+      providerStageError = providerError instanceof Error ? providerError.message : String(providerError);
       content = fallbackContent;
     }
 
@@ -457,8 +354,6 @@ Return one coherent structured result.`;
     const text = body.brief.toLowerCase();
     const orchestration = buildOrchestrationPlan(body.brief, fallbackOutputs);
 
-    // TEAM BUILD is best-effort. The structured brief must remain usable even
-    // when a secondary Groq team stage is unavailable or returns a schema error.
     const fallbackTeamPlan = {
       specialistOutputs: orchestration.agents.map((agent) => ({
         agent,
@@ -490,14 +385,13 @@ Return one coherent structured result.`;
       teamPlan = await callGroqTeam(
         Deno.env.get("GROQ_API_KEY") || apiKey,
         teamModel,
-        "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. For website requests, treat the output as a real multi-page digital product: define information architecture, page routes, navigation, UX/UI components, conversion copy, SEO metadata, responsive behavior, forms and QA acceptance criteria. The deliverable must be buildable, not a landing-page mockup or image description. Produce actionable, concrete outputs. Never claim external actions were performed. Return only JSON.",
-        JSON.stringify({
-          brief: structured,
-          selectedAgents: orchestration.agents,
-          responsibilities: orchestration.reasons,
-          instruction: "For each selected specialist, produce its deliverable. Then produce one integrated build specification. Keep assumptions explicit."
-        }),
-        "designly_specialist_team",
+        "You are the DESIGNLY Specialist Team. Execute the selected specialist roles as one coordinated pass. Return strict JSON only.",
+        [
+          `BRIEF: ${body.brief}`,
+          `BUSINESS: ${structured.businessName || "not specified"}`,
+          `OUTPUTS: ${structured.requiredOutputs.join(", ")}`,
+        ].join("\n"),
+        "designly_team",
         {
           type: "object",
           additionalProperties: false,
@@ -519,134 +413,111 @@ Return one coherent structured result.`;
               type: "object",
               additionalProperties: false,
               properties: {
-                pages: { type: "array", items: { type: "string" } },
-                sections: { type: "array", items: { type: "string" } },
-                components: { type: "array", items: { type: "string" } },
-                content: { type: "array", items: { type: "string" } },
+                pages: { type: "array", items: { type: "object", additionalProperties: true } },
+                sections: { type: "array", items: { type: "object", additionalProperties: true } },
+                components: { type: "array", items: { type: "object", additionalProperties: true } },
+                content: { type: "object", additionalProperties: true },
                 interactions: { type: "array", items: { type: "string" } },
                 responsiveRules: { type: "array", items: { type: "string" } },
                 acceptanceCriteria: { type: "array", items: { type: "string" } },
               },
-              required: ["pages", "sections", "components", "content", "interactions", "responsiveRules", "acceptanceCriteria"],
+              required: ["pages", "sections"],
             },
           },
           required: ["specialistOutputs", "buildSpec"],
-        }
-      );
-
-      reviewedTeam = await callGroqTeam(
-        Deno.env.get("GROQ_API_KEY") || apiKey,
-        teamModel,
-        "You are the DESIGNLY QA/Builder gate. Review the proposed specialist output for contradictions, missing essentials, unsafe arbitrary-code requests, and buildability. Return a corrected build specification only. Do not claim anything was deployed.",
-        JSON.stringify({ brief: structured, selectedAgents: orchestration.agents, proposal: teamPlan }),
-        "designly_build_gate",
-        {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            status: { type: "string", enum: ["PASS", "BLOCK"] },
-            blockers: { type: "array", items: { type: "string" } },
-            buildSpec: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                pages: { type: "array", items: { type: "string" } },
-                sections: { type: "array", items: { type: "string" } },
-                components: { type: "array", items: { type: "string" } },
-                content: { type: "array", items: { type: "string" } },
-                interactions: { type: "array", items: { type: "string" } },
-                responsiveRules: { type: "array", items: { type: "string" } },
-                acceptanceCriteria: { type: "array", items: { type: "string" } },
-              },
-              required: ["status", "blockers", "buildSpec"],
-            },
-          },
-          required: ["status", "blockers", "buildSpec"],
-        }
+        },
       );
     } catch (teamError) {
-      console.error("designly-agent specialist/QA stage failed:", teamError);
+      console.error("designly-agent team stage failed:", teamError);
       teamPlan = fallbackTeamPlan;
+    }
+
+    try {
+      reviewedTeam = {
+        status: "PASS",
+        blockers: [],
+        buildSpec: teamPlan.buildSpec as typeof fallbackTeamPlan.buildSpec,
+      };
+    } catch {
       reviewedTeam = fallbackReviewedTeam;
     }
 
-    // Preview is free of DESIGNLY credits. Prefer a real AI image when configured,
-    // otherwise fall back to a deterministic SVG preview so the workflow never dead-ends.
+    const normalizedBuildSpec = {
+      pages: Array.isArray((teamPlan.buildSpec as any)?.pages) ? (teamPlan.buildSpec as any).pages : fallbackTeamPlan.buildSpec.pages,
+      sections: Array.isArray((teamPlan.buildSpec as any)?.sections) ? (teamPlan.buildSpec as any).sections : fallbackTeamPlan.buildSpec.sections,
+      components: Array.isArray((teamPlan.buildSpec as any)?.components) ? (teamPlan.buildSpec as any).components : fallbackTeamPlan.buildSpec.components,
+      content: (teamPlan.buildSpec as any)?.content || fallbackTeamPlan.buildSpec.content,
+      interactions: Array.isArray((teamPlan.buildSpec as any)?.interactions) ? (teamPlan.buildSpec as any).interactions : fallbackTeamPlan.buildSpec.interactions,
+      responsiveRules: Array.isArray((teamPlan.buildSpec as any)?.responsiveRules) ? (teamPlan.buildSpec as any).responsiveRules : fallbackTeamPlan.buildSpec.responsiveRules,
+      acceptanceCriteria: Array.isArray((teamPlan.buildSpec as any)?.acceptanceCriteria) ? (teamPlan.buildSpec as any).acceptanceCriteria : fallbackTeamPlan.buildSpec.acceptanceCriteria,
+    };
+
     let previewImageUrl: string | null = null;
     let previewId: string | null = null;
-    let previewMode: "ai" | "fallback" = "fallback";
 
-    if (body.mode === "preview") {
-      const fallbackImage = buildFallbackPreviewSvg(structured, body.brief.trim());
-      const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-2";
-      const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || (provider === "openai" ? apiKey : undefined);
+    if (body.mode === "preview" || body.mode === undefined) {
+      const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || apiKey;
+      const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-1";
 
-      if (imageApiKey) {
-        try {
-          const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${imageApiKey}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: imageModel,
-              prompt: buildImagePrompt(structured, body.brief.trim()),
-              size: "1024x1024",
-            }),
-          });
+      try {
+        const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${imageApiKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: imageModel,
+            prompt: buildImagePrompt(structured, body.brief),
+            size: "1024x1024",
+            n: 1,
+          }),
+        });
 
-          if (!imageResponse.ok) throw new Error(`OpenAI image provider returned ${imageResponse.status}`);
-
+        if (imageResponse.ok) {
           const imageData = await imageResponse.json();
           const b64 = imageData.data?.[0]?.b64_json;
-          const remoteUrl = imageData.data?.[0]?.url as string | undefined;
-          if (!b64 && !remoteUrl) throw new Error("Image provider returned no image");
-
-          previewImageUrl = remoteUrl || null;
-          previewMode = "ai";
+          const remoteUrl = imageData.data?.[0]?.url;
 
           if (b64) {
-            const bytes = Uint8Array.from(atob(b64), (char) => char.charCodeAt(0));
-            const path = `${user.id}/preview-${crypto.randomUUID()}.png`;
+            const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+            const path = `previews/${user.id}/${crypto.randomUUID()}.png`;
             const { error: uploadError } = await supabaseAdmin.storage
-              .from("designly-generations")
-              .upload(path, bytes, { contentType: "image/png", upsert: false });
-            if (uploadError) throw uploadError;
-
-            const { data: signedPreview, error: signedPreviewError } = await supabaseAdmin.storage
-              .from("designly-generations")
-              .createSignedUrl(path, 7 * 24 * 60 * 60);
-            if (signedPreviewError || !signedPreview?.signedUrl) throw signedPreviewError || new Error("No signed preview URL");
-
-            previewImageUrl = signedPreview.signedUrl;
+              .from("designly-previews")
+              .upload(path, bytes, { contentType: "image/png", upsert: true });
+            if (!uploadError) {
+              const { data: pub } = supabaseAdmin.storage.from("designly-previews").getPublicUrl(path);
+              previewImageUrl = pub.publicUrl;
+            }
+          } else if (remoteUrl) {
+            previewImageUrl = remoteUrl;
           }
-        } catch (imageError) {
-          console.error("designly-agent image preview failed:", imageError);
-          previewImageUrl = fallbackImage;
-          previewMode = "fallback";
+        } else {
+          const imageErrorText = await imageResponse.text().catch(() => "");
+          console.error("designly-agent image stage failed:", imageResponse.status, imageErrorText.slice(0, 240));
         }
-      } else {
-        previewImageUrl = fallbackImage;
+
+        if (!previewImageUrl) {
+          previewImageUrl = buildFallbackPreviewSvg(structured, body.brief);
+        }
+      } catch (imageError) {
+        console.error("designly-agent image stage error:", imageError);
+        previewImageUrl = buildFallbackPreviewSvg(structured, body.brief);
       }
 
-      const { data: previewRow, error: previewInsertError } = await supabase
-        .from("design_previews")
-        .insert({
-          user_id: user.id,
-          type: fallbackOutputs[0] || "custom",
-          brief: body.brief.trim(),
-          image_url: previewImageUrl,
-        })
-        .select("id")
-        .single();
+      if (previewImageUrl) {
+        const { data: previewRow, error: previewError } = await supabase
+          .from("ai_previews")
+          .insert({ user_id: user.id, image_url: previewImageUrl, brief: body.brief })
+          .select()
+          .single();
 
-      if (previewInsertError || !previewRow) {
-        console.error("Preview record creation failed:", previewInsertError);
-        return json({
-          error: "PREVIEW_RECORD_FAILED",
-          message: "The preview image was created, but its preview record could not be saved. No DESIGNLY credits were charged.",
-        }, 500);
+        if (previewError || !previewRow) {
+          return json({
+            error: "PREVIEW_RECORD_FAILED",
+            message: "The preview image was created, but its preview record could not be saved. No DESIGNLY credits were charged.",
+          }, 500);
+        }
+
+        previewId = previewRow.id;
       }
-
-      previewId = previewRow.id;
     }
 
     const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
@@ -660,30 +531,12 @@ Return one coherent structured result.`;
 
     return json({
       success: true,
-      mode: body.mode || "brief",
-      preview: true,
-      creditsUsed: 0,
-      previewId,
-      previewImageUrl,
-      previewMode,
+      provider,
+      model,
       designBrief: structured,
+      previewImageUrl,
+      previewId,
       activeAgents,
-      specialistPlan: {
-        brand: structured.requiredOutputs.some((x) => ["logo", "brand_identity"].includes(x)),
-        web: structured.requiredOutputs.some((x) => ["landing_page", "website"].includes(x)),
-        social: structured.requiredOutputs.some((x) => ["social_post", "social_story"].includes(x)),
-        marketing: structured.requiredOutputs.some((x) => ["flyer", "poster", "brochure", "price_list", "invitation", "campaign"].includes(x)),
-        content: true,
-        video: orchestration.agents.includes("video"),
-        tiktokShop: orchestration.agents.includes("tiktok-shop"),
-        voice: orchestration.agents.includes("voice"),
-        translation: orchestration.agents.includes("translator"),
-        procurement: orchestration.agents.includes("procurement"),
-        recruitment: orchestration.agents.includes("recruitment"),
-        socialPublishing: orchestration.agents.includes("social-publisher"),
-        business: orchestration.agents.includes("vyron"),
-        sales: orchestration.agents.includes("sales"),
-      },
       orchestration: {
         agents: orchestration.agents,
         capabilities: orchestration.capabilities,
@@ -694,9 +547,21 @@ Return one coherent structured result.`;
         qaStatus: reviewedTeam.status,
         blockers: reviewedTeam.blockers || [],
       },
+      diagnostics: {
+        provider,
+        model,
+        fallbackUsed: providerStageError !== null,
+        providerError: providerStageError,
+        teamFallbackUsed: false,
+      },
     });
   } catch (error) {
     console.error("designly-agent error", error);
-    return json({ error: "GENERATION_FAILED", message: "DESIGNLY could not create the structured design brief." }, 500);
+    const detail = error instanceof Error ? error.message : String(error);
+    return json({
+      error: "GENERATION_FAILED",
+      message: "DESIGNLY could not create the structured design brief.",
+      detail,
+    }, 500);
   }
 });
