@@ -283,6 +283,38 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     recognition.start();
   };
 
+  const saveWebsite = async () => {
+    const projectId = localStorage.getItem('designly_selected_project');
+    if (!projectId) {
+      setAiError('Nincs kiválasztott projekt.');
+      return;
+    }
+    const { data: currentProject } = await supabase.from('projects').select('config').eq('id', projectId).maybeSingle();
+    const currentConfig = (currentProject?.config || {}) as Record<string, unknown>;
+    const site = {
+      version: 1,
+      name: projectName,
+      pages: Array.isArray(buildSpec?.pages) ? buildSpec.pages : [{ path: '/', title: projectName, sections: [] }],
+      sections: Array.isArray(buildSpec?.sections) ? buildSpec.sections : [],
+      components: Array.isArray(buildSpec?.components) ? buildSpec.components : [],
+      content: buildSpec?.content || {},
+      interactions: Array.isArray(buildSpec?.interactions) ? buildSpec.interactions : [],
+      responsiveRules: Array.isArray(buildSpec?.responsiveRules) ? buildSpec.responsiveRules : [],
+      acceptanceCriteria: Array.isArray(buildSpec?.acceptanceCriteria) ? buildSpec.acceptanceCriteria : [],
+      designState: design,
+      savedAt: new Date().toISOString(),
+    };
+    const { error } = await supabase.from('projects').update({
+      config: { ...currentConfig, site },
+      updated_at: new Date().toISOString(),
+    }).eq('id', projectId);
+    if (error) {
+      setAiError(error.message || 'A weboldal mentése nem sikerült.');
+      return;
+    }
+    setSiteMessage('A teljes weboldal konfigurációja elmentve.');
+  };
+
   const exportWebsite = () => {
     const spec = buildSpec || {
       pages: [{ path: '/', title: projectName, sections: ['Hero', 'Content', 'CTA'] }],
@@ -485,6 +517,14 @@ footer{padding:30px 7%;border-top:1px solid #ffffff12;color:#ffffff55;font-size:
           >
             <Redo2 className="w-4 h-4" />
           </button>
+          {buildSpec?.pages?.length ? (
+            <button
+              onClick={() => void saveWebsite()}
+              className="btn-ghost text-xs px-4 py-2"
+            >
+              MENTÉS
+            </button>
+          ) : null}
           <button
             onClick={buildSpec?.pages?.length ? exportWebsite : exportSettings}
             className="btn-gold text-xs px-4 py-2"
