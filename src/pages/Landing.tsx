@@ -54,3 +54,6 @@ export default function Landing({ onNavigate }: LandingProps) {
     </div>
   );
 }
+
+// Compatibility alias for existing DESIGNLY routes and cached integrations.
+export { Landing as LandingPage };
