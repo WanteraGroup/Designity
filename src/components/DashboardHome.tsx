@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
 import { ForgedPanel } from './layout/ForgedPanel';
+import { ForgedButton } from './layout/ForgedButton';
 import type { Project } from '@/types';
 
 interface DashboardHomeProps {
@@ -69,12 +70,12 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
               A DESIGNLY CORE összekapcsolja a kreatív eszközöket, az AI agenteket és a projektmunkát egyetlen műveleti térben.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <button onClick={() => onNavigate('create')} className="btn-gold text-sm">
+              <ForgedButton onClick={() => onNavigate('create')} variant="primary">
                 <Plus className="w-4 h-4" /> FORGE · CREATE
-              </button>
-              <button onClick={() => onNavigate('agents')} className="btn-ghost text-sm">
+              </ForgedButton>
+              <ForgedButton onClick={() => onNavigate('agents')} variant="secondary">
                 <Sparkles className="w-4 h-4" /> AGENT COMMAND
-              </button>
+              </ForgedButton>
             </div>
           </div>
 
