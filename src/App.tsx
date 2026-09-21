@@ -42,6 +42,7 @@ import { DesignPlannerPage } from '@/components/DesignPlannerPage';
 import { CncCamPage } from '@/components/CncCamPage';
 import { DiagnosticsPage } from '@/components/DiagnosticsPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
+import { NordicHeader } from '@/components/ui';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
@@ -211,6 +212,33 @@ function AppInner() {
     ? 'lg:pl-72 pt-14 lg:pt-0'
     : '';
 
+  const pageTitles: Partial<Record<Page, string>> = {
+    dashboard: 'DESIGNLY CORE',
+    create: 'FORGE STUDIO',
+    advertising: 'ADVERTISING STUDIO',
+    campaign: 'CAMPAIGN FORGE',
+    projects: 'PROJECTS',
+    brands: 'BRAND VAULT',
+    templates: 'TEMPLATE HALL',
+    tattoo: 'TATTOO LIBRARY',
+    planner: 'DESIGN PLANNER',
+    assets: 'ASSET LIBRARY',
+    credits: 'CREDIT FORGE',
+    billing: 'BILLING',
+    settings: 'SYSTEM SETTINGS',
+    admin: 'ADMIN COMMAND',
+    music: 'MUSIC FORGE',
+    agents: 'AGENT HUB',
+    voice: 'VOICE BRIDGE',
+    translator: 'TRANSLATOR',
+    creator: 'CREATOR MERCH',
+    streamer: 'STREAMER STUDIO',
+    shopify: 'SHOPIFY STUDIO',
+    cnc: 'CNC CAM',
+    diagnostics: 'QA CENTER',
+  };
+  const dashboardTitle = pageTitles[page] ?? 'DESIGNLY';
+
   return (
     <div className="min-h-screen bg-transparent">
       {isPublic && <PublicNav onNavigate={navigate} currentPage={page} />}
@@ -219,6 +247,12 @@ function AppInner() {
       <HuginnAgent onNavigate={navigate} />
 
       <div className={contentWrapperClass}>
+        {isDashboard && !isEditor && (
+          <NordicHeader
+            title={dashboardTitle}
+            userLabel="DESIGNLY OPERATOR"
+          />
+        )}
         {isPublic && (
           <main className={`designly-public-page designly-page-${page} ${page === 'landing' ? '' : 'pt-16 lg:pt-20'}`}>
             {authPending ? (
