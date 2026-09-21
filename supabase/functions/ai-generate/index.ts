@@ -112,13 +112,13 @@ Deno.serve(async (req: Request) => {
     const costs = costSetting?.value || {};
     const creditCost = (costs as Record<string, number>)[type] ?? 10;
 
-    // Check if AI provider is configured
+    // An approved preview is already the finished visual, so finalization
+    // does not require another AI provider call. Provider configuration is
+    // only required for legacy generations that have no approved preview.
     const aiProvider = Deno.env.get("AI_PROVIDER") || (Deno.env.get("GROQ_API_KEY") ? "groq" : "none");
     const aiApiKey = Deno.env.get("AI_API_KEY") || Deno.env.get("GROQ_API_KEY");
 
-    if (aiProvider === "none" || !aiApiKey) {
-      // Provider not configured — record the job as failed, refund credits
-      // But first, do NOT deduct credits since we can't generate
+    if (!previewId && (aiProvider === "none" || !aiApiKey)) {
       return new Response(JSON.stringify({
         error: "AI_PROVIDER_NOT_CONFIGURED",
         message: "AI generation is not yet configured. Please contact support.",
@@ -167,7 +167,7 @@ Deno.serve(async (req: Request) => {
         campaign_id: campaignId || null,
         type,
         status: "processing",
-        provider: aiProvider,
+        provider: previewId && aiProvider === "none" ? "approved-preview" : aiProvider,
         credits_cost: unlimited ? 0 : creditCost,
       })
       .select()
@@ -230,7 +230,7 @@ Deno.serve(async (req: Request) => {
         generationResult = {
           imageUrl: claimedPreview.image_url,
           previewId: claimedPreview.id,
-          provider: aiProvider,
+          provider: aiProvider === "none" ? "approved-preview" : aiProvider,
           type: claimedPreview.type || type,
           generatedAt: new Date().toISOString(),
           designDirection: parseDesignDirection(
