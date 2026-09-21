@@ -14,10 +14,10 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import {
   CelticGoldFrame,
-  FogAndEmbers,
   ForgedButton,
   ForgedPanel,
   HuginnPanel,
+  MorphingBackground,
   NordicHeader,
   RunePulse,
 } from '@/components/ui';
@@ -91,19 +91,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#020505] text-[#E3FFFB]">
-      {/* Háttér: nordikus hegyek + jégfény */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.28]"
-        style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-[#020505]/40 to-[#020505]/92"
-        aria-hidden="true"
-      />
-
-      {/* Füst + köd + parázs */}
-      <FogAndEmbers />
+      <MorphingBackground />
 
       <NordicHeader title="DESIGNLY CORE — Kreatív Operációs Rendszer" />
 
@@ -168,7 +156,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   >
                     {isCampaign && (
                       <>
-                        <FogAndEmbers />
+                        <MorphingBackground />
                         <CelticGoldFrame />
                         <RunePulse rune="ᚱ" duration="2s" />
                       </>
