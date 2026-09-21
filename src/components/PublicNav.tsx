@@ -23,7 +23,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
 
   const primary: NavItem[] = [
     { id: 'home', label: lang === 'hu' ? 'FŐOLDAL' : 'HOME', page: 'landing' },
-    { id: 'works', label: lang === 'hu' ? 'MUNKÁK' : 'WORKS', page: 'create' },
+    { id: 'works', label: lang === 'hu' ? 'MUNKÁK' : 'WORKS', page: 'works' },
     { id: 'shopify', label: lang === 'hu' ? 'SAJÁT SHOPIFY' : 'OWN SHOPIFY', page: 'shopify' },
     { id: 'agents', label: lang === 'hu' ? 'AI STUDIO' : 'AI STUDIO', page: 'agents' },
     { id: 'portfolio', label: lang === 'hu' ? 'PORTFÓLIÓ' : 'PORTFOLIO', page: 'projects' },
@@ -43,6 +43,7 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
 
   const activePages: Record<string, string> = {
     landing: 'home',
+    works: 'works',
     works: 'works',
     shopify: 'shopify',
     agents: 'agents',
