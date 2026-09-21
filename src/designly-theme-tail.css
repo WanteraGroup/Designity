@@ -1,0 +1,244 @@
+
+/* =========================================================
+   DESIGNLY SHARED UI CONTRACT
+   NordicHeader / ForgedPanel / ForgedButton are the canonical
+   application surfaces. Legacy classes remain as compatibility
+   aliases so every existing page shares the same visual system.
+   ========================================================= */
+
+.nordic-header{
+  position:relative;
+  z-index:40;
+  width:100%;
+  min-height:64px;
+  display:grid;
+  grid-template-columns:minmax(150px,.72fr) minmax(240px,1.5fr) minmax(210px,.9fr);
+  align-items:center;
+  gap:18px;
+  padding:10px 22px;
+  border-bottom:1px solid rgba(156,238,229,.14);
+  background:
+    linear-gradient(180deg,rgba(2,8,9,.96),rgba(4,12,12,.84)),
+    url("/designly-odin-hall-bg.svg") 76% 47%/cover no-repeat;
+  box-shadow:0 12px 38px rgba(0,0,0,.28), inset 0 -1px 0 rgba(214,179,106,.06);
+  backdrop-filter:blur(18px);
+}
+.nordic-header::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 50%,rgba(156,238,229,.08),transparent 24%),
+    linear-gradient(90deg,transparent,rgba(214,179,106,.045),transparent);
+}
+.nordic-header::after{
+  content:"ᛉ ᛟ ᚱ ᚦ ᚷ";
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translate(-50%,50%);
+  padding:2px 10px;
+  border:1px solid rgba(214,179,106,.20);
+  border-radius:999px;
+  background:#040b0b;
+  color:rgba(214,179,106,.50);
+  font:700 7px/1 "Marcellus",serif;
+  letter-spacing:.20em;
+}
+.nordic-header-title{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font:700 14px/1 "Marcellus","Cormorant Garamond",Georgia,serif;
+  letter-spacing:.15em;
+  color:#e3fffb;
+  text-shadow:0 0 18px rgba(156,238,229,.08);
+}
+.nordic-header-search{position:relative;min-width:0}
+.nordic-header-search-rune{
+  position:absolute;
+  left:14px;top:50%;
+  transform:translateY(-50%);
+  color:rgba(214,179,106,.52);
+  font:700 13px/1 "Marcellus",serif;
+  pointer-events:none;
+}
+.nordic-header-input{
+  width:100%;
+  height:38px;
+  padding:0 16px 0 36px;
+  border:1px solid rgba(156,238,229,.13);
+  border-radius:999px;
+  outline:none;
+  background:rgba(7,19,17,.72);
+  color:#e3fffb;
+  font:600 11px/1 "Manrope","Inter",system-ui,sans-serif;
+  letter-spacing:.02em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 25px rgba(0,0,0,.18);
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.nordic-header-input::placeholder{color:rgba(238,232,220,.34)}
+.nordic-header-input:focus{
+  border-color:rgba(156,238,229,.34);
+  background:rgba(7,20,19,.86);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 3px rgba(156,238,229,.055),0 12px 28px rgba(0,0,0,.22);
+}
+.nordic-header-meta{
+  position:relative;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  color:rgba(238,232,220,.62);
+  font:700 8px/1 "Manrope","Inter",system-ui,sans-serif;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+.nordic-header-status{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.nordic-header-status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#7ff5c7;
+  box-shadow:0 0 12px rgba(127,245,199,.72);
+}
+.nordic-header-language{white-space:nowrap;color:rgba(156,238,229,.52)}
+.nordic-header-avatar{
+  width:34px;height:34px;
+  flex:0 0 auto;
+  display:grid;place-items:center;
+  border:1px solid rgba(214,179,106,.30);
+  border-radius:10px;
+  background:radial-gradient(circle at 50% 30%,rgba(156,238,229,.12),rgba(2,8,9,.90));
+  color:rgba(214,179,106,.76);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 24px rgba(0,0,0,.35);
+  font:700 14px/1 "Marcellus",serif;
+}
+
+/* ForgedButton aliases: old button classes resolve to the same component language. */
+.forged-button-primary{
+  min-height:40px;
+  border-radius:14px;
+  border:1px solid rgba(244,232,199,.30);
+  background:linear-gradient(180deg,#D6B36A,#B9784F);
+  color:#020505;
+  box-shadow:0 8px 20px rgba(0,0,0,.60), inset 0 1px 0 rgba(255,255,255,.18);
+}
+.forged-button-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 12px 26px rgba(0,0,0,.80), inset 0 1px 0 rgba(255,255,255,.20);
+}
+.forged-button-secondary{
+  min-height:40px;
+  border-radius:14px;
+  border:1px solid rgba(156,238,229,.30);
+  background:#263636;
+  color:#E3FFFB;
+  box-shadow:0 8px 20px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.forged-button-secondary:hover{background:#071311;border-color:rgba(156,238,229,.45)}
+button:active{transform:translateY(1px)}
+
+/* ForgedPanel aliases: legacy panels use the same shared surface language. */
+.forged-panel{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid rgba(38,54,54,.95);
+  background:
+    linear-gradient(145deg,rgba(7,16,15,.86),rgba(2,5,5,.92)),
+    radial-gradient(circle at top,rgba(156,238,229,.07),transparent 42%);
+  box-shadow:0 20px 46px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.forged-panel::before{
+  content:"";
+  position:absolute;
+  inset:1px;
+  pointer-events:none;
+  border:1px solid rgba(156,238,229,.08);
+  border-radius:16px;
+}
+.forged-panel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at top,rgba(156,238,229,.09),transparent 42%),
+    linear-gradient(135deg,transparent 0 72%,rgba(214,179,106,.025));
+}
+.forged-panel > *{position:relative;z-index:2}
+.forged-panel .pointer-events-none{z-index:3}
+.forged-panel:hover{
+  border-color:rgba(156,238,229,.22);
+  box-shadow:0 25px 54px rgba(0,0,0,.50),0 0 24px rgba(156,238,229,.045);
+}
+
+@media(max-width:900px){
+  .nordic-header{grid-template-columns:1fr auto;min-height:58px;padding:8px 14px}
+  .nordic-header-search{grid-column:1 / -1;grid-row:2}
+  .nordic-header-meta{grid-column:2;grid-row:1}
+  .nordic-header-status,
+  .nordic-header-language{display:none}
+  .nordic-header-title{font-size:12px}
+}
+
+/* Celtic gold ambient pulse */
+@keyframes celtic-gold-pulse{
+  0%,100%{opacity:.2;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.25)}
+}
+.celtic-gold-pulse{
+  transform-origin:center;
+  animation:celtic-gold-pulse 3.2s ease-in-out infinite;
+}
+
+/* Nordic atmosphere: smoke and embers */
+@keyframes fogMove{
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-200px); }
+}
+@keyframes embersFloat{
+  0% { transform: translateY(0); opacity: 0.2; }
+  50% { opacity: 0.4; }
+  100% { transform: translateY(-80px); opacity: 0.2; }
+}
+@keyframes sidebarMorphFade{
+  0% { opacity: 0; transform: scale(1.035); }
+  18% { opacity: .2; }
+  100% { opacity: 1; transform: scale(1); }
+}
+/* Slow Celtic / Viking texture morph used inside ForgedPanel surfaces */
+@keyframes panelTextureMorph{
+  0% { opacity: 0; transform: scale(1.025); }
+  18% { opacity: .08; }
+  55% { opacity: .14; }
+  100% { opacity: .16; transform: scale(1); }
+}
+/* Nordic page transition */
+@keyframes pageTransitionEnter{
+  0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(.985); filter: blur(8px); }
+  55% { opacity: .78; transform: translate3d(0, 3px, 0) scale(.997); filter: blur(1.5px); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+.page-transition-preparing{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
+.page-transition-entered{animation:pageTransitionEnter var(--page-transition-duration,650ms) cubic-bezier(.22,1,.36,1) both}
+
+/* ==================== ACCESSIBILITY ==================== */
+@media (prefers-reduced-motion: reduce){
+  .celtic-gold-pulse,
+  .animate-_fogMove_18s_linear_infinite_,
+  .animate-_embersFloat_12s_linear_infinite_,
+  .animate-_sidebarMorphFade_var--sidebar-morph-duration-_ease-in-out_forwards_,
+  .animate-_panelTextureMorph_var--panel-morph-duration-_ease-in-out_forwards_,
+  .page-transition-entered{
+    animation: none;
+  }
+  .page-transition-preparing{opacity:1;transform:none;filter:none}
+  .designly-command-deck nav button:hover,
+  .forged-panel:hover,
+  .designly-app-page .card-lux:hover,
+  .designly-app-page .card-premium:hover{transform:none}
+}
