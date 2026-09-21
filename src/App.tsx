@@ -16,6 +16,7 @@ import { PublicNav } from '@/components/PublicNav';
 import LandingPage from '@/pages/Landing';
 import ForgeStudio from '@/pages/ForgeStudio';
 import Music from '@/pages/Music';
+import Voice from '@/pages/Voice';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -52,14 +53,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'translator', 'creator', 'streamer', 'shopify', 'cnc', 'diagnostics',
+  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'creator', 'streamer', 'shopify', 'cnc', 'diagnostics',
 ];
 
 function pageFromHash(): Page {
@@ -195,7 +196,8 @@ function AppInner() {
       case 'music': return <Music onNavigate={navigate} />;
       case 'music-workspace': return <MusicPage onNavigate={navigate} />;
       case 'agents': return <Agents onNavigate={navigate} />;
-      case 'voice': return <VoiceAgentPage onNavigate={navigate} />;
+      case 'voice': return <Voice onNavigate={navigate} />;
+      case 'voice-workspace': return <VoiceAgentPage onNavigate={navigate} />;
       case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
@@ -238,7 +240,8 @@ function AppInner() {
     music: 'SOUND HALL',
     'music-workspace': 'MUSIC FORGE WORKSPACE',
     agents: 'AGENT HUB',
-    voice: 'VOICE BRIDGE',
+    voice: 'COMMUNICATION CHAMBER',
+    'voice-workspace': 'VOICE AGENT WORKSPACE',
     translator: 'TRANSLATOR',
     creator: 'CREATOR MERCH',
     streamer: 'STREAMER STUDIO',
