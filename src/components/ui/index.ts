@@ -5,3 +5,4 @@ export * from './CelticGoldFrame';
 export * from './RunePulse';
 export * from './FogAndEmbers';
 export * from './HuginnPanel';
+export * from './MorphingBackground';
