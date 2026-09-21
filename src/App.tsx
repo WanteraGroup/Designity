@@ -27,6 +27,7 @@ import Credits from '@/pages/Credits';
 import Billing from '@/pages/Billing';
 import Settings from '@/pages/Settings';
 import Admin from '@/pages/Admin';
+import Diagnostics from '@/pages/Diagnostics';
 import Projects from '@/pages/Projects';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
@@ -220,7 +221,8 @@ function AppInner() {
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
       case 'cnc': return <CNC onNavigate={navigate} />;
       case 'cnc-workspace': return <CncCamPage />;
-      case 'diagnostics': return <DiagnosticsPage />;
+      case 'diagnostics': return <Diagnostics onNavigate={navigate} />;
+      case 'diagnostics-workspace': return <DiagnosticsPage />;
       default: return <DashboardHome onNavigate={navigate} />;
     }
   };
@@ -271,7 +273,8 @@ function AppInner() {
     creator: 'CREATOR MERCH',
     streamer: 'STREAMER STUDIO',
     cnc: 'CNC CAM',
-    diagnostics: 'QA CENTER',
+    diagnostics: 'SYSTEM DIAGNOSTICS',
+    'diagnostics-workspace': 'QA CENTER',
   };
   const dashboardTitle = pageTitles[page] ?? 'DESIGNLY';
 
