@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Activity, Bot, Cog, FolderOpen, Globe2, Mic, Music2, Palette, Radio, Sparkles, Store, Wrench } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { ForgedPanel, NordicHeader, ForgedButton, FogAndEmbers } from '@/components/ui';
+import { ForgedPanel, NordicHeader, ForgedButton, FogAndEmbers, HuginnPanel } from '@/components/ui';
 import type { Project } from '@/types';
 
 interface DashboardProps {
@@ -135,15 +135,15 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             <StatusRow label="Storage" value="LIVE CHECK" muted />
             <StatusRow label="Uptime" value="LIVE CHECK" muted />
           </div>
-          <div className="mt-6 rounded-2xl border border-[#9CEEE5]/10 bg-black/20 p-4">
-            <div className="text-[8px] uppercase tracking-[.24em] text-[#D6B36A]/60">HUGINN AI</div>
-            <p className="mt-2 text-sm text-[#EEE8DC]/65">Mit építsünk ma?</p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <SmallAction onClick={() => onNavigate('create')}>New Design</SmallAction>
-              <SmallAction onClick={() => onNavigate('campaign')}>Campaign</SmallAction>
-              <SmallAction onClick={() => onNavigate('agents')}>Analysis</SmallAction>
-              <SmallAction onClick={() => onNavigate('translator')}>Translate</SmallAction>
-            </div>
+          <div className="mt-6">
+            <HuginnPanel>
+              <div className="grid grid-cols-2 gap-2">
+                <SmallAction onClick={() => onNavigate('create')}>New Design</SmallAction>
+                <SmallAction onClick={() => onNavigate('campaign')}>Campaign</SmallAction>
+                <SmallAction onClick={() => onNavigate('agents')}>Analysis</SmallAction>
+                <SmallAction onClick={() => onNavigate('translator')}>Translate</SmallAction>
+              </div>
+            </HuginnPanel>
           </div>
         </ForgedPanel>
 
