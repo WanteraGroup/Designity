@@ -1,0 +1,556 @@
+/* ============================================================================
+   DESIGNLY — ODIN FORGE  (designly-forge.css)
+   ----------------------------------------------------------------------------
+   A ground-up rewrite of the public landing surface. Part 1 of 2.
+
+   Why this exists
+   ---------------
+   The previous styling was 11 stylesheets fighting each other with 1226
+   !important flags, and every fix broke something else. This file replaces that
+   for the LANDING page entirely. It is written from scratch against the exact
+   class set LandingPage.tsx renders (odin-*, huginn-*, designly-*).
+
+   Design language
+   ---------------
+   Norse forge hall: volcanic slate ground, glacier-cyan light, oxidised copper
+   accent, bone text. Everything is drawn with CSS - no hero bitmap.
+   ============================================================================ */
+
+:root {
+  --fg-void:      #030708;
+  --fg-deep:      #061012;
+  --fg-hall:      #0b1a1c;
+  --fg-panel:     #0d2022;
+  --fg-panel-2:   #122a2c;
+
+  --fg-ice:       #9ceee5;
+  --fg-ice-soft:  rgba(156,238,229,.55);
+  --fg-ice-line:  rgba(156,238,229,.16);
+  --fg-ice-glow:  rgba(85,201,202,.28);
+
+  --fg-copper:    #c98a5c;
+  --fg-copper-hi: #e8b183;
+  --fg-gold:      #d6b36a;
+
+  --fg-bone:      #efe9dd;
+  --fg-bone-dim:  rgba(239,233,221,.62);
+  --fg-bone-faint:rgba(239,233,221,.34);
+
+  --fg-shadow:    0 30px 90px rgba(0,0,0,.62);
+  --fg-ease:      cubic-bezier(.22,1,.36,1);
+
+  --fg-mono: "Manrope", "Inter", system-ui, -apple-system, sans-serif;
+  --fg-display: "Marcellus", "Cormorant Garamond", Georgia, serif;
+}
+
+/* ---------------------------------------------------------------- reset */
+.odin-forge,
+.odin-forge *,
+.odin-forge *::before,
+.odin-forge *::after { box-sizing: border-box; }
+
+.odin-forge {
+  position: relative;
+  isolation: isolate;
+  background: var(--fg-void);
+  color: var(--fg-bone);
+  font-family: var(--fg-mono);
+  overflow-x: clip;
+}
+
+.odin-forge h1, .odin-forge h2, .odin-forge h3 {
+  font-family: var(--fg-display);
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: .015em;
+}
+.odin-forge p { margin: 0; line-height: 1.75; }
+.odin-forge ul { margin: 0; padding: 0; list-style: none; }
+.odin-forge button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- shared atoms */
+.odin-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  color: var(--fg-ice);
+}
+.odin-label::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--fg-copper), var(--fg-ice));
+}
+
+.odin-section {
+  position: relative;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(88px, 9vw, 150px) clamp(20px, 5vw, 64px);
+}
+
+.odin-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: clamp(20px, 4vw, 56px);
+  margin-bottom: clamp(36px, 5vw, 64px);
+}
+.odin-section-head h2 {
+  margin-top: 18px;
+  max-width: 20ch;
+  font-size: clamp(2.1rem, 4.4vw, 4.4rem);
+  line-height: 1.06;
+  color: var(--fg-bone);
+}
+.odin-section-intro {
+  max-width: 250px;
+  padding-bottom: 8px;
+  text-align: right;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .20em;
+  text-transform: uppercase;
+  line-height: 2;
+  color: var(--fg-bone-faint);
+}
+
+/* ================================================================ HERO */
+.odin-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: clamp(120px, 14vh, 180px) clamp(20px, 5vw, 64px) clamp(70px, 9vh, 110px);
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 55% at 72% 22%, rgba(85,201,202,.13), transparent 62%),
+    radial-gradient(ellipse 70% 50% at 22% 72%, rgba(201,138,92,.10), transparent 60%),
+    linear-gradient(180deg, #071314 0%, #0a1a1b 42%, #030708 100%);
+}
+.odin-hero::before {
+  content: "";
+  position: absolute;
+  inset: clamp(16px, 2.4vw, 34px);
+  border: 1px solid var(--fg-ice-line);
+  clip-path: polygon(0 0, 100% 0, 100% 76%, 96% 100%, 4% 100%, 0 76%);
+  pointer-events: none;
+  z-index: 5;
+}
+.odin-hero::after {
+  content: "";
+  position: absolute;
+  left: 14%; right: 14%;
+  bottom: clamp(44px, 6vh, 74px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--fg-copper) 26%, var(--fg-ice) 50%, var(--fg-copper) 74%, transparent);
+  box-shadow: 0 0 22px var(--fg-ice-glow);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.odin-hero-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 40%, rgba(3,7,8,.72) 100%),
+    radial-gradient(circle at 50% 84%, rgba(85,201,202,.09), transparent 42%);
+}
+.odin-hero-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .5;
+  background:
+    repeating-linear-gradient(0deg, rgba(239,233,221,.014) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, transparent 0 96px, rgba(156,238,229,.02) 96px 97px);
+}
+.odin-hero-aurora {
+  position: absolute;
+  width: 74vw; height: 26vw;
+  border-radius: 50%;
+  filter: blur(46px);
+  opacity: .34;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(-11deg);
+}
+.odin-hero-aurora.aurora-a {
+  left: -12vw; top: 6vh;
+  background: radial-gradient(ellipse, rgba(76,150,124,.46), transparent 68%);
+  animation: fg-aurora-a 17s ease-in-out infinite alternate;
+}
+.odin-hero-aurora.aurora-b {
+  right: -14vw; top: 22vh;
+  background: radial-gradient(ellipse, rgba(57,142,161,.34), transparent 68%);
+  animation: fg-aurora-b 21s ease-in-out infinite alternate;
+}
+@keyframes fg-aurora-a { to { transform: translate3d(7vw,4vh,0) rotate(-5deg) scale(1.1); } }
+@keyframes fg-aurora-b { to { transform: translate3d(-6vw,-3vh,0) rotate(-16deg) scale(1.08); } }
+
+.odin-mountain {
+  position: absolute;
+  left: -6%; right: -6%; bottom: -1%;
+  height: 46%;
+  z-index: 0;
+  pointer-events: none;
+}
+.odin-mountain.mountain-a {
+  opacity: .95;
+  background:
+    repeating-linear-gradient(118deg, transparent 0 26px, rgba(156,238,229,.028) 26px 28px),
+    linear-gradient(180deg, rgba(17,38,37,.82), rgba(3,7,8,.99));
+  clip-path: polygon(0 96%,4% 76%,9% 84%,15% 55%,20% 77%,28% 43%,34% 70%,39% 35%,46% 66%,53% 47%,59% 74%,66% 40%,73% 69%,80% 48%,86% 77%,92% 54%,100% 83%,100% 100%,0 100%);
+  filter: drop-shadow(0 -26px 34px rgba(0,0,0,.34));
+}
+.odin-mountain.mountain-b {
+  bottom: 9%; height: 34%;
+  opacity: .38;
+  transform: scaleX(1.08);
+  background: linear-gradient(180deg, rgba(126,114,101,.24), rgba(3,7,8,.92));
+  clip-path: polygon(0 100%,8% 75%,19% 88%,28% 64%,37% 86%,48% 55%,60% 82%,69% 62%,80% 86%,91% 70%,100% 89%,100% 100%);
+}
+.odin-mist {
+  position: absolute;
+  left: -10%; right: -10%;
+  height: 18%;
+  border-radius: 50%;
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(206,231,229,.08) 22%, rgba(206,231,229,.13) 50%, rgba(206,231,229,.07) 78%, transparent);
+}
+.odin-mist.mist-a { bottom: 24%; transform: rotate(-2deg); animation: fg-mist 16s ease-in-out infinite alternate; }
+.odin-mist.mist-b { bottom: 32%; opacity: .5; transform: rotate(3deg); animation: fg-mist 22s ease-in-out infinite alternate-reverse; }
+@keyframes fg-mist { to { transform: translateX(6vw) rotate(1deg) scaleX(1.08); } }
+
+.odin-hero-content {
+  position: relative;
+  z-index: 4;
+  width: min(1400px, 100%);
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(340px, .88fr);
+  align-items: center;
+  gap: clamp(32px, 5vw, 80px);
+}
+.odin-hero-copy { max-width: 720px; }
+
+.odin-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  color: var(--fg-ice);
+}
+.sigil-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--fg-ice);
+  background: rgba(85,201,202,.20);
+  box-shadow: 0 0 0 5px rgba(85,201,202,.07), 0 0 20px rgba(85,201,202,.46);
+  flex: 0 0 auto;
+}
+
+.odin-hero-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 26px;
+}
+.odin-hero-title span {
+  font-family: var(--fg-mono);
+  font-size: clamp(1.15rem, 1.9vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(239,233,221,.44);
+}
+.odin-hero-title strong {
+  font-family: var(--fg-display);
+  font-size: clamp(3.2rem, 7.6vw, 8.4rem);
+  font-weight: 500;
+  line-height: .88;
+  letter-spacing: .04em;
+  color: #f2f7f4;
+  text-shadow: 0 3px 0 rgba(80,96,92,.9), 0 20px 56px rgba(0,0,0,.9), 0 0 46px rgba(85,201,202,.13);
+}
+
+.odin-hero-copy > p {
+  max-width: 620px;
+  margin-top: 28px;
+  font-size: 15px;
+  color: var(--fg-bone-dim);
+}
+
+.odin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.odin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: 12px;
+  border: 1px solid var(--fg-ice-line);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transition: transform .3s var(--fg-ease), box-shadow .3s var(--fg-ease), border-color .3s var(--fg-ease), background .3s var(--fg-ease);
+}
+.odin-btn-hot {
+  color: #06110f;
+  border-color: rgba(230,241,235,.62);
+  background: linear-gradient(140deg, #7d9590 0%, #eef4ef 48%, #61756f 100%);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.34), 0 14px 30px rgba(0,0,0,.42), 0 0 30px rgba(85,201,202,.12);
+}
+.odin-btn-hot:hover {
+  transform: translateY(-3px);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.40), 0 20px 40px rgba(0,0,0,.5), 0 0 42px rgba(85,201,202,.22);
+}
+.odin-btn-dark {
+  color: var(--fg-bone);
+  background: rgba(4,11,12,.62);
+  backdrop-filter: blur(12px);
+}
+.odin-btn-dark:hover {
+  transform: translateY(-3px);
+  border-color: rgba(156,238,229,.44);
+  background: rgba(17,40,39,.6);
+}
+.odin-btn:active { transform: translateY(1px); }
+
+.odin-proof {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 700px;
+  margin-top: 42px;
+  border-top: 1px solid var(--fg-ice-line);
+  border-bottom: 1px solid var(--fg-ice-line);
+}
+.odin-proof span {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--fg-bone-faint);
+}
+.odin-proof span + span { border-left: 1px solid var(--fg-ice-line); }
+.odin-proof b {
+  font-family: var(--fg-display);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  color: var(--fg-ice);
+}
+
+.odin-hero-symbol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+.odin-wheel {
+  position: relative;
+  width: min(462px, 40vw);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  container-type: size;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(156,238,229,.09), rgba(3,7,9,.14) 44%, transparent 66%),
+    conic-gradient(from 15deg, rgba(85,201,202,.17), transparent 12%, rgba(201,138,92,.23) 22%, transparent 34%, rgba(85,201,202,.16) 50%, transparent 65%, rgba(201,138,92,.19) 78%, transparent 90%);
+  box-shadow: 0 0 0 1px rgba(156,238,229,.09), 0 0 110px rgba(85,201,202,.09), inset 0 0 80px rgba(0,0,0,.58);
+}
+.odin-wheel::before,
+.odin-wheel::after { content: ""; position: absolute; border-radius: 50%; }
+.odin-wheel::before { inset: 9%; border: 1px solid rgba(200,213,212,.20); }
+.odin-wheel::after { inset: 15%; border: 1px dashed rgba(201,138,92,.26); animation: fg-wheel 30s linear infinite; }
+@keyframes fg-wheel { to { transform: rotate(360deg); } }
+
+.odin-wheel-core {
+  width: 44%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(239,233,221,.22);
+  background: radial-gradient(circle, rgba(20,44,42,.9), rgba(4,10,11,.97));
+  box-shadow: 0 0 0 12px rgba(85,201,202,.03), 0 0 54px rgba(85,201,202,.13);
+}
+.odin-wheel-core img,
+.odin-wheel-core svg { max-width: 100%; max-height: 100%; }
+
+.odin-wheel-rune {
+  position: absolute;
+  left: 50%; top: 50%;
+  font-family: var(--fg-display);
+  font-size: clamp(13px, 1.5vw, 21px);
+  color: rgba(226,241,237,.56);
+  text-shadow: 0 0 12px rgba(85,201,202,.26);
+  transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 30deg)) translateY(-19cqw) rotate(calc(var(--i, 0) * -30deg));
+}
+
+.odin-wheel-orbit { position: absolute; inset: 24%; border-radius: 50%; border: 1px solid rgba(156,238,229,.15); }
+.odin-wheel-orbit.orbit-a { transform: rotate(35deg) scaleX(.62); }
+.odin-wheel-orbit.orbit-b { transform: rotate(-35deg) scaleX(.62); }
+
+.odin-symbol-caption { display: flex; flex-direction: column; gap: 8px; text-align: center; }
+.odin-symbol-caption span {
+  font-size: 9px; font-weight: 700; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--fg-bone-faint);
+}
+.odin-symbol-caption em {
+  font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .32em;
+  text-transform: uppercase; color: var(--fg-copper-hi);
+}
+
+.odin-raven {
+  position: absolute;
+  width: 210px; height: 148px;
+  z-index: 3;
+  opacity: .74;
+  pointer-events: none;
+  filter: drop-shadow(0 22px 26px rgba(0,0,0,.78));
+}
+.odin-raven.left  { left: 2.5%;  bottom: 20%; transform: scale(1.06) rotate(-3deg); }
+.odin-raven.right { right: 2.5%; bottom: 22%; transform: scale(1.06) scaleX(-1) rotate(-3deg); }
+.odin-raven-wing {
+  position: absolute;
+  left: 40px; top: 58px;
+  width: 132px; height: 88px;
+  border-radius: 65% 22% 70% 25%;
+  background: linear-gradient(145deg, #1c2b2a, #050809 72%);
+  border: 1px solid rgba(201,138,92,.26);
+  transform: rotate(-10deg);
+}
+.odin-raven::before {
+  content: ""; position: absolute; left: 44px; top: 46px;
+  width: 116px; height: 70px;
+  border-radius: 55% 45% 48% 52%;
+  background: linear-gradient(145deg, #182424, #030708 70%);
+  border: 1px solid rgba(200,213,212,.18);
+}
+.odin-raven::after {
+  content: ""; position: absolute; left: 120px; top: 28px;
+  width: 60px; height: 56px;
+  border-radius: 50% 54% 46% 50%;
+  background: linear-gradient(145deg, #182424, #030708 75%);
+  border: 1px solid rgba(200,213,212,.20);
+}
+.odin-raven-eye {
+  position: absolute; left: 160px; top: 47px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #0a1110; border: 2px solid var(--fg-ice);
+  box-shadow: 0 0 15px rgba(85,201,202,.88); z-index: 2;
+}
+.odin-raven-beak {
+  position: absolute; left: 175px; top: 56px;
+  width: 50px; height: 20px;
+  background: linear-gradient(90deg, #4d5d59, #8a5c3e);
+  clip-path: polygon(0 20%, 100% 50%, 0 82%);
+  border-top: 1px solid rgba(239,233,221,.28);
+}
+.odin-raven-feather {
+  position: absolute; width: 68px; height: 16px; border-radius: 50%;
+  border-bottom: 1px solid rgba(200,213,212,.16);
+}
+.odin-raven-feather.f1 { left: 55px; top: 80px;  transform: rotate(9deg); }
+.odin-raven-feather.f2 { left: 68px; top: 95px;  transform: rotate(7deg); }
+.odin-raven-feather.f3 { left: 82px; top: 110px; transform: rotate(5deg); }
+
+.odin-sky-runes {
+  position: absolute; left: 0; right: 0; top: 16%; height: 26px;
+  z-index: 2; display: flex; justify-content: space-around;
+  overflow: hidden; opacity: .40; pointer-events: none;
+}
+.odin-sky-runes span { font-family: var(--fg-display); font-size: 11px; color: rgba(156,238,229,.6); }
+
+.odin-hero-bottom {
+  position: absolute;
+  left: clamp(20px, 5vw, 64px); right: clamp(20px, 5vw, 64px);
+  bottom: 16px; z-index: 6;
+  display: grid; grid-template-columns: 1fr 2fr 1fr;
+  align-items: center; gap: 24px;
+}
+.odin-scroll-mark {
+  font-size: 8px; font-weight: 800; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--fg-bone-faint);
+}
+.odin-scroll-mark:last-child { text-align: right; }
+.odin-scroll-mark span { margin-right: 8px; font-size: 14px; color: var(--fg-ice); }
+.odin-bottom-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(156,238,229,.22), transparent); }
+
+/* ============================================================== TOOLS */
+.odin-tool-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.odin-tool-card {
+  position: relative;
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 26px 22px 22px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid var(--fg-ice-line);
+  background: radial-gradient(circle at 88% 0%, rgba(85,201,202,.07), transparent 30%),
+              linear-gradient(160deg, rgba(16,35,34,.96), rgba(4,10,11,.99));
+  box-shadow: 0 20px 50px rgba(0,0,0,.4);
+  transition: transform .32s var(--fg-ease), border-color .32s var(--fg-ease), box-shadow .32s var(--fg-ease);
+}
+.odin-tool-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(125deg, transparent 58%, rgba(85,201,202,.05));
+  opacity: 0; transition: opacity .32s var(--fg-ease);
+}
+.odin-tool-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(156,238,229,.36);
+  box-shadow: 0 34px 76px rgba(0,0,0,.52), 0 0 34px rgba(85,201,202,.08);
+}
+.odin-tool-card:hover::after { opacity: 1; }
+.odin-tool-number { font-family: var(--fg-display); font-size: 13px; letter-spacing: .18em; color: rgba(156,238,229,.38); }
+.odin-tool-icon {
+  width: 52px; height: 52px; display: grid; place-items: center; border-radius: 14px;
+  border: 1px solid rgba(201,138,92,.30);
+  background: linear-gradient(140deg, rgba(201,138,92,.14), rgba(6,12,13,.4));
+  color: var(--fg-copper-hi);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 22px rgba(201,138,92,.08);
+}
+.odin-tool-content { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.odin-tool-content h3 { font-family: var(--fg-mono); font-size: 14px; font-weight: 800; letter-spacing: .02em; color: #eef4ef; }
+.odin-tool-content p { font-size: 12.5px; line-height: 1.65; color: rgba(239,233,221,.46); }
+.odin-tool-content span {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: auto; padding-top: 12px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-ice); transition: gap .3s var(--fg-ease);
+}
+.odin-tool-card:hover .odin-tool-content span { gap: 13px; }
+
+/* PART 2 CONTINUES IN THE SAME FILE */
