@@ -1074,3 +1074,20 @@ button:active{transform:translateY(1px)}
 @media (prefers-reduced-motion:reduce){
   .celtic-gold-pulse{animation:none!important;}
 }
+
+
+/* Nordic atmosphere: smoke and embers */
+@keyframes fogMove {
+  0% { transform: translate3d(-2%, 1%, 0) scale(1); }
+  50% { transform: translate3d(3%, -1%, 0) scale(1.06); }
+  100% { transform: translate3d(-2%, 1%, 0) scale(1); }
+}
+@keyframes embersFloat {
+  0% { transform: translate3d(0, 7%, 0) scale(1); opacity: .20; }
+  50% { transform: translate3d(-1%, -4%, 0) scale(1.025); opacity: .72; }
+  100% { transform: translate3d(0, -12%, 0) scale(1.05); opacity: .20; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-[fogMove_18s_linear_infinite],
+  .animate-[embersFloat_12s_linear_infinite] { animation: none !important; }
+}
