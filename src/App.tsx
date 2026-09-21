@@ -32,7 +32,7 @@ import { AdvertisingStudio } from '@/components/AdvertisingStudio';
 import { CampaignGenerator } from '@/components/CampaignGenerator';
 import { CheckoutPage } from '@/components/CheckoutPage';
 import { HuginnAgent } from '@/components/HuginnAgent';
-import { AgentHubPage } from '@/components/AgentHubPage';
+import Agents from '@/pages/Agents';
 import { VoiceAgentPage } from '@/components/VoiceAgentPage';
 import { RealtimeTranslatorPage } from '@/components/RealtimeTranslatorPage';
 import { AppErrorBoundary } from '@/components/AppErrorBoundary';
@@ -190,7 +190,7 @@ function AppInner() {
       case 'admin': return <AdminPage onNavigate={navigate} />;
       case 'editor': return <EditorPage onNavigate={navigate} />;
       case 'music': return <MusicPage onNavigate={navigate} />;
-      case 'agents': return <AgentHubPage onNavigate={navigate} />;
+      case 'agents': return <Agents onNavigate={navigate} />;
       case 'voice': return <VoiceAgentPage onNavigate={navigate} />;
       case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
