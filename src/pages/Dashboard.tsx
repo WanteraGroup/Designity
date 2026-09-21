@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Activity, Bot, Cog, FolderOpen, Globe2, Mic, Music2, Palette, Radio, Sparkles, Store, Wrench } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { ForgedPanel, NordicHeader, ForgedButton } from '@/components/ui';
+import { ForgedPanel, NordicHeader, ForgedButton, FogAndEmbers } from '@/components/ui';
 import type { Project } from '@/types';
 
 interface DashboardProps {
@@ -64,6 +64,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(156,238,229,.08),transparent_34%),linear-gradient(to_bottom,rgba(2,5,5,.38),rgba(2,5,5,.96))]" aria-hidden="true" />
+      <FogAndEmbers />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_center,rgba(214,179,106,.08)_1px,transparent_1px)] [background-size:32px_32px]" aria-hidden="true" />
 
       <NordicHeader title="DESIGNLY CORE — CREATIVE OPERATING SYSTEM" />
