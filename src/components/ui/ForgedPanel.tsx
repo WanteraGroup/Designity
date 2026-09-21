@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { CelticCorners } from '@/components/layout/CommandDeck';
+import { PanelMorphingOverlay } from './PanelMorphingOverlay';
 
 export interface ForgedPanelProps {
   children: ReactNode;
@@ -23,6 +24,7 @@ export function ForgedPanel({ children, className = '' }: ForgedPanelProps) {
       <div className="pointer-events-none absolute inset-0 z-0 text-[#9CEEE5]/28">
         <CelticCorners />
       </div>
+      <PanelMorphingOverlay />
       <div className="relative z-10 p-4">
         {children}
       </div>
