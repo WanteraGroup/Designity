@@ -639,3 +639,30 @@ aside.hidden.lg\\:flex nav button[class*="bg-gold"]{
   .designly-world-card{min-height:95px}
   .designly-core-runes{font-size:8px;letter-spacing:.3em}
 }
+
+
+/* PUBLIC BRAND LOCKUP */
+.designly-public-brand{display:flex;align-items:center;gap:11px}
+.designly-public-brand-title{font:700 16px/1 "Marcellus",serif;letter-spacing:.18em;color:#f1eadc}
+.designly-public-brand-sub{margin-top:5px;font:800 6px/1 "Manrope",sans-serif;letter-spacing:.22em;color:rgba(156,238,229,.62)}
+.celtic-header > .section-pad{position:relative}
+.celtic-header > .section-pad::after{
+  content:"ᛉ ᛟ ᚱ ᚦ ᚷ";
+  position:absolute;left:50%;bottom:-1px;transform:translate(-50%,50%);
+  padding:2px 9px;background:#030808;border:1px solid rgba(214,179,106,.22);border-radius:999px;
+  color:rgba(214,179,106,.48);font:700 7px/1 "Marcellus",serif;letter-spacing:.22em;
+}
+
+/* CREATE / EDITOR command surfaces */
+.designly-page-create .designly-create-forge{
+  position:relative!important;isolation:isolate!important;
+}
+.designly-page-create .designly-create-forge > *{
+  position:relative;z-index:2;
+}
+.designly-page-create .designly-create-forge::before{
+  content:"FORGE STUDIO";
+  position:absolute;right:28px;top:-18px;z-index:0;
+  font:700 clamp(3rem,8vw,8rem)/1 "Marcellus",serif;
+  letter-spacing:.08em;color:rgba(156,238,229,.035);pointer-events:none;
+}
