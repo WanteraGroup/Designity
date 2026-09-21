@@ -402,6 +402,11 @@ Deno.serve(async (req: Request) => {
     let previewId: string | null = null;
     let previewError: string | null = null;
 
+    // Final-mode bookkeeping — a billable run records what it saved and what it charged.
+    let projectId: string | null = null;
+    let creditsCharged = 0;
+    let creditError: string | null = null;
+
     if (body.mode === "preview" || body.mode === undefined) {
       const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || apiKey;
       const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-1";
@@ -492,6 +497,139 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    // ------------------------------------------------------------------------
+    // FINAL mode — billable. Charges real credits, renders the high-quality
+    // asset, stores it and records the project. Every failure path below the
+    // charge refunds, so a failed finalize never costs the user.
+    // ------------------------------------------------------------------------
+    if (body.mode === "final") {
+      const FINAL_COST = 3000;
+
+      const { data: charged, error: chargeError } = await supabaseAdmin.rpc("deduct_credits", {
+        p_user_id: user.id,
+        p_amount: FINAL_COST,
+        p_description: `Final generation — ${fallbackOutputs[0] || "custom"}`,
+      });
+
+      if (chargeError) {
+        console.error("designly-agent credit charge failed:", chargeError.message);
+        return json({
+          error: "CREDIT_CHARGE_FAILED",
+          message: "A kreditlevonás nem sikerült.",
+          detail: chargeError.message,
+        }, 500);
+      }
+
+      if (charged !== true) {
+        return json({
+          error: "INSUFFICIENT_CREDITS",
+          message: `Ehhez ${FINAL_COST} kredit kell.`,
+          required: FINAL_COST,
+        }, 402);
+      }
+
+      creditsCharged = FINAL_COST;
+
+      const refund = async (reason: string) => {
+        const { error: refundError } = await supabaseAdmin.rpc("refund_credits", {
+          p_user_id: user.id,
+          p_amount: FINAL_COST,
+          p_description: `Refund — ${reason}`,
+        });
+        if (refundError) {
+          console.error("designly-agent refund failed:", refundError.message);
+          creditError = refundError.message;
+        } else {
+          creditsCharged = 0;
+        }
+      };
+
+      const imageApiKey = Deno.env.get("AI_IMAGE_API_KEY") || Deno.env.get("OPENAI_API_KEY") || apiKey;
+      const imageModel = Deno.env.get("AI_IMAGE_MODEL") || "gpt-image-1";
+      let finalImageUrl: string | null = null;
+
+      try {
+        const imageResponse = await fetch("https://api.openai.com/v1/images/generations", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${imageApiKey}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: imageModel,
+            prompt: buildImagePrompt(structured, body.brief),
+            size: "1536x1024",
+            quality: "high",
+            n: 1,
+          }),
+        });
+
+        if (!imageResponse.ok) {
+          const imageErrorText = await imageResponse.text().catch(() => "");
+          throw new Error(`image stage ${imageResponse.status}: ${imageErrorText.slice(0, 240)}`);
+        }
+
+        const imageData = await imageResponse.json();
+        const b64 = imageData.data?.[0]?.b64_json;
+        const remoteUrl = imageData.data?.[0]?.url;
+
+        if (b64) {
+          const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+          const path = `final/${user.id}/${crypto.randomUUID()}.png`;
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from("designly-generations")
+            .upload(path, bytes, { contentType: "image/png", upsert: true });
+          if (uploadError) throw new Error(`upload failed: ${uploadError.message}`);
+          finalImageUrl = path;
+        } else if (remoteUrl) {
+          finalImageUrl = remoteUrl;
+        } else {
+          throw new Error("image stage returned no image");
+        }
+      } catch (finalImageError) {
+        const detail = finalImageError instanceof Error ? finalImageError.message : String(finalImageError);
+        console.error("designly-agent final image stage failed:", detail);
+        await refund("final image stage failed");
+        return json({
+          error: "FINAL_GENERATION_FAILED",
+          message: "A végleges generálás nem sikerült, a kredit visszatérítve.",
+          refunded: true,
+          detail,
+        }, 500);
+      }
+
+      try {
+        const { data: project, error: projectError } = await supabase
+          .from("projects")
+          .insert({
+            user_id: user.id,
+            name: structured.businessName || body.brief.trim().slice(0, 80),
+            type: fallbackOutputs[0] || "custom",
+            brief: body.brief.trim(),
+            design_brief: structured,
+            build_spec: normalizedBuildSpec,
+            image_url: finalImageUrl,
+            status: "ready",
+          })
+          .select("id")
+          .single();
+
+        if (projectError || !project) {
+          throw new Error(projectError?.message || "No project row returned");
+        }
+        projectId = project.id;
+      } catch (projectInsertError) {
+        const detail = projectInsertError instanceof Error ? projectInsertError.message : String(projectInsertError);
+        console.error("designly-agent project insert failed:", detail);
+        await refund("project insert failed");
+        return json({
+          error: "PROJECT_SAVE_FAILED",
+          message: "A projekt mentése nem sikerült, a kredit visszatérítve.",
+          refunded: true,
+          detail,
+        }, 500);
+      }
+
+      previewImageUrl = finalImageUrl;
+    }
+
     const isTikTokShop = /(tiktok|shop|seller|termékfeltölt|product listing|affiliate|creator|gmv)/i.test(text);
     const isMonkeyDesign = /(monkey design|logo|arculat|brand|ui|ux|weboldal|landing|social|plakát|flyer|brosúra|prezentáció|névjegy)/i.test(text);
 
@@ -508,6 +646,8 @@ Deno.serve(async (req: Request) => {
       designBrief: structured,
       previewImageUrl,
       previewId,
+      projectId,
+      creditsCharged,
       activeAgents,
       orchestration: {
         agents: orchestration.agents,
@@ -526,6 +666,8 @@ Deno.serve(async (req: Request) => {
         providerError: providerStageError,
         previewSaved: previewId !== null,
         previewError,
+        projectSaved: projectId !== null,
+        creditError,
       },
     });
   } catch (error) {
