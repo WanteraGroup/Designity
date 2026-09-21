@@ -79,6 +79,8 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [pendingAiDesign, setPendingAiDesign] = useState<DesignEditorState | null>(null);
   const [pendingAiChanges, setPendingAiChanges] = useState<DesignEditorChange[]>([]);
+  const [sitePath, setSitePath] = useState('/');
+  const [siteMessage, setSiteMessage] = useState('');
 
   const defaultDesign = useMemo(
     () => initialDesign(t('editor.previewTitle'), t('editor.previewDesc')),
@@ -281,6 +283,24 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
     recognition.start();
   };
 
+  const exportWebsite = () => {
+    const spec = buildSpec || { pages: [{ path: '/', title: projectName, sections: ['Hero', 'Content', 'CTA'] }], sections: [], content: {} };
+    const pages = Array.isArray(spec.pages) ? spec.pages : [{ path: '/', title: projectName, sections: [] }];
+    const pageLinks = pages.map((p: any) => `<a href="${escapeHtml(String(p.path || '/'))}" data-page="${escapeHtml(String(p.path || '/'))}">${escapeHtml(String(p.title || p.path || 'Page'))}</a>`).join('');
+    const pageSections = pages.map((p: any) => {
+      const sections = Array.isArray(p.sections) ? p.sections : [];
+      return `<section data-path="${escapeHtml(String(p.path || '/'))}"><div class="eyebrow">DESIGNLY</div><h1>${escapeHtml(String(p.title || projectName))}</h1><p>${escapeHtml(sections.join(' · ') || design.heroDescription)}</p><button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">${escapeHtml(design.heroButton || 'Kapcsolat')}</button></section>`;
+    }).join('');
+    const html = `<!doctype html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(projectName)}</title><style>*{box-sizing:border-box}body{margin:0;background:#020505;color:#e3fffb;font-family:Inter,system-ui,sans-serif}nav{position:sticky;top:0;z-index:5;display:flex;gap:18px;padding:18px 5%;background:#020505ee;border-bottom:1px solid #d6b36a55}nav a{color:#e3fffb;text-decoration:none}main{max-width:1200px;margin:auto}section{min-height:70vh;padding:12vh 7%;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(circle at 70% 20%,#d6b36a22,transparent 30%),linear-gradient(135deg,#071311,#020505)}h1{font-size:clamp(42px,7vw,88px);max-width:900px;margin:10px 0}p{max-width:700px;line-height:1.8;color:#eee8dcbb}button{width:max-content;padding:14px 22px;border:1px solid #d6b36a88;border-radius:10px;background:#d6b36a;color:#020505;font-weight:800;cursor:pointer}.eyebrow{letter-spacing:.3em;color:#d6b36a;font-size:11px}#contact{padding:10vh 7%;min-height:40vh}</style></head><body><nav>${pageLinks}</nav><main>${pageSections}</main><section id="contact"><div class="eyebrow">CONTACT</div><h2>Kapcsolat</h2><form onsubmit="event.preventDefault();this.querySelector('button').textContent='Elküldve ✓'"><input required placeholder="Neved" style="display:block;padding:14px;margin:12px 0;width:min(520px,100%)"><input required type="email" placeholder="Email" style="display:block;padding:14px;margin:12px 0;width:min(520px,100%)"><button>Üzenet küldése</button></form></section><script>document.querySelectorAll('nav a').forEach(a=>a.onclick=e=>{e.preventDefault();document.querySelectorAll('main section').forEach(s=>s.style.display=s.dataset.path===a.dataset.page?'flex':'none');history.pushState({},'',a.dataset.page)});window.addEventListener('popstate',()=>{const p=location.pathname;document.querySelectorAll('main section').forEach(s=>s.style.display=s.dataset.path===p?'flex':'none')});</script></body></html>`;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${projectName.replace(/[^a-z0-9-_]+/gi, '-').toLowerCase() || 'designly-site'}.html`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   const exportSettings = () => {
     const payload = JSON.stringify(
       {
@@ -374,11 +394,11 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
             <Redo2 className="w-4 h-4" />
           </button>
           <button
-            onClick={exportSettings}
+            onClick={buildSpec?.pages?.length ? exportWebsite : exportSettings}
             className="btn-gold text-xs px-4 py-2"
           >
             <Download className="w-3.5 h-3.5" />
-            {t('editor.export')}
+            {buildSpec?.pages?.length ? 'WEBOLDAL EXPORT' : t('editor.export')}
           </button>
         </div>
       </div>
@@ -432,7 +452,16 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
 
         <div className="flex-1 overflow-auto bg-ink-950 flex justify-center p-4 lg:p-8">
           <div className="rounded-xl border border-ink-600/40 shadow-2xl overflow-hidden bg-black" style={{ width: deviceWidths[device], maxWidth: '100%' }}>
-            {businessPreview || (
+            {businessPreview ? (
+              <WebsiteBuilderPreview
+                spec={buildSpec}
+                projectName={projectName}
+                design={design}
+                sitePath={sitePath}
+                onPathChange={setSitePath}
+                onMessage={setSiteMessage}
+              />
+            ) : (
               <div className={`min-h-[800px] p-8 ${atmosphereClass}`}>
                 <section className={`py-16 min-h-[420px] flex flex-col justify-center ${heroAlignClass} px-4`}>
                   <div className="w-16 h-16 rounded-full mb-6 flex items-center justify-center" style={{ background: `linear-gradient(135deg,${design.accent},#fff1b8,${design.accent})` }}><span className="font-display font-bold text-ink-950 text-2xl">D</span></div>
@@ -641,5 +670,98 @@ function ToolButton({
       <Icon className="w-3.5 h-3.5" />
       {label}
     </button>
+  );
+}
+
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char] || char));
+}
+
+function WebsiteBuilderPreview({
+  spec,
+  projectName,
+  design,
+  sitePath,
+  onPathChange,
+  onMessage,
+}: {
+  spec: any;
+  projectName: string;
+  design: DesignEditorState;
+  sitePath: string;
+  onPathChange: (path: string) => void;
+  onMessage: (message: string) => void;
+}) {
+  const pages = Array.isArray(spec?.pages) && spec.pages.length
+    ? spec.pages
+    : [{ path: '/', title: projectName, sections: [] }];
+  const page = pages.find((item: any) => String(item.path || '/') === sitePath) || pages[0];
+  const sections = Array.isArray(page.sections) ? page.sections : [];
+  const content = spec?.content && typeof spec.content === 'object' && !Array.isArray(spec.content) ? spec.content : {};
+  const heroTitle = String(content.heroTitle || content.title || page.title || design.heroTitle || projectName);
+  const heroDescription = String(content.heroDescription || content.description || design.heroDescription || '');
+  const cta = String(content.cta || design.heroButton || 'KAPCSOLAT');
+  const color = design.accent || '#D6B36A';
+
+  return (
+    <div className="min-h-[1100px] bg-[#020505] text-[#E3FFFB]">
+      <nav className="sticky top-0 z-20 flex flex-wrap items-center gap-2 border-b border-[#D6B36A]/20 bg-[#020505]/90 px-5 py-3 backdrop-blur-xl">
+        <div className="mr-auto font-serif text-sm">{projectName}</div>
+        {pages.map((item: any) => {
+          const path = String(item.path || '/');
+          return (
+            <button
+              key={path}
+              type="button"
+              onClick={() => { onPathChange(path); onMessage(''); }}
+              className={`rounded-lg border px-3 py-1.5 text-[10px] uppercase tracking-wider ${path === String(page.path || '/') ? 'border-[#D6B36A]/60 bg-[#D6B36A]/15 text-[#F2D99A]' : 'border-white/10 text-white/55'}`}
+            >
+              {String(item.title || path)}
+            </button>
+          );
+        })}
+      </nav>
+
+      <section className="relative min-h-[520px] overflow-hidden px-8 py-20 lg:px-14" style={{ background: 'radial-gradient(circle at 75% 20%, rgba(214,179,106,.24), transparent 28%), linear-gradient(135deg,#071311,#020505)' }}>
+        <div className="absolute right-[8%] top-16 hidden h-64 w-64 rounded-full border-[18px] border-[#D6B36A]/20 lg:block">
+          <div className="m-7 flex h-44 w-44 items-center justify-center rounded-full border border-[#D6B36A]/45 text-7xl text-[#D6B36A]">ᛟ</div>
+        </div>
+        <div className="relative z-10 max-w-3xl">
+          <div className="text-[9px] uppercase tracking-[.3em] text-[#D6B36A]">LIVE WEBSITE PREVIEW</div>
+          <h1 className="mt-4 font-serif text-5xl font-semibold leading-[.95] lg:text-7xl">{heroTitle}</h1>
+          <p className="mt-6 max-w-2xl text-sm leading-7 text-[#EEE8DC]/65">{heroDescription}</p>
+          <button type="button" onClick={() => document.getElementById('site-contact')?.scrollIntoView({ behavior: 'smooth' })} className="mt-8 rounded-xl px-6 py-3 text-sm font-semibold" style={{ background: color, color: '#020505' }}>
+            {cta}
+          </button>
+        </div>
+      </section>
+
+      <section className="grid gap-3 border-y border-white/10 bg-black/25 p-6 md:grid-cols-2 lg:grid-cols-3">
+        {(sections.length ? sections : ['Szolgáltatások', 'Előnyök', 'Kapcsolat']).map((section: any, index: number) => (
+          <article key={index} className="min-h-36 rounded-xl border border-[#D6B36A]/20 bg-[#071311]/75 p-5">
+            <div className="text-lg text-[#D6B36A]">✦</div>
+            <h2 className="mt-2 font-serif text-lg">{typeof section === 'string' ? section : String(section?.title || section?.type || 'Szekció')}</h2>
+            <p className="mt-2 text-xs leading-5 text-[#EEE8DC]/50">Szerkeszthető weboldal-szekció a DESIGNLY build specifikációból.</p>
+          </article>
+        ))}
+      </section>
+
+      <section id="site-contact" className="border-t border-white/10 px-8 py-16 lg:px-14">
+        <div className="max-w-xl">
+          <div className="text-[9px] uppercase tracking-[.3em] text-[#D6B36A]">CONTACT</div>
+          <h2 className="mt-3 font-serif text-3xl">Kapcsolatfelvétel</h2>
+          <form className="mt-6 space-y-3" onSubmit={(event) => { event.preventDefault(); onMessage('Üzenet elküldve — demo workflow.'); }}>
+            <input required className="input-lux" placeholder="Név" />
+            <input required type="email" className="input-lux" placeholder="Email" />
+            <textarea required className="input-lux min-h-28" placeholder="Üzenet" />
+            <button type="submit" className="btn-gold text-xs">ÜZENET KÜLDÉSE</button>
+          </form>
+          {siteMessage && <div className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-200">{siteMessage}</div>}
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 px-8 py-8 text-[10px] text-white/35">Built with DESIGNLY · {projectName}</footer>
+    </div>
   );
 }
