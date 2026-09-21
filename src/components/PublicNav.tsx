@@ -44,7 +44,6 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
   const activePages: Record<string, string> = {
     landing: 'home',
     works: 'works',
-    works: 'works',
     shopify: 'shopify',
     agents: 'agents',
     portfolio: 'portfolio',
