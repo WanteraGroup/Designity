@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 900" width="1800" height="900">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#04080b"/><stop offset=".48" stop-color="#0a1719"/><stop offset="1" stop-color="#020607"/></linearGradient>
+  <linearGradient id="mount" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#203330"/><stop offset="1" stop-color="#050b0c"/></linearGradient>
+  <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263a38"/><stop offset="1" stop-color="#061011"/></linearGradient>
+  <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#573525"/><stop offset=".48" stop-color="#d28d62"/><stop offset="1" stop-color="#4b2b1e"/></linearGradient>
+  <linearGradient id="ice" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#63d8d5"/><stop offset=".5" stop-color="#d8f7ee"/><stop offset="1" stop-color="#63d8d5"/></linearGradient>
+  <radialGradient id="aurora"><stop stop-color="#81efe1" stop-opacity=".42"/><stop offset="1" stop-color="#81efe1" stop-opacity="0"/></radialGradient>
+  <radialGradient id="moon"><stop stop-color="#eef7f0"/><stop offset=".7" stop-color="#bcc8c6"/><stop offset="1" stop-color="#71807d"/></radialGradient>
+  <filter id="blur24"><feGaussianBlur stdDeviation="24"/></filter>
+  <filter id="blur10"><feGaussianBlur stdDeviation="10"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <pattern id="knot" width="96" height="48" patternUnits="userSpaceOnUse">
+    <path d="M0 24C18 0 30 0 48 24S78 48 96 24" fill="none" stroke="#8fe6e4" stroke-opacity=".12" stroke-width="3"/>
+    <path d="M0 24C18 48 30 48 48 24S78 0 96 24" fill="none" stroke="#d28d62" stroke-opacity=".10" stroke-width="3"/>
+  </pattern>
+</defs>
+
+<rect width="1800" height="900" fill="url(#sky)"/>
+
+<!-- Stars -->
+<g fill="#dbeeea" opacity=".55">
+  <circle cx="110" cy="90" r="1.7"/><circle cx="220" cy="160" r="1.2"/><circle cx="328" cy="72" r="1.5"/>
+  <circle cx="520" cy="122" r="1.3"/><circle cx="720" cy="65" r="1.4"/><circle cx="930" cy="136" r="1.1"/>
+  <circle cx="1118" cy="77" r="1.5"/><circle cx="1360" cy="142" r="1.2"/><circle cx="1560" cy="75" r="1.8"/>
+  <circle cx="1710" cy="158" r="1.1"/>
+</g>
+
+<!-- Moon -->
+<circle cx="1518" cy="145" r="78" fill="url(#moon)" opacity=".95"/>
+<circle cx="1492" cy="123" r="14" fill="#92a19f" opacity=".18"/>
+<circle cx="1547" cy="167" r="11" fill="#8c9b99" opacity=".14"/>
+<circle cx="1526" cy="108" r="7" fill="#7f8f8b" opacity=".14"/>
+
+<!-- Aurora -->
+<path d="M0 185 C250 40 480 310 770 150 S1330 120 1800 245 L1800 370 C1440 255 1300 265 1030 250 S480 430 0 310Z" fill="url(#aurora)" filter="url(#blur24)"/>
+<path d="M220 240 C470 120 650 330 860 216 S1250 135 1500 240" fill="none" stroke="#75e7db" stroke-opacity=".22" stroke-width="22" filter="url(#blur10)"/>
+
+<!-- Far mountain chain -->
+<path d="M0 505 L0 440 110 325 190 410 300 260 410 405 510 235 610 410 720 280 860 420 980 250 1100 416 1230 240 1370 420 1490 295 1610 410 1715 290 1800 430 1800 505Z" fill="#142725"/>
+<path d="M0 505 L0 472 120 368 192 414 292 307 407 430 508 278 605 427 718 335 862 442 980 304 1102 437 1230 298 1370 434 1492 348 1610 432 1718 342 1800 463 1800 505Z" fill="#203a36" opacity=".55"/>
+
+<!-- Main mountains -->
+<path d="M0 620 L0 520 150 405 290 560 450 330 620 560 805 355 960 552 1125 335 1280 560 1425 395 1600 548 1725 415 1800 510 1800 620Z" fill="url(#mount)"/>
+<g fill="none" stroke="#6e9b94" stroke-opacity=".12" stroke-width="5">
+  <path d="M130 540 450 330 620 560"/>
+  <path d="M455 565 805 355 955 560"/>
+  <path d="M1128 340 1280 560 1430 398"/>
+</g>
+
+<!-- Fortress plateau -->
+<path d="M640 540 L690 490 705 410 748 375 775 310 840 278 900 312 930 370 970 402 1008 485 1070 530 1085 575 640 575Z" fill="#10201f" stroke="#6f9a94" stroke-opacity=".18"/>
+<!-- Fortress towers -->
+<g fill="#0b1515" stroke="#9bd9d0" stroke-opacity=".18" stroke-width="3">
+  <path d="M740 425 L740 335 775 292 810 335 810 425Z"/>
+  <path d="M823 398 L823 260 860 214 897 260 897 398Z"/>
+  <path d="M900 420 L900 300 936 255 972 300 972 420Z"/>
+  <path d="M966 447 L966 340 1002 298 1038 340 1038 447Z"/>
+</g>
+<g fill="#d8a071" opacity=".82" filter="url(#glow)">
+  <rect x="760" y="355" width="12" height="25" rx="3"/><rect x="844" y="310" width="12" height="28" rx="3"/>
+  <rect x="922" y="347" width="12" height="25" rx="3"/><rect x="990" y="372" width="12" height="26" rx="3"/>
+</g>
+<!-- Gate rune circle -->
+<g transform="translate(892 420)">
+  <circle r="72" fill="#071010" stroke="#c98b5f" stroke-opacity=".45" stroke-width="5"/>
+  <circle r="54" fill="none" stroke="#8fe6e4" stroke-opacity=".30" stroke-width="2"/>
+  <circle r="38" fill="none" stroke="#d8f0ea" stroke-opacity=".16" stroke-width="2"/>
+  <path d="M0-38 10-12 38 0 10 12 0 38 -10 12 -38 0 -10-12Z" fill="none" stroke="#c98b5f" stroke-opacity=".70" stroke-width="3"/>
+</g>
+
+<!-- Water -->
+<path d="M0 610 C330 580 520 650 760 625 S1240 570 1800 635 L1800 900 0 900Z" fill="#041012"/>
+<path d="M0 660 C310 620 520 690 780 660 S1280 620 1800 676" fill="none" stroke="#87ddd7" stroke-opacity=".18" stroke-width="7"/>
+<path d="M0 700 C300 665 560 735 820 700 S1280 670 1800 720" fill="none" stroke="#87ddd7" stroke-opacity=".08" stroke-width="4"/>
+
+<!-- Waterfalls -->
+<g opacity=".55" filter="url(#blur10)" fill="url(#ice)">
+  <path d="M300 500 C315 540 320 580 330 640 L350 640 C345 580 342 535 350 500Z"/>
+  <path d="M520 515 C540 560 550 595 560 655 L579 655 C568 592 568 550 585 515Z"/>
+  <path d="M1220 500 C1235 553 1240 590 1254 653 L1275 653 C1260 587 1261 547 1280 500Z"/>
+  <path d="M1450 520 C1462 570 1472 610 1480 660 L1500 660 C1490 603 1491 566 1510 520Z"/>
+</g>
+
+<!-- Viking longships -->
+<g stroke="#b9805d" stroke-opacity=".78" stroke-width="3" fill="#091111">
+  <path d="M465 735 Q545 770 625 735 L600 760 Q545 784 490 759Z"/>
+  <path d="M510 735 L510 610"/><path d="M510 620 L566 646 510 655Z"/>
+  <path d="M1020 730 Q1095 760 1170 728 L1144 754 Q1098 770 1040 748Z"/>
+  <path d="M1087 728 L1087 605"/><path d="M1087 615 L1143 642 1087 650Z"/>
+  <path d="M1260 790 Q1310 812 1360 788 L1343 807 Q1310 818 1270 805Z"/>
+</g>
+
+<!-- Foreground cliffs -->
+<path d="M0 610 L160 575 300 650 430 700 530 900 0 900Z" fill="#061010"/>
+<path d="M1800 590 L1660 560 1530 650 1410 710 1320 900 1800 900Z" fill="#050c0d"/>
+
+<!-- Left raven -->
+<g transform="translate(165 458)">
+  <path d="M0 155 C-30 80 16 28 92 25 C125 24 166 39 190 74 C150 78 123 100 103 132 C75 168 36 178 0 155Z" fill="#020405" stroke="#94c9c2" stroke-opacity=".38" stroke-width="3"/>
+  <path d="M90 55 L180 74 120 92Z" fill="#0a1010" stroke="#d08a5a" stroke-opacity=".65" stroke-width="3"/>
+  <circle cx="125" cy="58" r="8" fill="#071010" stroke="#8fe6e4" stroke-width="3" filter="url(#glow)"/>
+  <path d="M72 105 C110 84 152 92 176 126 C136 116 105 131 79 155" fill="none" stroke="#c58b66" stroke-opacity=".45" stroke-width="5"/>
+</g>
+
+<!-- Right raven -->
+<g transform="translate(1615 455) scale(-1 1)">
+  <path d="M0 155 C-30 80 16 28 92 25 C125 24 166 39 190 74 C150 78 123 100 103 132 C75 168 36 178 0 155Z" fill="#020405" stroke="#94c9c2" stroke-opacity=".38" stroke-width="3"/>
+  <path d="M90 55 L180 74 120 92Z" fill="#0a1010" stroke="#d08a5a" stroke-opacity=".65" stroke-width="3"/>
+  <circle cx="125" cy="58" r="8" fill="#071010" stroke="#8fe6e4" stroke-width="3" filter="url(#glow)"/>
+  <path d="M72 105 C110 84 152 92 176 126 C136 116 105 131 79 155" fill="none" stroke="#c58b66" stroke-opacity=".45" stroke-width="5"/>
+</g>
+
+<!-- Celtic trim -->
+<rect x="28" y="28" width="1744" height="844" fill="none" stroke="url(#ice)" stroke-opacity=".16" stroke-width="2"/>
+<rect x="48" y="48" width="1704" height="804" fill="url(#knot)" opacity=".50"/>
+<!-- Rune marks -->
+<g fill="#8fe6e4" fill-opacity=".42" font-family="serif" font-size="22">
+  <text x="70" y="110">ᚠ</text><text x="70" y="180">ᚢ</text><text x="70" y="250">ᚦ</text><text x="70" y="320">ᚨ</text>
+  <text x="1692" y="110">ᚱ</text><text x="1692" y="180">ᚲ</text><text x="1692" y="250">ᚷ</text><text x="1692" y="320">ᚹ</text>
+</g>
+
+<!-- Low fog -->
+<path d="M0 610 C300 540 560 650 820 590 S1330 550 1800 620 L1800 740 C1380 650 1160 700 820 665 S320 680 0 735Z" fill="#d8f7ee" fill-opacity=".045" filter="url(#blur24)"/>
+<path d="M0 670 C360 620 660 710 930 645 S1440 625 1800 690" fill="none" stroke="#d8f7ee" stroke-opacity=".10" stroke-width="18" filter="url(#blur10)"/>
+</svg>
