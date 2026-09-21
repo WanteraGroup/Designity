@@ -1060,3 +1060,17 @@ button:active{transform:translateY(1px)}
   .nordic-header-language{display:none}
   .nordic-header-title{font-size:12px}
 }
+
+
+/* Celtic gold ambient pulse */
+@keyframes celtic-gold-pulse{
+  0%,100%{opacity:.2;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.25)}
+}
+.celtic-gold-pulse{
+  transform-origin:center;
+  animation:celtic-gold-pulse 3.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  .celtic-gold-pulse{animation:none!important;}
+}
