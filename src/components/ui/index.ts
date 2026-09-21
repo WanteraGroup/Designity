@@ -6,3 +6,4 @@ export * from './RunePulse';
 export * from './FogAndEmbers';
 export * from './HuginnPanel';
 export * from './MorphingBackground';
+export * from './SidebarMorphingBackground';
