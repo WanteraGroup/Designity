@@ -18,17 +18,17 @@ export default function Landing({ onNavigate }: LandingProps) {
         aria-hidden="true"
       />
 
-      <NordicHeader title="DESIGNLY — CREATIVE OPERATING SYSTEM" />
+      <NordicHeader title="DESIGNITY STUDIO — DIGITAL CREATIVE STUDIO" />
 
       <main className="relative z-10 flex flex-col items-center justify-center pt-24 pb-32 px-6">
         <h1 className="font-serif text-[clamp(42px,7vw,64px)] tracking-wide text-center mb-6">
-          A Nordic AI Creative OS
+          A PRÉMIUM DIGITÁLIS STÚDIÓ
         </h1>
 
         <p className="text-lg text-[#EEE8DC]/70 max-w-2xl text-center mb-12 leading-relaxed">
-          Ancient Nordic soul. Modern AI core.
+          WEB. BRAND. DESIGN. CONTENT.
           <br />
-          A teljes kreatív operációs rendszered egyetlen prémium felületen.
+          Egyetlen stúdióban: ötlettől a kész digitális munkáig.
         </p>
 
         <ForgedPanel className="max-w-xl w-full mt-10">
@@ -38,7 +38,7 @@ export default function Landing({ onNavigate }: LandingProps) {
               className="w-full py-4 text-lg"
               onClick={() => onNavigate?.("create")}
             >
-              Enter the Forge
+              MONDD EL, MIT SZERETNÉL
             </ForgedButton>
 
             <ForgedButton
@@ -46,10 +46,22 @@ export default function Landing({ onNavigate }: LandingProps) {
               className="w-full py-3"
               onClick={() => onNavigate?.("agents")}
             >
-              Explore Agents
+              AI STUDIO
             </ForgedButton>
           </div>
         </ForgedPanel>
+<div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8 w-full max-w-5xl">
+{[
+  ["WEB","Weboldalak, landingek, webappok","create"],
+  ["BRAND","Logó, arculat, brand guide","brands"],
+  ["DIGITÁLIS DESIGN","Social, banner, hirdetés, merch","create"],
+  ["CREATOR","YouTube, Twitch, Discord, stream","creator"],
+  ["ART","Tattoo, karakter, illusztráció","tattoo"],
+  ["TERVEZÉS","Alaprajz, látvány, koncepció","planner"],
+  ["VEKTOR","SVG, PDF, plotter, nyomda","create"],
+  ["CONTENT","SEO, webszöveg, reklám, videó","create"],
+].map(([title,copy,page])=><button key={title} onClick={()=>onNavigate?.(page)} className="text-left p-5 rounded-lg border border-gold-600/20 bg-black/40 hover:border-gold-400/50 transition-all"><span className="text-gold-300 text-xs tracking-widest">{title}</span><p className="mt-2 text-sm text-cream-200/60">{copy}</p></button>)}
+</div>
       </main>
     </div>
   );
