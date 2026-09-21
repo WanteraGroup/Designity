@@ -40,15 +40,23 @@ export async function generateDesign(params: GenerationParams): Promise<Generati
     }
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const response = await fetch(`${supabaseUrl}/functions/v1/ai-generate`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params),
-    });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 45000);
 
+    let response: Response;
+    try {
+      response = await fetch(supabaseUrl + '/functions/v1/ai-generate', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+        signal: controller.signal,
+      });
+    } finally {
+      window.clearTimeout(timeout);
+    }
     const data = await response.json();
 
     if (!response.ok) {
@@ -70,6 +78,13 @@ export async function generateDesign(params: GenerationParams): Promise<Generati
       creditsUsed: data.creditsUsed,
     };
   } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      return {
+        success: false,
+        error: 'GENERATION_TIMEOUT',
+        message: 'A véglegesítés túl sokáig válaszolt. Kérlek próbáld meg újra.',
+      };
+    }
     return {
       success: false,
       error: 'NETWORK_ERROR',
