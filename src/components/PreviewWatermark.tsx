@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { useAuth } from '@/lib/auth';
 
 interface PreviewWatermarkProps {
   label?: string;
@@ -7,7 +8,8 @@ interface PreviewWatermarkProps {
 }
 
 export function PreviewWatermark({ label = 'DESIGNLY · PREVIEW', projectName, hidden = false }: PreviewWatermarkProps) {
-  if (hidden) return null;
+  const { isAdmin } = useAuth();
+  if (hidden || isAdmin) return null;
   const text = projectName ? `${label} · ${projectName}` : label;
   return (
     <div className="designly-preview-watermark" aria-hidden="true">

@@ -1,4 +1,5 @@
 import { Check, CreditCard, Eye, Loader2, Sparkles, X } from 'lucide-react';
+import { useAuth } from '@/lib/auth';
 
 interface FreePreviewModalProps {
   open: boolean;
@@ -31,6 +32,7 @@ export function FreePreviewModal({
   onBuyCredits,
   approvedLoading = false,
 }: FreePreviewModalProps) {
+  const { isAdmin } = useAuth();
   if (!open) return null;
 
   const enough = balance == null || balance >= cost;
@@ -63,18 +65,27 @@ export function FreePreviewModal({
               ) : imageUrl ? (
                 <div
                   className="relative max-h-[72vh] w-full overflow-hidden"
-                  onContextMenu={(e) => e.preventDefault()}
-                  onDragStart={(e) => e.preventDefault()}
+                  onContextMenu={isAdmin ? undefined : (e) => e.preventDefault()}
+                  onDragStart={isAdmin ? undefined : (e) => e.preventDefault()}
                 >
-                  <img src={imageUrl} alt={title + ' AI preview'} className="block max-h-[72vh] w-full object-contain select-none pointer-events-none" draggable={false} />
-                  <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
-                    <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
-                      DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
-                    </div>
-                  </div>
-                  <div className="pointer-events-none absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[9px] uppercase tracking-[.18em] text-white/60 backdrop-blur-sm">
-                    VÍZJELZETT ELŐNÉZET · LETÖLTÉS A JÓVÁHAGYÁS UTÁN
-                  </div>
+                  <img
+                    src={imageUrl}
+                    alt={title + ' AI preview'}
+                    className={`block max-h-[72vh] w-full object-contain ${isAdmin ? 'pointer-events-auto' : 'select-none pointer-events-none'}`}
+                    draggable={isAdmin}
+                  />
+                  {!isAdmin && (
+                    <>
+                      <div className="pointer-events-none absolute inset-0 grid place-items-center overflow-hidden">
+                        <div className="rotate-[-18deg] whitespace-nowrap text-[clamp(18px,4vw,54px)] font-black tracking-[.35em] text-black/20">
+                          DESIGNLY · ELŐNÉZET · NEM LETÖLTHETŐ
+                        </div>
+                      </div>
+                      <div className="pointer-events-none absolute bottom-3 left-3 right-3 rounded-lg border border-white/15 bg-black/45 px-3 py-2 text-center text-[9px] uppercase tracking-[.18em] text-white/60 backdrop-blur-sm">
+                        VÍZJELZETT ELŐNÉZET · LETÖLTÉS A JÓVÁHAGYÁS UTÁN
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="min-h-[52vh] grid place-items-center text-center text-black/50 px-8">
