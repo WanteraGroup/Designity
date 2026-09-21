@@ -14,12 +14,14 @@ interface MorphingBackgroundProps {
   intervalMs?: number;
   transitionMs?: number;
   className?: string;
+  global?: boolean;
 }
 
 export function MorphingBackground({
   intervalMs = 8000,
   transitionMs = 4000,
   className = '',
+  global = false,
 }: MorphingBackgroundProps) {
   const [index, setIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState(0);
@@ -62,7 +64,7 @@ export function MorphingBackground({
 
   return (
     <div
-      className={`pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#020505] ${className}`}
+      className={`pointer-events-none overflow-hidden bg-[#020505] ${global ? 'fixed inset-0 z-[5]' : 'absolute inset-0 z-0'} ${className}`}
       aria-hidden="true"
     >
       <div
@@ -82,11 +84,18 @@ export function MorphingBackground({
         }}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-b from-[#020505]/30 via-[#020505]/45 to-[#020505]/94" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(156,238,229,.07),transparent_35%),radial-gradient(circle_at_50%_100%,rgba(214,179,106,.05),transparent_42%)]" />
+      {!global && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#020505]/30 via-[#020505]/45 to-[#020505]/94" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(156,238,229,.07),transparent_35%),radial-gradient(circle_at_50%_100%,rgba(214,179,106,.05),transparent_42%)]" />
+        </>
+      )}
+      {global && (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(156,238,229,.07),transparent_38%)] opacity-60" />
+      )}
 
       <div
-        className="absolute inset-[-6%] opacity-[0.20] animate-[fogMove_18s_linear_infinite]"
+        className={`absolute inset-[-6%] animate-[fogMove_18s_linear_infinite] ${global ? 'opacity-[0.08]' : 'opacity-[0.20]'}`}
         style={{
           backgroundImage:
             'radial-gradient(ellipse at 15% 40%, rgba(220,230,226,.16), transparent 28%), radial-gradient(ellipse at 68% 58%, rgba(188,205,198,.12), transparent 30%)',
@@ -94,7 +103,7 @@ export function MorphingBackground({
       />
 
       <div
-        className="absolute inset-0 opacity-[0.18] animate-[embersFloat_12s_linear_infinite]"
+        className={`absolute inset-0 animate-[embersFloat_12s_linear_infinite] ${global ? 'opacity-[0.08]' : 'opacity-[0.18]'}`}
         style={{
           backgroundImage:
             'radial-gradient(circle at 10% 82%, rgba(214,179,106,.85) 0 1px, transparent 2px), radial-gradient(circle at 28% 65%, rgba(242,217,154,.72) 0 1px, transparent 2px), radial-gradient(circle at 47% 78%, rgba(214,179,106,.78) 0 1px, transparent 2px), radial-gradient(circle at 71% 54%, rgba(242,217,154,.65) 0 1px, transparent 2px), radial-gradient(circle at 89% 75%, rgba(214,179,106,.82) 0 1px, transparent 2px)',
