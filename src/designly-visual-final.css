@@ -1116,3 +1116,14 @@ button:active{transform:translateY(1px)}
     transform: none !important;
   }
 }
+
+
+/* Nordic page transition */
+@keyframes pageTransitionEnter {
+  0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(.985); filter: blur(8px); }
+  55% { opacity: .78; transform: translate3d(0, 3px, 0) scale(.997); filter: blur(1.5px); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+.page-transition-preparing{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
+.page-transition-entered{animation:pageTransitionEnter var(--page-transition-duration,650ms) cubic-bezier(.22,1,.36,1) both}
+@media (prefers-reduced-motion:reduce){.page-transition-entered{animation:none!important}.page-transition-preparing{opacity:1;transform:none;filter:none}}
