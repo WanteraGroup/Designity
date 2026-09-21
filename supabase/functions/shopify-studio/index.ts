@@ -31,10 +31,16 @@ let cachedAccessToken: { token: string; expiresAt: number } | null = null;
 
 async function getShopifyAccessToken() {
   const shop = getShopDomain();
-  const clientId = Deno.env.get("SHOPIFY_CLIENT_ID");
-  const clientSecret = Deno.env.get("SHOPIFY_CLIENT_SECRET");
 
-  if (!clientId || !clientSecret) throw new Error("SHOPIFY_NOT_CONFIGURED");
+  // Prefer a securely stored static token when supplied. This also supports
+  // legacy custom-app setups while keeping the token server-side.
+  const staticToken = String(Deno.env.get("SHOPIFY_ACCESS_TOKEN") || "").trim();
+  if (staticToken) return staticToken;
+
+  const clientId = String(Deno.env.get("SHOPIFY_CLIENT_ID") || "").trim();
+  const clientSecret = String(Deno.env.get("SHOPIFY_CLIENT_SECRET") || "").trim();
+
+  if (!clientId || !clientSecret) throw new Error("SHOPIFY_CREDENTIALS_MISSING");
 
   const now = Date.now();
   if (cachedAccessToken && cachedAccessToken.expiresAt > now + 60_000) {
@@ -96,6 +102,23 @@ async function shopifyGraphql(query: string, variables: Record<string, unknown> 
   return body.data;
 }
 
+async function getShopifyConfigStatus() {
+  const shop = String(Deno.env.get("SHOPIFY_SHOP") || "").trim();
+  const hasStaticToken = Boolean(String(Deno.env.get("SHOPIFY_ACCESS_TOKEN") || "").trim());
+  const hasClientId = Boolean(String(Deno.env.get("SHOPIFY_CLIENT_ID") || "").trim());
+  const hasClientSecret = Boolean(String(Deno.env.get("SHOPIFY_CLIENT_SECRET") || "").trim());
+
+  return {
+    configured: Boolean(shop && (hasStaticToken || (hasClientId && hasClientSecret))),
+    shop: shop || null,
+    authMode: hasStaticToken ? "access_token" : (hasClientId && hasClientSecret ? "client_credentials" : "missing"),
+    hasShop: Boolean(shop),
+    hasStaticToken,
+    hasClientId,
+    hasClientSecret,
+  };
+}
+
 async function assertAdmin(req: Request) {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) throw new Error("NO_SESSION");
@@ -134,6 +157,44 @@ Deno.serve(async (req: Request) => {
     await assertAdmin(req);
     const body = await req.json().catch(() => ({}));
     const action = body.action || "list";
+
+    if (action === "health") {
+      const config = await getShopifyConfigStatus();
+      if (!config.configured) {
+        return json({
+          success: true,
+          connected: false,
+          config,
+          message: "A Shopify kapcsolat konfigurációja hiányos.",
+        });
+      }
+      try {
+        const data = await shopifyGraphql(`
+          query {
+            shop { name currencyCode primaryDomain { url } }
+          }
+        `);
+        return json({
+          success: true,
+          connected: true,
+          config,
+          shop: {
+            name: data.shop.name,
+            domain: new URL(data.shop.primaryDomain.url).hostname,
+            currencyCode: data.shop.currencyCode || "HUF",
+          },
+        });
+      } catch (healthError) {
+        const code = healthError instanceof Error ? healthError.message : "SHOPIFY_CONNECTION_ERROR";
+        return json({
+          success: true,
+          connected: false,
+          config,
+          error: code,
+          message: "A Shopify hitelesítés vagy API kapcsolat nem sikerült.",
+        });
+      }
+    }
 
     if (action === "list") {
       const data = await shopifyGraphql(`
@@ -233,7 +294,30 @@ Deno.serve(async (req: Request) => {
     const code = error instanceof Error ? error.message : "INTERNAL_ERROR";
     if (code === "NO_SESSION") return json({ error: code, message: "Bejelentkezés szükséges." }, 401);
     if (code === "FORBIDDEN") return json({ error: code, message: "Csak admin vagy owner kezelheti a Shopify modult." }, 403);
-    if (code === "SHOPIFY_NOT_CONFIGURED") return json({ error: code, message: "A Shopify szerveroldali kapcsolat még nincs beállítva. A SHOPIFY_SHOP, SHOPIFY_CLIENT_ID és SHOPIFY_CLIENT_SECRET Supabase secret szükséges." }, 503);
+    if (code === "SHOPIFY_NOT_CONFIGURED" || code === "SHOPIFY_CREDENTIALS_MISSING") {
+      return json({
+        error: "SHOPIFY_NOT_CONFIGURED",
+        message: "A Shopify szerveroldali kapcsolat nincs teljesen konfigurálva. A Supabase Edge Function secretjei közül a SHOPIFY_SHOP és vagy SHOPIFY_ACCESS_TOKEN, vagy SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET szükséges.",
+      }, 503);
+    }
+    if (code === "SHOPIFY_AUTH_ERROR") {
+      return json({
+        error: code,
+        message: "A Shopify hitelesítés sikertelen. Ellenőrizd a Client ID/Secret értékeket, az app telepítését és a szükséges hozzáférési scope-okat.",
+      }, 502);
+    }
+    if (code === "SHOPIFY_GRAPHQL_ERROR") {
+      return json({
+        error: code,
+        message: "A Shopify Admin API GraphQL kérés hibát adott. Ellenőrizd az app scope-jait és a Shopify app verzióját.",
+      }, 502);
+    }
+    if (code === "SHOPIFY_API_ERROR") {
+      return json({
+        error: code,
+        message: "A Shopify Admin API nem fogadta el a kérést.",
+      }, 502);
+    }
     if (code === "PROFILE_LOOKUP_FAILED") return json({ error: code, message: "A felhasználói jogosultság ellenőrzése sikertelen." }, 500);
     if (code === "SERVER_CONFIG_ERROR") return json({ error: code, message: "A Supabase szerver konfiguráció hiányos." }, 500);
     console.error("shopify-studio error", error);
