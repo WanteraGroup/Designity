@@ -56,8 +56,12 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-// Landing visuals (odin-hero etc.) live in index.css, imported from main.tsx.
-// This layer only ADDS application chrome — it never strips the landing shell.
+// Visual system.
+//   index.css   - Tailwind base + shared primitives (imported in main.tsx)
+//   forge       - the public landing surface, written from scratch
+//   shell       - application chrome (dashboard sidebar, nordic header)
+import './designly-forge-part2.css';
+import './designly-forge-part3.css';
 import './designly-theme-overrides.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
