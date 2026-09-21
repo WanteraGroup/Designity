@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Activity, Bot, Cog, FolderOpen, Globe2, Mic, Music2, Palette, Radio, Sparkles, Store, Wrench } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { ForgedPanel, NordicHeader, ForgedButton, FogAndEmbers, HuginnPanel } from '@/components/ui';
+import { CelticGoldFrame, ForgedPanel, NordicHeader, ForgedButton, FogAndEmbers, HuginnPanel, RunePulse } from '@/components/ui';
 import type { Project } from '@/types';
 
 interface DashboardProps {
@@ -104,12 +104,21 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                 <button
                   key={module.id}
                   onClick={() => onNavigate(module.id)}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#9CEEE5]/30 bg-[#020505]/85 px-4 py-3 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] backdrop-blur-md transition-all duration-300 hover:-translate-x-1/2 hover:-translate-y-[55%] hover:border-[#D6B36A]/50 hover:bg-[#0b1514]"
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border px-4 py-3 text-left shadow-[0_10px_30px_rgba(0,0,0,.35)] backdrop-blur-md transition-all duration-300 hover:-translate-x-1/2 hover:-translate-y-[55%] ${module.id === 'campaign' ? 'overflow-hidden border-[#263636] bg-[#071311]/70' : 'border-[#9CEEE5]/30 bg-[#020505]/85 hover:border-[#D6B36A]/50 hover:bg-[#0b1514]'}`}
                   style={{ left: `${x}%`, top: `${y}%` }}
                 >
-                  <span className="flex items-center gap-2">
+                  {module.id === 'campaign' && (
+                    <>
+                      <FogAndEmbers />
+                      <CelticGoldFrame intensity="soft" />
+                      <RunePulse rune="ᚱ" duration="2s" />
+                    </>
+                  )}
+                  <span className="relative z-30 flex items-center gap-2">
                     <Icon className="h-4 w-4 text-[#D6B36A]/80" />
-                    <span className="text-[10px] uppercase tracking-[.18em] text-[#E3FFFB]">{module.label}</span>
+                    <span className="text-[10px] uppercase tracking-[.18em] text-[#E3FFFB]">
+                      {module.id === 'campaign' ? 'Kampányok' : module.label}
+                    </span>
                   </span>
                 </button>
               );
