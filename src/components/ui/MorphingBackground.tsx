@@ -62,7 +62,7 @@ export function MorphingBackground({
 
   return (
     <div
-      className={`pointer-events-none absolute inset-0 -z-0 overflow-hidden bg-[#020505] ${className}`}
+      className={`pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#020505] ${className}`}
       aria-hidden="true"
     >
       <div
