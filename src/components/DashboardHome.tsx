@@ -190,7 +190,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
               <InfinityIcon className="w-5 h-5 text-gold-400" />
             </div>
             <p className="text-sm text-cream-300/60">
-              {isOwner ? '100 000 000 tulajdonosi kredit · nincs kreditlevonás · korlátlan DESIGNLY AI használat.' : t('dash.ownerDesc')}
+              {isOwner ? '100 000 000 tulajdonosi tesztkredit · a végleges generálásokból valódi kredit levonás történik.' : t('dash.ownerDesc')}
             </p>
           </div>
         </div>
