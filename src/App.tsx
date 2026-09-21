@@ -208,7 +208,7 @@ function AppInner() {
   const isEditor = page === 'editor';
 
   const contentWrapperClass = isDashboard
-    ? 'lg:pl-60 pt-14 lg:pt-0'
+    ? 'lg:pl-72 pt-14 lg:pt-0'
     : '';
 
   return (
