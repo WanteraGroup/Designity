@@ -50,6 +50,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
   const product = PRODUCTS.find((item) => item.id === productId) || PRODUCTS[0];
   const Icon = product.icon;
   const cost = getCreditsForType('custom');
+  const finalCost = isUnlimited ? 0 : cost;
   const enough = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const buildPreview = async () => {
@@ -106,9 +107,9 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
     setPreviewId(preview.previewId || null);
   };
 
-  const generate = async () => {
-    if (!profile || !previewId) return;
-    if (!enough) { setShowCreditModal(true); return; }
+  const generate = async (): Promise<boolean> => {
+    if (!profile || !previewId) return false;
+    if (!enough) { setShowCreditModal(true); return false; }
     const creatorName = creator.trim() || 'CREATOR';
     const channelName = channel.trim() || creatorName;
     const customBrief = [
@@ -136,7 +137,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
     if (!result.success) {
       setError(result.message || 'A merch generálás nem sikerült.');
       setGenerating(false);
-      return;
+      return false;
     }
 
     const nextImage = (result.result?.imageUrl as string) || null;
@@ -164,7 +165,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
       setError(projectError?.message || 'A merch elkészült, de a projekt mentése nem sikerült.');
       setStatus('');
       setGenerating(false);
-      return;
+      return false;
     }
 
     await refreshProfile();
@@ -173,6 +174,7 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
     setStatus('Kész · gyártásra előkészíthető');
     setGenerating(false);
     setShowSpec(true);
+    return true;
   };
 
   const downloadSpec = () => {
@@ -263,10 +265,13 @@ export function CreatorMerchPage({ onNavigate }: CreatorMerchPageProps) {
         title={product.label + ' · Merch előnézet'}
         imageUrl={previewImage}
         loading={previewLoading}
-        cost={cost}
+        cost={finalCost}
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
-        onApprove={() => void generate().then(() => setPreviewOpen(false))}
+        onApprove={async () => {
+          const ok = await generate();
+          if (ok) setPreviewOpen(false);
+        }}
         onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewId(null); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
