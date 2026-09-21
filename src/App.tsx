@@ -23,6 +23,7 @@ import Brands from '@/pages/Brands';
 import Templates from '@/pages/Templates';
 import Tattoo from '@/pages/Tattoo';
 import Planner from '@/pages/Planner';
+import Credits from '@/pages/Credits';
 import Projects from '@/pages/Projects';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
@@ -197,7 +198,7 @@ function AppInner() {
       case 'planner': return <Planner onNavigate={navigate} />;
       case 'planner-workspace': return <DesignPlannerPage onNavigate={navigate} />;
       case 'assets': return <AssetsPage onNavigate={navigate} />;
-      case 'credits': return <CreditsPage onNavigate={navigate} />;
+      case 'credits': return <Credits onNavigate={navigate} />;
       case 'billing': return <BillingPage onNavigate={navigate} />;
       case 'settings': return <SettingsPage onNavigate={navigate} />;
       case 'admin': return <AdminPage onNavigate={navigate} />;
