@@ -51,6 +51,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
   }, [profile]);
 
   const cost = getCreditsForType('advertisement');
+  const finalCost = isUnlimited ? 0 : cost;
   const hasEnoughCredits = isUnlimited || (profile?.credits ?? 0) >= cost;
 
   const toggleFormat = (fmt: string) => {
@@ -96,8 +97,8 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     setPreviewImage(firstImage);
   };
 
-  const handleGenerate = async () => {
-    if (!profile || selectedFormats.length === 0 || Object.keys(previewIds).length === 0) return;
+  const handleGenerate = async (): Promise<boolean> => {
+    if (!profile || selectedFormats.length === 0 || Object.keys(previewIds).length === 0) return false;
     setError(null);
     setProviderNotConfigured(false);
 
@@ -105,7 +106,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     if (!isUnlimited && (profile.credits ?? 0) < totalCost) {
       setError(t('gen.insufficientCredits'));
       setShowCreditModal(true);
-      return;
+      return false;
     }
 
     setGenerating(true);
@@ -142,7 +143,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     if (campError) {
       setError(campError.message);
       setGenerating(false);
-      return;
+      return false;
     }
 
     setCampaignId(campaign.id);
@@ -199,7 +200,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     if (!allSuccess && providerNotConfigured) {
       setError(t('ad.providerNotConfigured'));
       setGenerating(false);
-      return;
+      return false;
     }
 
     await refreshProfile();
@@ -207,6 +208,7 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
     await new Promise((r) => setTimeout(r, 800));
     setGenerating(false);
     setStep(4);
+    return true;
   };
 
   if (generating) {
@@ -445,10 +447,13 @@ export function CampaignGenerator({ onNavigate }: CampaignGeneratorProps) {
         title="AI Campaign Preview"
         imageUrl={previewImage}
         loading={previewLoading}
-        cost={cost * Math.max(1, selectedFormats.length)}
+        cost={finalCost * Math.max(1, selectedFormats.length)}
         balance={profile?.credits}
         onClose={() => setPreviewOpen(false)}
-        onApprove={() => void handleGenerate()}
+        onApprove={async () => {
+          const ok = await handleGenerate();
+          if (ok) setPreviewOpen(false);
+        }}
         onModify={() => { setPreviewOpen(false); setPreviewImage(null); setPreviewIds({}); }}
         onBuyCredits={() => setShowCreditModal(true)}
         approvedLoading={generating}
