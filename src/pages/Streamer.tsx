@@ -1,5 +1,5 @@
 import { Activity, Radio, Sparkles, Tv2, Users, Video } from 'lucide-react';
-import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
+import { ForgedPanel, ForgedButton, NordicHeader, FogAndEmbers } from '@/components/ui';
 
 interface StreamerProps {
   onNavigate: (page: string) => void;
@@ -13,6 +13,7 @@ export default function Streamer({ onNavigate }: StreamerProps) {
         style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }}
         aria-hidden="true"
       />
+      <FogAndEmbers />
       <div
         className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95"
         aria-hidden="true"
