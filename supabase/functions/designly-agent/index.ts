@@ -594,6 +594,7 @@ Return one coherent structured result.`;
       creditsUsed: 0,
       previewId,
       previewImageUrl,
+      previewMode,
       designBrief: structured,
       activeAgents,
       specialistPlan: {
