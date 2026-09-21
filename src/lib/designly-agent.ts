@@ -28,6 +28,7 @@ export interface MasterAgentResult {
   creditsUsed?: number;
   previewId?: string | null;
   previewImageUrl?: string | null;
+  previewMode?: 'ai' | 'fallback';
   activeAgents?: string[];
   designBrief?: DesignBrief;
   orchestration?: { agents: string[]; capabilities: string[]; reasons: Record<string, string>; teamExecuted: boolean; specialistOutputs: Array<{ agent: string; deliverable: string; decisions: string[] }>; buildSpec: { pages: Array<{ path: string; title: string; sections: string[] }>; sections: Array<{ id: string; type: string; title: string; content?: string }>; components: Array<{ name: string; purpose: string }>; content: Record<string, unknown>; interactions: string[]; responsiveRules: string[]; acceptanceCriteria: string[] }; qaStatus: 'PASS' | 'BLOCK'; blockers: string[]; };
