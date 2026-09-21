@@ -56,11 +56,12 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-// Brand system. One layer, one file, no !important.
-//   index.css  - Tailwind base + shared primitives (imported in main.tsx)
-//   brand      - black + gold Celtic knotwork, Norse picture layer
-// Everything the old 11 stylesheets did for the landing now lives in brand.
+// Brand system - two files, one layer, no !important on the landing.
+//   index.css          Tailwind base + shared primitives (imported in main.tsx)
+//   designly-brand     public landing: black + gold Celtic knotwork
+//   designly-brand-shell  app chrome: CommandDeck, NordicHeader, app background
 import './designly-brand.css';
+import './designly-brand-shell.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
