@@ -3,6 +3,7 @@ import './designly-dashboard-overrides.css';
 import './designly-forged-system.css';
 import './designly-forged-landing.css';
 import './designly-viking-frost.css';
+import './designly-odin-hall.css';
 import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
