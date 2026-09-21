@@ -584,7 +584,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
                   <Sparkles className="w-5 h-5 text-gold-400" />
                 </div>
                 <div className="text-xs font-medium text-cream-100">{item.label}</div>
-                <div className="text-[10px] text-gold-400 mt-1">{isUnlimited ? '∞' : `${item.credits} credits`}</div>
+                <div className="text-[10px] text-gold-400 mt-1">{billableAccount ? `${item.credits} credits` : (isUnlimited ? '∞' : `${item.credits} credits`)}</div>
               </button>
             ))}
           </div>
