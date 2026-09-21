@@ -31,6 +31,7 @@ import Diagnostics from '@/pages/Diagnostics';
 import Projects from '@/pages/Projects';
 import Editor from '@/pages/Editor';
 import Creator from '@/pages/Creator';
+import Streamer from '@/pages/Streamer';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
@@ -67,14 +68,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'editor-workspace' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'creator-workspace' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
+  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'editor-workspace' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'creator-workspace' | 'streamer' | 'streamer-workspace' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'admin-workspace', 'editor', 'editor-workspace', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'creator-workspace', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
+  'settings', 'admin', 'admin-workspace', 'editor', 'editor-workspace', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'creator-workspace', 'streamer', 'streamer-workspace', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
 ];
 
 function pageFromHash(): Page {
@@ -222,7 +223,8 @@ function AppInner() {
       case 'shopify-workspace': return <ShopifyStudioPage onNavigate={navigate} />;
       case 'creator': return <Creator onNavigate={navigate} />;
       case 'creator-workspace': return <CreatorMerchPage onNavigate={navigate} />;
-      case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
+      case 'streamer': return <Streamer onNavigate={navigate} />;
+      case 'streamer-workspace': return <StreamerStudioPage onNavigate={navigate} />;
       case 'cnc': return <CNC onNavigate={navigate} />;
       case 'cnc-workspace': return <CncCamPage />;
       case 'diagnostics': return <Diagnostics onNavigate={navigate} />;
@@ -276,6 +278,8 @@ function AppInner() {
     'cnc-workspace': 'CNC CAM WORKSPACE',
     creator: 'CREATOR HUB',
     'creator-workspace': 'CREATOR / GAMER PRODUCT STUDIO',
+    streamer: 'STREAM HALL',
+    'streamer-workspace': 'STREAMER STUDIO',
     streamer: 'STREAMER STUDIO',
     cnc: 'CNC CAM',
     diagnostics: 'SYSTEM DIAGNOSTICS',
