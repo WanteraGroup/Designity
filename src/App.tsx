@@ -63,6 +63,7 @@ import { CncCamPage } from '@/components/CncCamPage';
 import { DiagnosticsPage } from '@/components/DiagnosticsPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
+import MorphingBackground from '@/components/ui/MorphingBackground';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
@@ -291,7 +292,8 @@ function AppInner() {
   const dashboardTitle = pageTitles[page] ?? 'DESIGNLY';
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="relative min-h-screen bg-transparent">
+      <MorphingBackground global className="mix-blend-soft-light opacity-[0.18]" />
       {isPublic && page !== 'landing' && <PublicNav onNavigate={navigate} currentPage={page} />}
       {isDashboard && <DashNav currentPage={page} onNavigate={navigate} />}
 
