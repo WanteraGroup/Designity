@@ -50,6 +50,11 @@ export function CelticGoldFrame({
         aria-hidden="true"
       />
 
+      <div
+        className="celtic-gold-pulse absolute inset-[11px] rounded-[10px] border border-[#D6B36A]/25"
+        aria-hidden="true"
+      />
+
       {/* Sarok díszek */}
       <Corner className="left-0 top-0" />
       <Corner className="right-0 top-0 rotate-90" />
