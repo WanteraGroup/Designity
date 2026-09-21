@@ -19,6 +19,7 @@ import Music from '@/pages/Music';
 import Voice from '@/pages/Voice';
 import Translator from '@/pages/Translator';
 import Shopify from '@/pages/Shopify';
+import Projects from '@/pages/Projects';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
@@ -185,7 +186,7 @@ function AppInner() {
       case 'advertising': return <AdvertisingStudio onNavigate={navigate} />;
       case 'campaign': return <Campaigns onNavigate={navigate} />;
       case 'campaign-workspace': return <CampaignGenerator onNavigate={navigate} />;
-      case 'projects': return <ProjectsPage onNavigate={navigate} />;
+      case 'projects': return <Projects onNavigate={navigate} />;
       case 'brands': return <BrandsPage onNavigate={navigate} />;
       case 'templates': return <TemplatesPage onNavigate={navigate} />;
       case 'tattoo': return <TattooLibraryPage onNavigate={navigate} />;
