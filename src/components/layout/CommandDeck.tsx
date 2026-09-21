@@ -67,13 +67,13 @@ export function CommandDeck({
 
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto relative z-10">
         {menuItems.map((item) => {
-          const isActive = active === item.id;
+          const isActive = true;
 
           return (
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              aria-current={isActive ? 'page' : undefined}
+              aria-current={active === item.id ? 'page' : undefined}
               className={[
                 'relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]',
                 'transition-all duration-200',
