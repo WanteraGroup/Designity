@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Users, CreditCard, Settings, BarChart3, Shield, Infinity as InfinityIcon,
   Gift, Mail, Save, RefreshCw, RotateCcw,
@@ -25,6 +25,7 @@ interface GiftRow {
 }
 
 const publicPlanIds = ['free', 'starter', 'pro', 'business', 'agency', 'ultimate'];
+const costDefaults = GENERATION_COSTS.map((item) => item.credits);
 
 export function AdminPage({ onNavigate }: AdminPageProps) {
   const { t, lang } = useI18n();
@@ -39,6 +40,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [editCosts, setEditCosts] = useState(GENERATION_COSTS.map((c) => c.credits));
   const [savedMsg, setSavedMsg] = useState(false);
+  const [loadingCosts, setLoadingCosts] = useState(false);
 
   const [giftEmail, setGiftEmail] = useState('');
   const [giftType, setGiftType] = useState<'full_unlock' | 'plan' | 'credits'>('full_unlock');
@@ -48,6 +50,36 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
   const [giftMessage, setGiftMessage] = useState('');
   const [gifts, setGifts] = useState<GiftRow[]>([]);
   const [loadingGifts, setLoadingGifts] = useState(false);
+
+  useEffect(() => {
+    if (!isOwner) return;
+    let active = true;
+
+    const loadCosts = async () => {
+      setLoadingCosts(true);
+      const { data, error } = await supabase
+        .from('system_settings')
+        .select('value')
+        .eq('key', 'generation_costs')
+        .maybeSingle();
+
+      if (!active) return;
+
+      if (!error && data?.value && typeof data.value === 'object') {
+        const values = data.value as Record<string, unknown>;
+        setEditCosts(GENERATION_COSTS.map((item, index) => {
+          const raw = values[item.type];
+          const value = typeof raw === 'number' ? raw : Number(raw);
+          return Number.isFinite(value) && value > 0 ? Math.round(value) : costDefaults[index];
+        }));
+      }
+
+      setLoadingCosts(false);
+    };
+
+    void loadCosts();
+    return () => { active = false; };
+  }, [isOwner]);
 
   if (!isAdmin) {
     return (
@@ -203,9 +235,14 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           <p className="text-xs text-cream-300/50">{t('admin.subtitle')}</p>
         </div>
         {isOwner && (
-          <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300 ml-auto">
-            <InfinityIcon className="w-3 h-3" /> OWNER
-          </span>
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+            <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300">
+              <InfinityIcon className="w-3 h-3" /> OWNER
+            </span>
+            <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300">
+              100 000 000 KREDIT · KORLÁTLAN
+            </span>
+          </div>
         )}
       </div>
 
@@ -437,7 +474,10 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
       {tab === 'costs' && isOwner && (
         <div className="space-y-4">
           <div className="card-lux p-6">
-            <h3 className="text-lg font-display font-semibold text-cream-100 mb-4">{t('admin.genCostsTitle')}</h3>
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h3 className="text-lg font-display font-semibold text-cream-100">{t('admin.genCostsTitle')}</h3>
+              {loadingCosts && <span className="text-xs text-cream-300/40">Betöltés…</span>}
+            </div>
             <p className="text-xs text-cream-300/50 mb-6">{t('admin.genCostsDesc')}</p>
             <div className="space-y-3">
               {GENERATION_COSTS.map((c, i) => (
@@ -447,7 +487,6 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
                     <input
                       type="number"
                       min={1}
-                      max={50}
                       value={editCosts[i]}
                       onChange={(e) => setEditCosts(prev => prev.map((v, j) => j === i ? parseInt(e.target.value) || 1 : v))}
                       className="w-20 px-3 py-1.5 bg-ink-700 border border-ink-600/40 rounded-lg text-cream-100 text-right focus:outline-none focus:border-gold-600/60"
