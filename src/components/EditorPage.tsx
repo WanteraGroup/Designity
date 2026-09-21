@@ -1,3 +1,4 @@
+import { ForgedButton, NordicHeader } from '@/components/ui';
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import {
   Monitor,
@@ -605,12 +606,8 @@ function buildBusinessPreviewSpec(spec: any, projectName: string, design: Design
     pick(/scale|növek|growth/i, 'Scale & Optimize'),
   ];
   return (
-    <div className="min-h-[1100px] bg-[#070707] text-[#f5f0e6]">
-      <header className="h-16 px-7 flex items-center justify-between border-b border-[#d6aa4a33] bg-black">
-        <div className="flex items-center gap-3"><div className="w-9 h-9 rounded-full border border-[#d6aa4a88] flex items-center justify-center text-[#d6aa4a]">ᛟ</div><div className="font-display tracking-[.18em] text-sm">{projectName.toUpperCase()}</div></div>
-        <nav className="hidden sm:flex gap-5 text-[10px] text-[#cfc7b5aa] uppercase"><span>Home</span><span>Services</span><span>Solutions</span><span>Pricing</span><span>About</span></nav>
-        <button className="px-3 py-2 rounded-md text-[10px] font-semibold bg-[#d6aa4a] text-black">GET STARTED</button>
-      </header>
+    <div className="min-h-[1100px] bg-transparent text-[#f5f0e6]">
+      <NordicHeader title={projectName.toUpperCase()} userLabel="EDITOR" />
       <section className="relative px-8 py-20 min-h-[430px] flex items-center overflow-hidden" style={{ background:'radial-gradient(circle at 72% 35%,rgba(214,170,74,.25),transparent 28%),linear-gradient(120deg,#050505,#17130b,#050505)' }}>
         <div className="absolute right-[8%] top-10 w-64 h-64 rounded-full border-[18px] border-[#d6aa4a55] flex items-center justify-center"><div className="w-40 h-40 rounded-full border border-[#d6aa4a99] flex items-center justify-center text-7xl text-[#d6aa4a]">ᛟ</div></div>
         <div className="relative z-[1] max-w-xl"><div className="text-[10px] uppercase tracking-[.3em] text-[#d6aa4a] mb-4">AUTOMATE. BUILD. SCALE.</div><h1 className="text-4xl lg:text-6xl font-display font-bold leading-[.95] mb-5">{design.heroTitle || projectName}</h1><p className="text-sm leading-6 text-[#f5f0e699] max-w-lg mb-7">{design.heroDescription || 'Prémium, AI-alapú üzleti rendszer automatikus felépítéssel.'}</p><button className="px-6 py-3 rounded-md font-semibold text-xs bg-[#d6aa4a] text-black">{design.heroButton || 'EXPLORE SOLUTIONS →'}</button></div>
