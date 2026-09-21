@@ -62,7 +62,7 @@ function clampHistory<T>(items: T[], limit = 30) {
 
 export function EditorPage({ onNavigate }: EditorPageProps) {
   const { t } = useI18n();
-  const { profile, isUnlimited, refreshProfile } = useAuth();
+  const { profile, isUnlimited, isAdmin, refreshProfile } = useAuth();
   const [device, setDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [selectedElement, setSelectedElement] = useState<string | null>('hero');
   const [aiCommand, setAiCommand] = useState('');
@@ -184,7 +184,7 @@ export function EditorPage({ onNavigate }: EditorPageProps) {
   const approveAiCommand = async () => {
     if (!pendingAiDesign || aiLoading) return;
 
-    if (!isUnlimited && (profile?.credits ?? 0) < 1) {
+    if ((isAdmin || !isUnlimited) && (profile?.credits ?? 0) < 1) {
       setAiError('Ehhez az AI szerkesztéshez 1 kredit szükséges.');
       setShowCreditModal(true);
       return;
