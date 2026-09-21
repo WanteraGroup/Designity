@@ -26,6 +26,7 @@ import Planner from '@/pages/Planner';
 import Credits from '@/pages/Credits';
 import Billing from '@/pages/Billing';
 import Settings from '@/pages/Settings';
+import Admin from '@/pages/Admin';
 import Projects from '@/pages/Projects';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
@@ -63,14 +64,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics';
+  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics',
+  'settings', 'admin', 'admin-workspace', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics',
 ];
 
 function pageFromHash(): Page {
@@ -203,7 +204,8 @@ function AppInner() {
       case 'credits': return <Credits onNavigate={navigate} />;
       case 'billing': return <Billing onNavigate={navigate} />;
       case 'settings': return <Settings onNavigate={navigate} />;
-      case 'admin': return <AdminPage onNavigate={navigate} />;
+      case 'admin': return <Admin onNavigate={navigate} />;
+      case 'admin-workspace': return <AdminPage onNavigate={navigate} />;
       case 'editor': return <EditorPage onNavigate={navigate} />;
       case 'music': return <Music onNavigate={navigate} />;
       case 'music-workspace': return <MusicPage onNavigate={navigate} />;
@@ -253,7 +255,8 @@ function AppInner() {
     credits: 'CREDIT FORGE',
     billing: 'BILLING',
     settings: 'SYSTEM SETTINGS',
-    admin: 'ADMIN COMMAND',
+    admin: 'CONTROL HALL',
+    'admin-workspace': 'ADMIN COMMAND',
     music: 'SOUND HALL',
     'music-workspace': 'MUSIC FORGE WORKSPACE',
     agents: 'AGENT HUB',
