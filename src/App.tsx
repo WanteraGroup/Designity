@@ -32,6 +32,7 @@ import Projects from '@/pages/Projects';
 import Editor from '@/pages/Editor';
 import Creator from '@/pages/Creator';
 import Streamer from '@/pages/Streamer';
+import Dashboard from '@/pages/Dashboard';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
@@ -191,7 +192,7 @@ function AppInner() {
 
   const renderDashboardPage = (): ReactNode => {
     switch (page) {
-      case 'dashboard': return <DashboardHome onNavigate={navigate} />;
+      case 'dashboard': return <Dashboard onNavigate={navigate} />;
       case 'forge': return <ForgeStudio onNavigate={navigate} />;
       case 'create': return <CreatePage onNavigate={navigate} />;
       case 'advertising': return <AdvertisingStudio onNavigate={navigate} />;
