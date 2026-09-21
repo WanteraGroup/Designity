@@ -1,0 +1,182 @@
+/* ============================================================================
+   DESIGNLY — THEME OVERRIDES (designly-theme-overrides.css)
+   ----------------------------------------------------------------------------
+   Narrow override layer, imported AFTER index.css.
+
+   History: a previous commit merged 11 competing stylesheets into one
+   designly-theme.css and removed the old imports from App.tsx. That was wrong:
+   the landing hero (odin-hero / odin-wheel / odin-tool-card) is styled by
+   index.css, and the merged layer's blanket
+
+     #root > .min-h-screen { background: transparent }
+     .designly-public-page   { background: transparent }
+
+   rules were stripping the landing background, leaving the page unstyled.
+
+   This file keeps only the parts that ADD to index.css — application chrome,
+   dashboard surfaces, agents and accessibility — and deliberately does not
+   touch the public landing shell.
+   ============================================================================ */
+
+:root{
+  --dl-void:#020505;
+  --dl-night:#06100f;
+  --dl-panel:rgba(7,16,15,.84);
+  --dl-ice:#9ceee5;
+  --dl-ice-hi:#e3fffb;
+  --dl-gold:#d6b36a;
+  --dl-copper:#b9784f;
+  --dl-bone:#eee8dc;
+  --dl-muted:#9aa6a0;
+
+  /* Aliases so markup still reading the old prefixes keeps its colour. */
+  --dhx-ice:var(--dl-ice);      --dhx-ice-hi:var(--dl-ice-hi);
+  --dhx-copper:var(--dl-copper);--dhx-bone:var(--dl-bone);
+  --df-ice:var(--dl-ice);       --df-ice-hi:var(--dl-ice-hi);
+  --df-gold:var(--dl-gold);     --df-copper:var(--dl-copper);
+  --df-bone:var(--dl-bone);     --df-muted:var(--dl-muted);
+}
+
+/* ==================== APPLICATION CHROME ==================== */
+
+/* Only the private app shell is made transparent — never the public landing. */
+.designly-app-page{background:transparent}
+
+.designly-app-page{
+  position:relative;
+  isolation:isolate;
+  min-height:calc(100vh - 74px);
+  max-width:none;margin:0;width:100%;
+  padding-left:clamp(16px,2.2vw,34px);
+  padding-right:clamp(16px,2.2vw,34px);
+  padding-top:clamp(22px,2vw,32px);
+  padding-bottom:56px;
+  z-index:10;
+}
+.designly-app-page > *{position:relative;z-index:2}
+
+.designly-app-page::before{
+  content:"";position:fixed;inset:0 0 0 252px;z-index:-20;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(2,6,7,.34),rgba(2,7,7,.54) 45%,rgba(2,5,6,.88)),
+    url("/designly-odin-hall-bg.svg") 50% 50%/cover no-repeat;
+  background-blend-mode:normal,soft-light;
+  filter:saturate(1.05) contrast(1.04);
+}
+.designly-app-page::after{
+  content:"";position:fixed;inset:0 0 0 252px;z-index:-19;pointer-events:none;
+  background:
+    radial-gradient(circle at 70% 15%,rgba(156,238,229,.11),transparent 23%),
+    radial-gradient(circle at 26% 82%,rgba(185,120,79,.075),transparent 24%),
+    linear-gradient(rgba(156,238,229,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(156,238,229,.016) 1px,transparent 1px);
+  background-size:auto,auto,84px 84px,84px 84px;
+}
+
+/* route-specific focal lighting */
+.designly-page-dashboard::before{background-position:50% 54%}
+.designly-page-create::before{background-position:18% 50%}
+.designly-page-advertising::before{background-position:74% 46%}
+.designly-page-campaign::before{background-position:60% 28%}
+.designly-page-music::before{background-position:84% 60%}
+.designly-page-agents::before{background-position:42% 44%}
+.designly-page-voice::before{background-position:30% 42%}
+.designly-page-translator::before{background-position:54% 66%}
+.designly-page-shopify::before{background-position:18% 64%}
+.designly-page-admin::before{background-position:84% 50%}
+.designly-page-diagnostics::before{background-position:50% 26%}
+.designly-page-projects::before{background-position:62% 66%}
+.designly-page-brands::before{background-position:8% 35%}
+.designly-page-templates::before{background-position:56% 42%}
+.designly-page-tattoo::before{background-position:38% 54%}
+.designly-page-planner::before{background-position:78% 30%}
+.designly-page-cnc::before{background-position:50% 72%}
+.designly-page-settings::before{background-position:14% 50%}
+.designly-page-credits::before{background-position:78% 20%}
+.designly-page-billing::before{background-position:50% 14%}
+.designly-page-editor::before{background-position:62% 50%}
+
+/* ==================== NORDIC HEADER ==================== */
+.nordic-header{
+  position:relative;z-index:40;width:100%;min-height:64px;
+  display:grid;
+  grid-template-columns:minmax(150px,.72fr) minmax(240px,1.5fr) minmax(210px,.9fr);
+  align-items:center;gap:18px;padding:10px 22px;
+  border-bottom:1px solid rgba(156,238,229,.14);
+  background:
+    linear-gradient(180deg,rgba(2,8,9,.96),rgba(4,12,12,.84)),
+    url("/designly-odin-hall-bg.svg") 76% 47%/cover no-repeat;
+  box-shadow:0 12px 38px rgba(0,0,0,.28), inset 0 -1px 0 rgba(214,179,106,.06);
+  backdrop-filter:blur(18px);
+}
+.nordic-header::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 50%,rgba(156,238,229,.08),transparent 24%),
+    linear-gradient(90deg,transparent,rgba(214,179,106,.045),transparent);
+}
+.nordic-header::after{
+  content:"ᛉ ᛟ ᚱ ᚦ ᚷ";
+  position:absolute;left:50%;bottom:0;transform:translate(-50%,50%);
+  padding:2px 10px;border:1px solid rgba(214,179,106,.20);border-radius:999px;
+  background:#040b0b;color:rgba(214,179,106,.50);
+  font:700 7px/1 "Marcellus",serif;letter-spacing:.20em;
+}
+.nordic-header-title{
+  position:relative;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font:700 14px/1 "Marcellus","Cormorant Garamond",Georgia,serif;
+  letter-spacing:.15em;color:#e3fffb;
+}
+.nordic-header-search{position:relative;min-width:0}
+.nordic-header-input{
+  width:100%;height:38px;padding:0 16px 0 36px;
+  border:1px solid rgba(156,238,229,.13);border-radius:999px;outline:none;
+  background:rgba(7,19,17,.72);color:#e3fffb;
+  font:600 11px/1 "Manrope","Inter",system-ui,sans-serif;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 25px rgba(0,0,0,.18);
+}
+.nordic-header-meta{
+  display:flex;align-items:center;justify-content:flex-end;gap:12px;
+  color:rgba(238,232,220,.62);
+  font:700 8px/1 "Manrope","Inter",system-ui,sans-serif;
+  letter-spacing:.10em;text-transform:uppercase;
+}
+.nordic-header-status{display:inline-flex;align-items:center;gap:7px}
+.nordic-header-status-dot{width:7px;height:7px;border-radius:50%;background:#7ff5c7}
+.nordic-header-avatar{
+  width:34px;height:34px;display:grid;place-items:center;
+  border:1px solid rgba(214,179,106,.30);border-radius:10px;
+  background:radial-gradient(circle at 50% 30%,rgba(156,238,229,.12),rgba(2,8,9,.90));
+  color:rgba(214,179,106,.76);font:700 14px/1 "Marcellus",serif;
+}
+
+@media(max-width:900px){
+  .nordic-header{grid-template-columns:1fr auto;min-height:58px;padding:8px 14px}
+  .nordic-header-search{grid-column:1 / -1;grid-row:2}
+  .nordic-header-meta{grid-column:2;grid-row:1}
+  .nordic-header-status,.nordic-header-language{display:none}
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes celtic-gold-pulse{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+.celtic-gold-pulse{transform-origin:center;animation:celtic-gold-pulse 3.2s ease-in-out infinite}
+@keyframes fogMove{0%{transform:translateX(0)}100%{transform:translateX(-200px)}}
+@keyframes embersFloat{0%{transform:translateY(0);opacity:.2}50%{opacity:.4}100%{transform:translateY(-80px);opacity:.2}}
+@keyframes sidebarMorphFade{0%{opacity:0;transform:scale(1.035)}18%{opacity:.2}100%{opacity:1;transform:scale(1)}}
+@keyframes panelTextureMorph{0%{opacity:0;transform:scale(1.025)}18%{opacity:.08}55%{opacity:.14}100%{opacity:.16;transform:scale(1)}}
+@keyframes pageTransitionEnter{
+  0%{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
+  55%{opacity:.78;transform:translate3d(0,3px,0) scale(.997);filter:blur(1.5px)}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+}
+.page-transition-preparing{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
+.page-transition-entered{animation:pageTransitionEnter var(--page-transition-duration,650ms) cubic-bezier(.22,1,.36,1) both}
+
+/* ==================== ACCESSIBILITY ==================== */
+@media (prefers-reduced-motion: reduce){
+  .celtic-gold-pulse,
+  .page-transition-entered{
+    animation: none;
+  }
+  .page-transition-preparing{opacity:1;transform:none;filter:none}
+}
