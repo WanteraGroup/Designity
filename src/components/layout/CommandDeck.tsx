@@ -169,7 +169,7 @@ export function CommandDeck({
                 item={item}
                 onNavigate={onNavigate}
                 isOwner={isOwner}
-                isActive={true}
+                isActive={active === item.id}
               />
             ))}
           </div>
