@@ -1,10 +1,8 @@
-import { useEffect, useState, type ComponentType, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties, type ComponentType } from 'react';
 import {
-  ArrowRight, Check, ChevronDown, Gamepad2, Layout, Palette, Play,
-  Sparkles, Wand2, Shirt, Layers3, MousePointer2, Globe2, Trophy,
-  Users, Ruler, Shield, Flame, Compass
+  ArrowRight, Check, ChevronDown, Gamepad2, Palette, Play,
+  Sparkles, Wand2, Shirt, Layers3, MousePointer2, Globe2, Shield, Compass
 } from 'lucide-react';
-import { CelticEmblem } from './CelticEmblem';
 import { Logo } from './Logo';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -12,163 +10,299 @@ import { PUBLIC_PLANS } from '@/lib/constants';
 
 interface LandingPageProps { onNavigate: (page: string) => void; }
 
-const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ'];
+/*
+  DESIGNLY - public landing.
+
+  Paired with designly-brand.css. The markup defines the system; the stylesheet
+  owns it. The bk- prefix is new and closed so nothing else can override it.
+
+  Brand: black ground, gold Celtic knotwork, Norse picture layer (rune wheel,
+  mountain range, aurora, rune band). The CSS-drawn ravens were removed - at
+  real sizes they read as smudges rather than birds.
+*/
+
+const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ'] as const;
 
 function RuneWheel() {
   return (
-    <div className="odin-wheel" aria-hidden="true">
-      <div className="odin-wheel-core"><CelticEmblem size={118} animate showD /></div>
+    <div className="bk-wheel" aria-hidden="true">
+      <div className="bk-wheel-core"><Logo size={104} /></div>
       {runes.map((rune, i) => (
-        <span key={rune} className="odin-wheel-rune" style={{ '--i': i } as CSSProperties}>{rune}</span>
+        <span key={rune} className="bk-wheel-rune" style={{ '--i': i } as CSSProperties}>{rune}</span>
       ))}
-      <span className="odin-wheel-orbit orbit-a" />
-      <span className="odin-wheel-orbit orbit-b" />
-    </div>
-  );
-}
-
-function RavenSilhouette({ side }: { side: 'left' | 'right' }) {
-  return (
-    <div className={`odin-raven ${side}`} aria-hidden="true">
-      <div className="odin-raven-eye" />
-      <div className="odin-raven-beak" />
-      <div className="odin-raven-feather f1" />
-      <div className="odin-raven-feather f2" />
-      <div className="odin-raven-feather f3" />
-      <div className="odin-raven-wing" />
+      <span className="bk-wheel-orbit bk-wheel-orbit--a" />
+      <span className="bk-wheel-orbit bk-wheel-orbit--b" />
     </div>
   );
 }
 
 export function LandingPage({ onNavigate }: LandingPageProps) {
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const hu = lang === 'hu';
 
   const copy = {
-    eyebrow: hu ? 'ODIN KOVÁCSMŰHELYE · AI CREATIVE OS' : "ODIN'S FORGE · AI CREATIVE OS",
-    titleA: hu ? 'NE CSAK TERVEZD.' : "DON'T JUST DESIGN.",
-    titleB: hu ? 'EMELD LEGENDÁVÁ.' : 'FORGE A LEGEND.',
+    eyebrow: hu ? 'AI KREATÍV RENDSZER' : 'AI CREATIVE SYSTEM',
+    titleA: hu ? 'Ne csak tervezz.' : 'Don’t just design.',
+    titleB: hu ? 'Kovácsolj rendszert.' : 'Forge a system.',
     sub: hu
-      ? 'A DESIGNLY egy új generációs kreatív rendszer. Ötletből márkát, kampányt, weboldalt, merch-et és kész kreatív rendszert épít.'
-      : 'DESIGNLY is a next-generation creative system. Turn ideas into brands, campaigns, websites, merch and production-ready creative systems.',
-    primary: hu ? 'ALKOSS A DESIGNLY-VEL' : 'CREATE WITH DESIGNLY',
-    secondary: hu ? 'NÉZD MEG A MŰHELYT' : 'ENTER THE FORGE',
-    system: hu ? 'EGY RENDSZER · MINDEN KREATÍV' : 'ONE SYSTEM · EVERY CREATIVE',
-    tools: hu ? 'A teljes kreatív műhely' : 'The complete creative forge',
-    toolsSub: hu ? 'Válassz fegyvert. Vagy bízd az egészet az AI-ra.' : 'Choose your weapon. Or let AI forge the whole thing.',
-    manifesto: hu ? 'A DESIGNLY NEM SABLON. FOLYAMAT.' : 'DESIGNLY IS NOT A TEMPLATE. IT IS A SYSTEM.',
-    manifestoSub: hu ? 'Brief → irány → generálás → szerkesztés → export → projekt.' : 'Brief → direction → generation → editing → export → project.',
-    footer: hu ? 'ÉPÍTS OLYAT, AMIT NEM FELEJTENEK EL.' : 'BUILD WHAT THEY CANNOT FORGET.',
+      ? 'A DESIGNLY egyetlen műhely, ahol az ötletből márka, kampány, weboldal és gyártásra kész kreatív anyag lesz. Brief be, kész rendszer ki.'
+      : 'DESIGNLY is one workshop where an idea becomes a brand, a campaign, a website and production-ready creative work. Brief in, finished system out.',
+    primary: hu ? 'Kezdj egy briefet' : 'Start a brief',
+    secondary: hu ? 'Nézd meg a műhelyt' : 'See the workshop',
+    toolsLabel: hu ? 'A nyolc műhely' : 'The eight studios',
+    toolsTitle: hu ? 'Válassz eszközt. Vagy bízd az egészet a rendszerre.' : 'Pick a tool. Or let the system do all of it.',
+    stepsLabel: hu ? 'Hogyan működik' : 'How it works',
+    stepsTitle: hu ? 'Négy lépés a briefig.' : 'Four steps from brief.',
+    priceLabel: hu ? 'Árak' : 'Pricing',
+    priceTitle: hu ? 'Növekedj a saját tempódban.' : 'Scale at your own pace.',
+    faqLabel: hu ? 'Gyakori kérdések' : 'Questions',
+    faqTitle: hu ? 'Amit tudni érdemes.' : 'What to know.',
+    finalTitle: hu ? 'A következő projekted ne fájl legyen. Hanem rendszer.' : 'Your next project should not be a file. It should be a system.',
+    finalCta: hu ? 'Vágjunk bele' : 'Let’s build it',
+    wheelA: hu ? 'A HOLLÓK ÉS RÚNÁK MŰHELYE' : 'THE FORGE OF RAVENS & RUNES',
+    wheelB: 'CREATE · REFINE · SHIP',
   };
 
-  const tools = [
-    { label:'AI Website Builder', desc:hu?'Teljes webélmény egy briefből.':'Complete web experiences from one brief.', icon:Globe2, page:'create', key:'web' },
-    { label:'Ad Studio', desc:hu?'Reklámok, kreatív kampányok, vizuálok.':'Ads, campaigns and visual creatives.', icon:Sparkles, page:'advertising', key:'ad' },
-    { label:'Campaign Engine', desc:hu?'Egy briefből teljes kampányrendszer.':'Turn one brief into a campaign system.', icon:Layers3, page:'campaign', key:'campaign' },
-    { label:'Streamer Studio', desc:hu?'Overlay, alert, scene és creator pack.':'Overlays, alerts, scenes and creator packs.', icon:Gamepad2, page:'streamer', key:'stream' },
-    { label:'Merch Studio', desc:hu?'Master artwork és gyártásra kész merch.':'Master artwork and production-ready merch.', icon:Shirt, page:'creator', key:'merch' },
-    { label:'Design Editor', desc:hu?'Képszerkesztés, finomhangolás, export.':'Refine, edit and export visual work.', icon:Wand2, page:'editor', key:'editor' },
-    { label:'AI Music Studio', desc:hu?'Dal, hang, narráció és audio workflow.':'Music, voice, narration and audio workflow.', icon:Play, page:'music', key:'music' },
-    { label:'Planner & Visualizer', desc:hu?'Tervkoncepciók és vizualizációk AI-val.':'Plans and visualization concepts with AI.', icon:Ruler, page:'planner', key:'planner' },
+  const tools: Array<{ label: string; desc: string; icon: ComponentType<{ className?: string }>; page: string }> = [
+    { label: hu ? 'Weboldal-építő' : 'Website Builder', desc: hu ? 'Teljes webélmény egy briefből.' : 'Complete web experiences from one brief.', icon: Globe2, page: 'create' },
+    { label: hu ? 'Hirdetésstúdió' : 'Ad Studio', desc: hu ? 'Reklámok, kampányok, vizuálok.' : 'Ads, campaigns and visual creatives.', icon: Sparkles, page: 'advertising' },
+    { label: hu ? 'Kampánymotor' : 'Campaign Engine', desc: hu ? 'Egy briefből teljes kampányrendszer.' : 'Turn one brief into a campaign system.', icon: Layers3, page: 'campaign' },
+    { label: hu ? 'Streamer-stúdió' : 'Streamer Studio', desc: hu ? 'Overlay, alert, scene, creator pack.' : 'Overlays, alerts, scenes and creator packs.', icon: Gamepad2, page: 'streamer' },
+    { label: hu ? 'Merch-stúdió' : 'Merch Studio', desc: hu ? 'Master artwork és gyártható merch.' : 'Master artwork and production-ready merch.', icon: Shirt, page: 'creator' },
+    { label: hu ? 'Design-szerkesztő' : 'Design Editor', desc: hu ? 'Finomhangolás és export.' : 'Refine, edit and export visual work.', icon: Wand2, page: 'editor' },
+    { label: hu ? 'Zene-stúdió' : 'Music Studio', desc: hu ? 'Dal, hang, narráció.' : 'Music, voice and narration.', icon: Play, page: 'music' },
+    { label: hu ? 'Tervező és vizualizáló' : 'Planner & Visualizer', desc: hu ? 'Tervkoncepciók AI-val.' : 'Plans and concepts with AI.', icon: Compass, page: 'planner' },
   ];
 
-  const pillars: Array<[string,string,string,ComponentType<{ className?: string }>]> = [
-    [ '01', hu?'KITALÁLOD':'CONCEIVE', hu?'Elmondod, mit akarsz.':'Describe what you want.', MousePointer2 ],
-    [ '02', hu?'MEGTERVEZZÜK':'FORGE', hu?'Az AI felépíti az irányt.':'AI builds the direction.', Compass ],
-    [ '03', hu?'FINOMÍTOD':'REFINE', hu?'Te döntesz minden részletről.':'You control every detail.', Palette ],
-    [ '04', hu?'ELINDÍTOD':'SHIP', hu?'Export, publikálás, projekt.':'Export, publish, project.', ArrowRight ],
+  const steps: Array<[string, string, string, ComponentType<{ className?: string }>]> = [
+    ['01', hu ? 'Kitalálod' : 'Conceive', hu ? 'Elmondod, mit szeretnél.' : 'Describe what you want.', MousePointer2],
+    ['02', hu ? 'Megépül' : 'Forge', hu ? 'A rendszer felállítja az irányt.' : 'The system builds the direction.', Compass],
+    ['03', hu ? 'Finomítod' : 'Refine', hu ? 'Minden részlet a te kezedben.' : 'You control every detail.', Palette],
+    ['04', hu ? 'Elindítod' : 'Ship', hu ? 'Export, publikálás, projekt.' : 'Export, publish, project.', ArrowRight],
   ];
 
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const faqs = [
-    [hu?'Mi az a DESIGNLY?':'What is DESIGNLY?', hu?'Egyetlen kreatív platform weboldalhoz, márkához, kampányhoz, streamer/gamer anyagokhoz, merchhez és további kreatív workflow-khoz.':'A single creative platform for websites, brands, campaigns, streamer/gamer assets, merch and more.'],
-    [hu?'Van ingyenes előnézet?':'Is there a free preview?', hu?'Igen. A preview külön kezelhető, és a végleges generálás csak jóváhagyás után történik.':'Yes. Preview is handled separately, and final generation happens only after approval.'],
-    [hu?'Megmaradnak a projektjeim?':'Are projects saved?', hu?'A DESIGNLY projektként kezeli az elkészült munkákat, így később visszanyithatók és tovább szerkeszthetők.':'DESIGNLY stores finished work as projects so you can reopen and continue editing later.'],
+  const faqs: Array<[string, string]> = [
+    [hu ? 'Mi az a DESIGNLY?' : 'What is DESIGNLY?', hu ? 'Egyetlen kreatív platform weboldalhoz, márkához, kampányhoz, streamer-anyagokhoz és merchhez.' : 'A single creative platform for websites, brands, campaigns, streamer assets and merch.'],
+    [hu ? 'Van ingyenes előnézet?' : 'Is there a free preview?', hu ? 'Igen. Az előnézet ingyenes, a végleges generálás csak jóváhagyás után indul.' : 'Yes. Preview is free; final generation starts only after you approve it.'],
+    [hu ? 'Megmaradnak a projektjeim?' : 'Are projects saved?', hu ? 'Igen, minden munka projektként marad meg, később visszanyitható és szerkeszthető.' : 'Yes. Every piece of work is kept as a project you can reopen and keep editing.'],
   ];
 
   return (
-    <div className="odin-forge">
-      <section className="odin-hero">
-        <div className="odin-hero-scene" aria-hidden="true" />
-        <div className="odin-hero-noise" aria-hidden="true" />
-        <div className="odin-hero-aurora aurora-a" aria-hidden="true" />
-        <div className="odin-hero-aurora aurora-b" aria-hidden="true" />
-        <div className="odin-mountain mountain-a" aria-hidden="true" />
-        <div className="odin-mountain mountain-b" aria-hidden="true" />
-        <div className="odin-mist mist-a" aria-hidden="true" />
-        <div className="odin-mist mist-b" aria-hidden="true" />
-        <RavenSilhouette side="left" />
-        <RavenSilhouette side="right" />
-        <div className="odin-hero-content">
-          <div className="odin-hero-copy">
-            <div className="odin-eyebrow"><span className="sigil-dot" />{copy.eyebrow}</div>
-            <div className="odin-hero-title"><span>{copy.titleA}</span><strong>{copy.titleB}</strong></div>
-            <p>{copy.sub}</p>
-            <div className="odin-actions">
-              <button className="odin-btn odin-btn-hot" onClick={() => onNavigate('signup')}>{copy.primary}<ArrowRight className="w-4 h-4" /></button>
-              <button className="odin-btn odin-btn-dark" onClick={() => document.getElementById('odin-tools')?.scrollIntoView({ behavior:'smooth' })}><Flame className="w-4 h-4" />{copy.secondary}</button>
+    <div className="bk">
+      <section className="bk-hero">
+        <span className="bk-aurora bk-aurora--a" aria-hidden="true" />
+        <span className="bk-aurora bk-aurora--b" aria-hidden="true" />
+        <span className="bk-mountains" aria-hidden="true" />
+        <span className="bk-mist bk-mist--a" aria-hidden="true" />
+        <span className="bk-mist bk-mist--b" aria-hidden="true" />
+
+        <div className="bk-sky-runes" aria-hidden="true">
+          {[...runes, ...runes].map((r, i) => <span key={i}>{r}</span>)}
+        </div>
+
+        <div className="bk-shell bk-hero-inner">
+          <div className="bk-hero-copy">
+            <p className="bk-eyebrow">{copy.eyebrow}</p>
+            <h1 className="bk-title">
+              <span>{copy.titleA}</span>
+              <em>{copy.titleB}</em>
+            </h1>
+            <p className="bk-lede">{copy.sub}</p>
+
+            <div className="bk-actions">
+              <button className="bk-btn bk-btn--gold" onClick={() => onNavigate('signup')}>
+                {copy.primary}<ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                className="bk-btn bk-btn--line"
+                onClick={() => document.getElementById('bk-tools')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                {copy.secondary}
+              </button>
             </div>
-            <div className="odin-proof"><span><b>100K+</b>{hu?'sablon':'templates'}</span><span><b>0</b>{hu?'kredit preview':'preview cost'}</span><span><b>AI</b>workflow</span><span><b>∞</b>{hu?'irány':'directions'}</span></div>
+
+            <dl className="bk-stats">
+              <div><dt>100K+</dt><dd>{hu ? 'sablon' : 'templates'}</dd></div>
+              <div><dt>0 Ft</dt><dd>{hu ? 'előnézet' : 'preview'}</dd></div>
+              <div><dt>8</dt><dd>{hu ? 'műhely' : 'studios'}</dd></div>
+              <div><dt>∞</dt><dd>{hu ? 'irány' : 'directions'}</dd></div>
+            </dl>
           </div>
-          <div className="odin-hero-symbol">
+
+          <div className="bk-wheel-wrap">
             <RuneWheel />
-            <div className="odin-symbol-caption"><span>{hu?'A FEHÉR FARKAS ÉS A HOLLÓK MŰHELYE':'THE FORGE OF WOLVES & RAVENS'}</span><em>CREATE · REFINE · SHIP</em></div>
+            <div className="bk-wheel-caption">
+              <span>{copy.wheelA}</span>
+              <em>{copy.wheelB}</em>
+            </div>
           </div>
         </div>
-        <div className="odin-sky-runes" aria-hidden="true">{runes.concat(runes).map((r,i)=><span key={i} style={{'--i':i} as CSSProperties}>{r}</span>)}</div>
-        <div className="odin-hero-bottom"><div className="odin-scroll-mark"><span>↓</span> SCROLL THE FORGE</div><div className="odin-bottom-line" /><div className="odin-scroll-mark">DESIGNLY · CREATIVE OS</div></div>
       </section>
 
-      <section id="odin-tools" className="odin-section odin-tool-section">
-        <div className="odin-section-head"><div><span className="odin-label">01 / {copy.tools}</span><h2>{copy.toolsSub}</h2></div><div className="odin-section-intro">{copy.system}</div></div>
-        <div className="odin-tool-grid">{tools.map((tool,i)=>{ const Icon=tool.icon; return <button key={tool.key} onClick={()=>onNavigate(tool.page)} className="odin-tool-card"><div className="odin-tool-number">{String(i+1).padStart(2,'0')}</div><div className="odin-tool-icon"><Icon className="w-6 h-6"/></div><div className="odin-tool-content"><h3>{tool.label}</h3><p>{tool.desc}</p><span>{hu?'BELÉPÉS A MŰHELYBE':'ENTER THE FORGE'} <ArrowRight className="w-3.5 h-3.5"/></span></div></button>; })}</div>
+      <div className="bk-knot bk-knot--divider" aria-hidden="true" />
+
+      <section id="bk-tools" className="bk-band">
+        <div className="bk-shell">
+          <header className="bk-head">
+            <p className="bk-eyebrow">{copy.toolsLabel}</p>
+            <h2>{copy.toolsTitle}</h2>
+          </header>
+
+          <ul className="bk-tools">
+            {tools.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <li key={tool.label}>
+                  <button className="bk-tool" onClick={() => onNavigate(tool.page)}>
+                    <span className="bk-tool-icon"><Icon className="w-5 h-5" /></span>
+                    <h3>{tool.label}</h3>
+                    <p>{tool.desc}</p>
+                    <span className="bk-tool-go">{hu ? 'Megnyitás' : 'Open'} <ArrowRight className="w-3.5 h-3.5" /></span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </section>
 
-      <section className="odin-manifesto">
-        <div className="odin-manifesto-runes" aria-hidden="true">ᛉ · ᚨ · ᛟ · ᚱ · ᚦ · ᚷ · ᛏ · ᚹ</div>
-        <div className="odin-manifesto-mark"><CelticEmblem size={92} animate /></div>
-        <span className="odin-label">02 / CREATIVE PHILOSOPHY</span>
-        <h2>{copy.manifesto}</h2><p>{copy.manifestoSub}</p>
+      <section className="bk-band bk-band--tint">
+        <div className="bk-shell">
+          <header className="bk-head">
+            <p className="bk-eyebrow">{copy.stepsLabel}</p>
+            <h2>{copy.stepsTitle}</h2>
+          </header>
+
+          <ol className="bk-steps">
+            {steps.map(([n, title, desc, Icon]) => (
+              <li key={n}>
+                <span className="bk-step-n">{n}</span>
+                <Icon className="w-5 h-5 bk-step-icon" />
+                <h3>{title}</h3>
+                <p>{desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
 
-      <section className="odin-section odin-process">
-        <div className="odin-section-head"><div><span className="odin-label">03 / WORKFLOW</span><h2>{hu?'Négy mozdulat.':'Four moves.'}</h2></div></div>
-        <div className="odin-pillar-grid">{pillars.map(([n,title,desc,Icon])=><div key={n} className="odin-pillar"><div className="odin-pillar-top"><span>{n}</span><Icon className="w-5 h-5"/></div><h3>{title}</h3><p>{desc}</p></div>)}</div>
+      <section className="bk-band">
+        <div className="bk-shell">
+          <header className="bk-head">
+            <p className="bk-eyebrow">{copy.priceLabel}</p>
+            <h2>{copy.priceTitle}</h2>
+          </header>
+          <PricingPreview hu={hu} onNavigate={onNavigate} />
+        </div>
       </section>
 
-      <section className="odin-section odin-zones">
-        <div className="odin-zone zone-copper"><div className="odin-zone-art"><div className="odin-zone-halo"/><Shield className="w-12 h-12"/></div><div><span className="odin-label">CREATOR / STREAMER</span><h2>{hu?'Építs legendás jelenlétet.':'Forge a legendary presence.'}</h2><p>{hu?'Overlay, alert, merch, emote, scene és brand egyetlen rendszerben.':'Overlay, alert, merch, emote, scene and brand in one system.'}</p><button className="odin-link" onClick={()=>onNavigate('streamer')}>CREATOR STUDIO <ArrowRight className="w-4 h-4"/></button></div></div>
-        <div className="odin-zone zone-ice"><div className="odin-zone-art"><div className="odin-zone-halo"/><Layout className="w-12 h-12"/></div><div><span className="odin-label">BUSINESS / BRAND</span><h2>{hu?'Építs rendszert, ne csak oldalt.':'Build systems, not just pages.'}</h2><p>{hu?'Weboldal, márka, kampány, AI és ügyfélprojekt egy összefüggő workflow-ban.':'Website, brand, campaign, AI and client work in one coherent workflow.'}</p><button className="odin-link" onClick={()=>onNavigate('create')}>BUSINESS STUDIO <ArrowRight className="w-4 h-4"/></button></div></div>
+      <section className="bk-band bk-band--tint">
+        <div className="bk-shell">
+          <header className="bk-head">
+            <p className="bk-eyebrow">{copy.faqLabel}</p>
+            <h2>{copy.faqTitle}</h2>
+          </header>
+
+          <div className="bk-faq">
+            {faqs.map(([q, a], i) => {
+              const open = openFaq === i;
+              return (
+                <div key={q} className={open ? 'bk-faq-item bk-faq-item--open' : 'bk-faq-item'}>
+                  <button onClick={() => setOpenFaq(open ? null : i)} aria-expanded={open}>
+                    <span>{q}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  {open && <p>{a}</p>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
-      <section className="odin-section odin-pricing">
-        <div className="odin-section-head"><div><span className="odin-label">04 / SCALE</span><h2>{hu?'Növekedj a saját tempódban.':'Scale at your pace.'}</h2></div></div>
-        <PricingPreview onNavigate={onNavigate} />
+      <section className="bk-close">
+        <div className="bk-shell bk-close-inner">
+          <Shield className="w-8 h-8 bk-close-mark" />
+          <h2>{copy.finalTitle}</h2>
+          <button className="bk-btn bk-btn--gold" onClick={() => onNavigate('signup')}>
+            {copy.finalCta}<ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
       </section>
 
-      <section className="odin-section odin-faq">
-        <div className="odin-section-head"><div><span className="odin-label">05 / FAQ</span><h2>{hu?'Kérdezz. Az AI válaszol.':'Ask. AI answers.'}</h2></div></div>
-        <div className="odin-faq-list">{faqs.map(([q,a],i)=><div key={q} className={`odin-faq-item ${openFaq===i?'open':''}`}><button onClick={()=>setOpenFaq(openFaq===i?null:i)}><span>{String(i+1).padStart(2,'0')}</span><b>{q}</b><ChevronDown className="w-4 h-4"/></button>{openFaq===i&&<p>{a}</p>}</div>)}</div>
-      </section>
+      <div className="bk-knot" aria-hidden="true" />
 
-      <section className="odin-final">
-        <div className="odin-final-runes" aria-hidden="true">ᛏ ᚨ ᛚ ᚨ · ᛚ ᛖ ᚷ ᛖ ᚾ ᛞ</div>
-        <CelticEmblem size={74} animate showD />
-        <span className="odin-label">06 / THE LAST WORD</span>
-        <h2>{copy.footer}</h2>
-        <p>{hu?'A következő projekted nem egy újabb fájl lesz. Hanem egy rendszer.':'Your next project should not be another file. It should be a system.'}</p>
-        <button className="odin-btn odin-btn-hot" onClick={()=>onNavigate('signup')}>{hu?'KEZDJÜK EL':'LET’S FORGE IT'} <ArrowRight className="w-4 h-4"/></button>
-      </section>
-
-      <footer className="odin-footer"><Logo size={34} showText /><span>DESIGNLY STUDIO · CREATIVE OS</span><button onClick={()=>window.scrollTo({top:0,behavior:'smooth'})}>{hu?'Vissza fel ↑':'Back to top ↑'}</button></footer>
+      <footer className="bk-foot">
+        <div className="bk-shell bk-foot-inner">
+          <Logo size={28} showText />
+          <span>DESIGNLY STUDIO · CREATIVE OS</span>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>{hu ? 'Vissza a tetejére ↑' : 'Back to top ↑'}</button>
+        </div>
+      </footer>
     </div>
   );
 }
 
-function PricingPreview({ onNavigate }: { onNavigate: (p:string)=>void }) {
-  const { t } = useI18n();
-  const fallbackPlans = PUBLIC_PLANS.map((plan)=>({id:plan.id,name:plan.name,price:plan.priceMonthly,credits:plan.creditsMonthly,features:plan.features.slice(0,3),highlight:plan.highlighted===true}));
-  const [plans,setPlans]=useState(fallbackPlans);
-  useEffect(()=>{let mounted=true; supabase.from('plans').select('id,name,price_monthly,credits_monthly,features,sort_order').eq('is_public',true).order('sort_order').then(({data})=>{if(!mounted||!data?.length)return;setPlans(data.map((p:any)=>({id:p.id,name:p.name,price:p.price_monthly,credits:p.credits_monthly,features:Array.isArray(p.features)?p.features.slice(0,3):[],highlight:p.id==='pro'})));});return()=>{mounted=false};},[]);
-  return <div className="odin-price-grid">{plans.map(plan=><div key={plan.id} className={`odin-price-card ${plan.highlight?'hot':''}`}>{plan.highlight&&<span className="odin-price-badge">MOST CHOSEN</span>}<span className="odin-price-name">{plan.name}</span><strong>{new Intl.NumberFormat('hu-HU').format(plan.price)} <small>Ft</small></strong><span className="odin-price-period">{t('plan.perMonth')}</span><div className="odin-price-credits">{plan.credits} {t('plan.creditsMo')}</div><ul>{plan.features.map(f=><li key={f}><Check className="w-3.5 h-3.5"/>{f}</li>)}</ul><button className={plan.highlight?'odin-btn odin-btn-hot':'odin-link'} onClick={()=>onNavigate('signup')}>{t('plan.getStarted')} <ArrowRight className="w-3.5 h-3.5"/></button></div>)}</div>;
+function PricingPreview({ hu, onNavigate }: { hu: boolean; onNavigate: (p: string) => void }) {
+  const fallback = PUBLIC_PLANS.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.priceMonthly,
+    credits: plan.creditsMonthly,
+    features: plan.features.slice(0, 3),
+    highlight: plan.highlighted === true,
+  }));
+
+  const [plans, setPlans] = useState(fallback);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase
+      .from('plans')
+      .select('id,name,price_monthly,credits_monthly,features,sort_order')
+      .eq('is_public', true)
+      .order('sort_order')
+      .then(({ data }) => {
+        if (!mounted || !data?.length) return;
+        setPlans(data.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price_monthly,
+          credits: p.credits_monthly,
+          features: Array.isArray(p.features) ? p.features.slice(0, 3) : [],
+          highlight: p.id === 'pro',
+        })));
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  return (
+    <ul className="bk-plans">
+      {plans.map((plan) => (
+        <li key={plan.id} className={plan.highlight ? 'bk-plan bk-plan--hot' : 'bk-plan'}>
+          {plan.highlight && <span className="bk-plan-tag">{hu ? 'Népszerű' : 'Most chosen'}</span>}
+          <h3>{plan.name}</h3>
+          <p className="bk-plan-price">
+            {new Intl.NumberFormat('hu-HU').format(plan.price)} <small>Ft</small>
+            <span>/{hu ? 'hó' : 'mo'}</span>
+          </p>
+          <p className="bk-plan-credits">{plan.credits} {hu ? 'kredit / hó' : 'credits / mo'}</p>
+          <ul>
+            {plan.features.map((f) => (
+              <li key={f}><Check className="w-3.5 h-3.5" />{f}</li>
+            ))}
+          </ul>
+          <button
+            className={plan.highlight ? 'bk-btn bk-btn--gold bk-btn--full' : 'bk-btn bk-btn--line bk-btn--full'}
+            onClick={() => onNavigate('signup')}
+          >
+            {hu ? 'Kezdés' : 'Get started'}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
 }
+
+export default LandingPage;
