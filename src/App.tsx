@@ -13,7 +13,7 @@ import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'rea
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
 import { PublicNav } from '@/components/PublicNav';
-import Landing from '@/pages/Landing';
+import { Landing as LandingPage } from '@/pages/Landing';
 import ForgeStudio from '@/pages/ForgeStudio';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
@@ -167,7 +167,7 @@ function AppInner() {
       case 'signup': return <AuthPage mode="signup" onNavigate={navigate} />;
       case 'reset': return <AuthPage mode="reset" onNavigate={navigate} />;
       case 'checkout': return <CheckoutPage onNavigate={navigate} checkoutItem={checkoutItem} />;
-      default: return <Landing onNavigate={navigate} />;
+      default: return <LandingPage onNavigate={navigate} />;
     }
   };
 
