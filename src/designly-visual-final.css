@@ -1127,3 +1127,244 @@ button:active{transform:translateY(1px)}
 .page-transition-preparing{opacity:0;transform:translate3d(0,14px,0) scale(.985);filter:blur(8px)}
 .page-transition-entered{animation:pageTransitionEnter var(--page-transition-duration,650ms) cubic-bezier(.22,1,.36,1) both}
 @media (prefers-reduced-motion:reduce){.page-transition-entered{animation:none!important}.page-transition-preparing{opacity:1;transform:none;filter:none}}
+
+
+/* =========================================================
+   DESIGNLY REALM MASTER ART DIRECTION
+   Reference: premium Nordic / Celtic / Viking command hall
+   ========================================================= */
+
+body{
+  background:#020505!important;
+  overflow-x:hidden;
+}
+
+.designly-app-page{
+  max-width:none!important;
+  margin:0!important;
+  width:100%!important;
+  padding-left:clamp(16px,2.2vw,34px)!important;
+  padding-right:clamp(16px,2.2vw,34px)!important;
+  padding-top:clamp(22px,2vw,32px)!important;
+  padding-bottom:56px!important;
+  position:relative!important;
+  z-index:10!important;
+}
+
+.designly-app-page > *{
+  position:relative;
+  z-index:2;
+}
+
+.designly-command-deck{
+  width:288px!important;
+  background:transparent!important;
+  border-right:1px solid rgba(214,179,106,.22)!important;
+  box-shadow:18px 0 65px rgba(0,0,0,.72),inset -1px 0 0 rgba(156,238,229,.08)!important;
+}
+
+.designly-command-deck::before{
+  background:
+    linear-gradient(180deg,rgba(2,7,8,.36),rgba(2,7,8,.58) 42%,rgba(2,7,8,.92)),
+    url("/kor keret.png") center/cover no-repeat,
+    radial-gradient(circle at 30% 10%,rgba(214,179,106,.12),transparent 26%)!important;
+  background-blend-mode:normal,soft-light,normal!important;
+  opacity:1!important;
+}
+
+.designly-command-deck::after{
+  width:3px!important;
+  background:linear-gradient(180deg,transparent 2%,var(--df-gold) 18%,var(--df-ice) 50%,var(--df-copper) 78%,transparent 98%)!important;
+  opacity:.75!important;
+  box-shadow:0 0 20px rgba(214,179,106,.24),0 0 24px rgba(156,238,229,.18)!important;
+}
+
+.designly-command-deck > *{
+  position:relative!important;
+  z-index:10!important;
+}
+
+.designly-command-deck nav{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(214,179,106,.28) transparent;
+}
+
+.designly-command-deck nav::-webkit-scrollbar{width:5px}
+.designly-command-deck nav::-webkit-scrollbar-thumb{
+  border-radius:99px;
+  background:linear-gradient(180deg,rgba(156,238,229,.18),rgba(214,179,106,.34));
+}
+
+.designly-command-deck nav button{
+  min-height:42px!important;
+  border-radius:11px!important;
+  border-color:rgba(214,179,106,.17)!important;
+  background:linear-gradient(180deg,rgba(7,19,17,.78),rgba(2,5,5,.72))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 18px rgba(0,0,0,.24)!important;
+}
+
+.designly-command-deck nav button:hover{
+  transform:translateX(4px)!important;
+  border-color:rgba(156,238,229,.36)!important;
+  background:linear-gradient(90deg,rgba(214,179,106,.08),rgba(7,19,17,.82))!important;
+}
+
+.designly-command-deck nav button[aria-current="page"]{
+  border-color:rgba(214,179,106,.56)!important;
+  background:
+    linear-gradient(90deg,rgba(214,179,106,.18),rgba(7,19,17,.82) 62%,rgba(2,5,5,.74))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(242,217,154,.09),
+    inset 0 0 0 1px rgba(214,179,106,.05),
+    0 10px 28px rgba(0,0,0,.35),
+    0 0 22px rgba(214,179,106,.07)!important;
+}
+
+.nordic-header{
+  min-height:76px!important;
+  margin-left:0!important;
+  border:1px solid rgba(214,179,106,.18)!important;
+  border-radius:14px!important;
+  background:
+    linear-gradient(180deg,rgba(9,18,18,.92),rgba(2,7,8,.84)),
+    url("/designly-odin-hall-bg.svg") 68% 40%/cover no-repeat!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 14px 38px rgba(0,0,0,.38),
+    0 0 22px rgba(156,238,229,.035)!important;
+  overflow:hidden!important;
+}
+
+.nordic-header::before{
+  background:
+    radial-gradient(circle at 16% 50%,rgba(156,238,229,.10),transparent 22%),
+    radial-gradient(circle at 88% 50%,rgba(214,179,106,.08),transparent 18%),
+    linear-gradient(90deg,transparent,rgba(214,179,106,.04),transparent)!important;
+}
+
+.nordic-header::after{
+  left:1%!important;
+  right:1%!important;
+  bottom:-1px!important;
+  height:2px!important;
+  background:linear-gradient(90deg,transparent,var(--df-copper) 18%,var(--df-gold) 36%,var(--df-ice) 50%,var(--df-gold) 64%,var(--df-copper) 82%,transparent)!important;
+}
+
+.forged-panel,
+.designly-app-page .card-lux,
+.designly-app-page .card-premium,
+.designly-surface{
+  border-color:rgba(214,179,106,.20)!important;
+  border-radius:18px!important;
+  background:
+    linear-gradient(145deg,rgba(10,21,20,.90),rgba(2,6,7,.94)),
+    radial-gradient(circle at 50% 0%,rgba(156,238,229,.07),transparent 42%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -24px 60px rgba(0,0,0,.20),
+    0 20px 52px rgba(0,0,0,.48)!important;
+}
+
+.forged-panel::after,
+.designly-app-page .card-lux::after,
+.designly-app-page .card-premium::after,
+.designly-surface::after{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(156,238,229,.08),transparent 38%),
+    linear-gradient(135deg,transparent 72%,rgba(214,179,106,.05))!important;
+}
+
+.forged-panel:hover,
+.designly-app-page .card-lux:hover,
+.designly-app-page .card-premium:hover,
+.designly-surface:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(214,179,106,.34)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 28px 60px rgba(0,0,0,.56),
+    0 0 26px rgba(156,238,229,.045)!important;
+}
+
+.designly-app-page input,
+.designly-app-page textarea,
+.designly-app-page select,
+.input-lux{
+  border-color:rgba(156,238,229,.16)!important;
+  background:linear-gradient(180deg,rgba(7,18,17,.86),rgba(2,7,8,.82))!important;
+  color:var(--df-ice-hi)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 8px 18px rgba(0,0,0,.20)!important;
+}
+
+.designly-app-page input:focus,
+.designly-app-page textarea:focus,
+.designly-app-page select:focus,
+.input-lux:focus{
+  outline:none!important;
+  border-color:rgba(214,179,106,.48)!important;
+  box-shadow:0 0 0 3px rgba(214,179,106,.055),0 0 24px rgba(156,238,229,.05)!important;
+}
+
+.btn-gold,
+.forged-button-primary{
+  background:
+    linear-gradient(180deg,#E3C985 0%,#D6B36A 48%,#A96D49 100%)!important;
+  border-color:rgba(242,217,154,.54)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.20),
+    inset 0 -2px 0 rgba(76,35,22,.20),
+    0 10px 24px rgba(0,0,0,.42),
+    0 0 18px rgba(214,179,106,.07)!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.18)!important;
+}
+
+.btn-ghost,
+.forged-button-secondary{
+  background:
+    linear-gradient(180deg,rgba(38,54,54,.84),rgba(7,19,17,.90))!important;
+  border-color:rgba(156,238,229,.22)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 9px 20px rgba(0,0,0,.30)!important;
+}
+
+.designly-app-page .chip{
+  border-color:rgba(214,179,106,.18)!important;
+  background:rgba(2,7,8,.55)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)!important;
+}
+
+.designly-page-dashboard .forged-panel:first-child{
+  min-height:520px;
+}
+
+@media (min-width:1280px){
+  .designly-page-dashboard .forged-panel{
+    backdrop-filter:blur(12px) saturate(1.02)!important;
+  }
+}
+
+@media (max-width:1100px){
+  .designly-app-page{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+}
+
+@media (max-width:900px){
+  .nordic-header{
+    border-radius:0!important;
+    border-left:0!important;
+    border-right:0!important;
+  }
+  .designly-app-page{
+    padding-top:18px!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .designly-command-deck nav button:hover,
+  .forged-panel:hover,
+  .designly-app-page .card-lux:hover,
+  .designly-app-page .card-premium:hover{
+    transform:none!important;
+  }
+}
