@@ -61,7 +61,9 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
       if (!active) return;
 
-      if (!error && data && typeof data === 'object') {
+      if (error) {
+        setGiftMessage(hu ? `A generálási költségek betöltése nem sikerült: ${error.message}` : `Failed to load generation costs: ${error.message}`);
+      } else if (data && typeof data === 'object') {
         const values = data as Record<string, unknown>;
         setEditCosts(GENERATION_COSTS.map((item, index) => {
           const raw = values[item.type];
@@ -505,6 +507,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
             <button onClick={saveCosts} className="btn-gold text-sm mt-6">
               {savedMsg ? t('admin.saved') : t('admin.saveChanges')}
             </button>
+            {giftMessage && <Notice message={giftMessage} />}
           </div>
         </div>
       )}
