@@ -1,0 +1,193 @@
+import { useState } from 'react';
+import { Box, Cog, Download, Hammer, Save, Sparkles } from 'lucide-react';
+import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
+
+interface CNCProps {
+  onNavigate: (page: string) => void;
+}
+
+const programs = [
+  { id: 1, name: 'Obsidian Plate', material: 'Steel', machine: 'Haas VF-2' },
+  { id: 2, name: 'Nordic Ornament', material: 'Aluminum', machine: 'Fanuc 5-axis' },
+];
+
+export default function CNC({ onNavigate }: CNCProps) {
+  const [form, setForm] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
+  const update = (key: string, value: string) => {
+    setSaved(false);
+    setForm((current) => ({ ...current, [key]: value }));
+  };
+
+  const saveSetup = () => {
+    localStorage.setItem('designly_cnc_setup', JSON.stringify(form));
+    setSaved(true);
+  };
+
+  const generateGcode = () => {
+    localStorage.setItem('designly_cnc_setup', JSON.stringify(form));
+    setGenerating(true);
+    window.setTimeout(() => {
+      setGenerating(false);
+      onNavigate('cnc-workspace');
+    }, 450);
+  };
+
+  return (
+    <div className="relative min-h-screen bg-[#020505] text-[#E3FFFB] overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.24]"
+        style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95"
+        aria-hidden="true"
+      />
+
+      <NordicHeader title="CNC — ENGINEERING FORGE" />
+
+      <main className="relative z-10 px-6 lg:px-8 pt-12 lg:pt-16 pb-24 space-y-12 max-w-[1700px] mx-auto">
+        <section>
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">
+                <Hammer className="w-4 h-4" /> ENGINEERING COMMAND
+              </div>
+              <h1 className="mt-2 font-serif text-4xl lg:text-5xl">CNC Overview</h1>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
+                CNC előkészítés, parametrikus pályatervezés és G-kód export egy egységes Nordic Engineering Forge felületen.
+              </p>
+            </div>
+            <ForgedButton variant="secondary" onClick={() => onNavigate('dashboard')}>← Command</ForgedButton>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <OverviewMetric label="Programs Generated" value="84" icon={Hammer} />
+            <OverviewMetric label="Machines Linked" value="6" icon={Cog} />
+            <OverviewMetric label="Materials" value="12" icon={Box} accent />
+          </div>
+        </section>
+
+        <section>
+          <div className="mb-6">
+            <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">ENGINEERING FORGE</div>
+            <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Generate CNC Program</h2>
+          </div>
+
+          <ForgedPanel className="max-w-4xl">
+            <div className="grid md:grid-cols-2 gap-5 text-xs">
+              <Field label="Model File" placeholder="Upload .STEP / .STL" value={form.model || ''} onChange={(v) => update('model', v)} />
+              <Field label="Material" placeholder="Steel / Aluminum / Wood / Composite" value={form.material || ''} onChange={(v) => update('material', v)} />
+              <Field label="Machine" placeholder="Haas / Fanuc / Siemens / Heidenhain" value={form.machine || ''} onChange={(v) => update('machine', v)} />
+              <Field label="Operation" placeholder="2.5D / 3D / 5-axis" value={form.operation || ''} onChange={(v) => update('operation', v)} />
+            </div>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <ForgedButton variant="primary" onClick={generateGcode} disabled={generating}>
+                <Hammer className="w-4 h-4" /> {generating ? 'Preparing…' : 'Generate G-code'}
+              </ForgedButton>
+              <ForgedButton variant="secondary" onClick={saveSetup}>
+                <Save className="w-4 h-4" /> {saved ? 'Setup Saved' : 'Save Setup'}
+              </ForgedButton>
+              <ForgedButton variant="secondary" onClick={() => onNavigate('cnc-workspace')}>
+                Open CNC CAM
+              </ForgedButton>
+            </div>
+          </ForgedPanel>
+        </section>
+
+        <section>
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <div className="text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">PROGRAM ARCHIVE</div>
+              <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Programs</h2>
+            </div>
+            <ForgedButton variant="secondary" onClick={() => onNavigate('cnc-workspace')}>
+              <Download className="w-4 h-4" /> Open CAM Workspace
+            </ForgedButton>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {programs.map((program) => (
+              <ForgedPanel key={program.id}>
+                <div className="flex justify-between items-start gap-4 mb-5">
+                  <div>
+                    <div className="font-serif text-2xl">{program.name}</div>
+                    <div className="text-xs text-[#EEE8DC]/55 mt-1">{program.material}</div>
+                  </div>
+                  <div className="text-[9px] uppercase tracking-[.18em] text-[#9CEEE5]/70">{program.machine}</div>
+                </div>
+                <div className="flex gap-3">
+                  <ForgedButton variant="secondary" className="flex-1" onClick={() => onNavigate('cnc-workspace')}>Open</ForgedButton>
+                  <ForgedButton variant="secondary" className="flex-1" onClick={() => onNavigate('cnc-workspace')}>
+                    <Download className="w-4 h-4" /> Export
+                  </ForgedButton>
+                </div>
+              </ForgedPanel>
+            ))}
+          </div>
+        </section>
+
+        <ForgedPanel className="max-w-4xl">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-[#D6B36A]/75 mt-0.5" />
+            <div>
+              <div className="text-[9px] uppercase tracking-[.22em] text-[#9CEEE5]/55">CAM BRIDGE</div>
+              <div className="font-serif text-2xl mt-1">Parametric G-code workspace</div>
+              <p className="mt-3 text-sm leading-7 text-[#EEE8DC]/55">
+                A részletes művelet-, vezérlő-, szerszám- és toolpath-beállításokat a meglévő CNC CAM workspace kezeli, beleértve a G-kód előállítást és az NC exportot.
+              </p>
+            </div>
+          </div>
+        </ForgedPanel>
+      </main>
+    </div>
+  );
+}
+
+function OverviewMetric({
+  label,
+  value,
+  icon: Icon,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  icon: typeof Hammer;
+  accent?: boolean;
+}) {
+  return (
+    <ForgedPanel>
+      <Icon className={`w-5 h-5 mb-3 ${accent ? 'text-[#9CEEE5]/80' : 'text-[#D6B36A]/75'}`} />
+      <div className="text-xs text-[#EEE8DC]/55">{label}</div>
+      <div className={`font-serif text-4xl mt-2 ${accent ? 'text-[#9CEEE5]' : ''}`}>{value}</div>
+    </ForgedPanel>
+  );
+}
+
+function Field({
+  label,
+  placeholder,
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="space-y-1 block">
+      <span className="text-[#EEE8DC]/70">{label}</span>
+      <input
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full bg-[#071311]/75 border border-[#263636] rounded-[10px] px-3 py-2.5 text-xs text-[#E3FFFB] placeholder:text-[#EEE8DC]/35 outline-none focus:border-[#9CEEE5]/40 focus:ring-2 focus:ring-[#9CEEE5]/5"
+        placeholder={placeholder}
+      />
+    </label>
+  );
+}
