@@ -64,6 +64,7 @@ import { DiagnosticsPage } from '@/components/DiagnosticsPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
+import PageTransition from '@/components/ui/PageTransition';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
