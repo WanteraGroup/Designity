@@ -83,7 +83,7 @@ export default function Credits({ onNavigate }: CreditsProps) {
                 </div>
               </div>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
-                Az owner hozzáférés korlátlan kreditjogosultságot használ. A generálási költségek információs módban továbbra is láthatók.
+                Az OWNER tesztmód valódi krediteket használ a végleges generálásokhoz. Az Admin menüből saját kredit visszatöltés kérhető.
               </p>
             </ForgedPanel>
           </section>
