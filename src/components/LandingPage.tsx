@@ -89,6 +89,7 @@ export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <div className="odin-forge">
       <section className="odin-hero">
+        <div className="odin-hero-scene" aria-hidden="true" />
         <div className="odin-hero-noise" aria-hidden="true" />
         <div className="odin-hero-aurora aurora-a" aria-hidden="true" />
         <div className="odin-hero-aurora aurora-b" aria-hidden="true" />
