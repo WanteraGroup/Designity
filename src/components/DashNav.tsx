@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   LayoutDashboard, Plus, Megaphone, Layers, FolderOpen, Palette, LayoutTemplate,
-  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer, FlaskConical,
+  ImageIcon, Coins, CreditCard, Settings, Shield, LogOut, Menu, X, Infinity as InfinityIcon, Music2, Network, Mic, Languages, Gamepad2, Radio, PenTool, Ruler, ShoppingBag, Hammer,
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
@@ -27,7 +27,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     { id: 'music', label: 'MUSIC', icon: Music2 },
     { id: 'voice', label: 'VOICE', icon: Mic },
     { id: 'translator', label: 'TRANSLATOR', icon: Languages },
-    { id: 'shopify', label: 'SHOPIFY', icon: ShoppingBag },
+    ...(isAdmin ? [{ id: 'shopify', label: 'SHOPIFY', icon: ShoppingBag }] : []),
     { id: 'cnc', label: 'CNC', icon: Hammer },
     { id: 'tattoo', label: 'TATTOO', icon: PenTool },
     { id: 'planner', label: 'PLANNER', icon: Ruler },
@@ -37,7 +37,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     { id: 'credits', label: 'CREDITS', icon: Coins },
     { id: 'billing', label: 'BILLING', icon: CreditCard },
     { id: 'settings', label: 'SETTINGS', icon: Settings },
-    ...(isAdmin ? [{ id: 'advertising', label: 'AD STUDIO', icon: Megaphone }, { id: 'admin', label: 'ADMIN', icon: Shield }] : []),
+    ...(isAdmin ? [{ id: 'admin', label: 'ADMIN', icon: Shield }] : []),
   ];
   const privilegedIds = ['admin'];
   const primaryNavItems = navItems.filter((item) => !privilegedIds.includes(item.id));
