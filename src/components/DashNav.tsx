@@ -6,6 +6,7 @@ import {
 import { Logo } from './Logo';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
+import { CommandDeck } from '@/components/layout/CommandDeck';
 
 interface DashNavProps {
   currentPage: string;
@@ -61,118 +62,12 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
   return (
     <>
-      {/* Desktop Command Deck */}
-      <aside className="designly-command-deck hidden lg:flex">
-        <div className="designly-command-brand">
-          <button onClick={() => onNavigate('landing')} className="designly-command-brand-button">
-            <div className="designly-command-mark">
-              <Logo size={46} />
-            </div>
-            <div className="designly-command-brand-copy">
-              <div className="designly-command-title">DESIGNLY</div>
-              <div className="designly-command-subtitle">CREATIVE OPERATING SYSTEM</div>
-            </div>
-          </button>
-          <div className="designly-command-rune-separator">
-            <span>ᛉ</span><i /><span>ᛟ</span><i /><span>ᚱ</span><i /><span>ᚦ</span><i /><span>ᚷ</span>
-          </div>
-        </div>
-
-        <div className="designly-command-section-label">COMMAND DECK</div>
-
-        <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
-          {primaryNavItems.map((item) => {
-            const isActive = currentPage === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNav(item.id)}
-                aria-current={isActive ? 'page' : undefined}
-                className={`
-                  relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]
-                  transition-all duration-200
-                  ${isActive
-                    ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
-                    : 'border border-transparent hover:bg-[#071311]/40'
-                  }
-                `}
-              >
-                <item.icon className={`w-5 h-5 ${isActive ? 'text-[#9CEEE5]' : 'text-[#EEE8DC]/60'}`} />
-                <span className={`text-sm tracking-wide ${isActive ? 'text-[#E3FFFB]' : 'text-[#EEE8DC]/70'}`}>
-                  {item.label}
-                </span>
-                {isActive && (
-                  <div className="absolute left-0 top-0 h-full w-[3px] bg-[#9CEEE5] rounded-r-md shadow-[0_0_10px_rgba(156,238,229,0.55)]" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-
-        {privilegedNavItems.length > 0 && (
-          <div className="px-4 pt-2 pb-1">
-            <div className="designly-command-section-label px-0">CONTROL</div>
-            <div className="space-y-1">
-              {privilegedNavItems.map((item) => {
-                const isActive = currentPage === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNav(item.id)}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={`
-                      relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]
-                      transition-all duration-200
-                      ${isActive
-                        ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
-                        : 'border border-transparent hover:bg-[#071311]/40'
-                      }
-                    `}
-                  >
-                    <item.icon className={`w-5 h-5 ${isActive ? 'text-[#9CEEE5]' : 'text-[#EEE8DC]/60'}`} />
-                    <span className={`text-sm tracking-wide ${isActive ? 'text-[#E3FFFB]' : 'text-[#EEE8DC]/70'}`}>
-                      {item.label}
-                    </span>
-                    {item.id === 'admin' && isOwner && <InfinityIcon className="w-3.5 h-3.5 text-amber-200 ml-auto" />}
-                    {isActive && (
-                      <div className="absolute left-0 top-0 h-full w-[3px] bg-[#9CEEE5] rounded-r-md shadow-[0_0_10px_rgba(156,238,229,0.55)]" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <div className="designly-command-spacer" />
-
-        <div className="designly-command-huginn">
-          <div className="designly-command-huginn-head">
-            <span className="designly-online-dot" />
-            <div>
-              <div className="designly-command-huginn-name">HUGINN</div>
-              <div className="designly-command-huginn-status">AI SYSTEM ONLINE</div>
-            </div>
-            <span className="designly-command-huginn-glyph">◈</span>
-          </div>
-          <div className="designly-command-huginn-stats">
-            <div><strong>{isUnlimited ? '14' : '—'}</strong><span>AGENTS CONNECTED</span></div>
-            <div><strong>∞</strong><span>AUTOMATION ROUTES</span></div>
-            <div><strong>LIVE</strong><span>CORE STATUS</span></div>
-          </div>
-        </div>
-
-        <div className="designly-command-user">
-          <div className="designly-command-user-email">{profile?.email}</div>
-          <div className="designly-command-user-meta">
-            <span className="chip">{isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}</span>
-            <span className="chip">{isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}</span>
-          </div>
-          <button onClick={handleSignOut} className="designly-command-logout">
-            <LogOut className="w-4 h-4" /> {t('nav.logout')}
-          </button>
-        </div>
-      </aside>
+      <CommandDeck
+        active={currentPage}
+        menuItems={primaryNavItems}
+        controlItems={privilegedNavItems}
+        onNavigate={handleNav}
+      />
 
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-14 border-b border-gold-600/10 bg-ink-900/90 backdrop-blur-xl z-50 flex items-center justify-between px-4">
