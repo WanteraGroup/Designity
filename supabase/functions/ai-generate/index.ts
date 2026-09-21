@@ -291,16 +291,53 @@ Deno.serve(async (req: Request) => {
         .eq("status", "approved");
     }
 
-    // Update project status if projectId was provided
+    // Update project status without destroying the website build specification.
+    // The Create flow stores the complete buildSpec/orchestration in projects.config;
+    // finalization must enrich that config, not replace it with an image-only result.
     if (projectId) {
+      const { data: currentProject } = await supabase
+        .from("projects")
+        .select("config, type")
+        .eq("id", projectId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const currentConfig = (currentProject?.config && typeof currentProject.config === "object")
+        ? currentProject.config as Record<string, unknown>
+        : {};
+
+      const isWebsite = type === "website";
+      const existingBuildSpec = currentConfig.buildSpec || (currentConfig.orchestration as Record<string, unknown> | undefined)?.buildSpec;
+      const siteArtifact = isWebsite && existingBuildSpec
+        ? {
+            version: 1,
+            kind: "designly-website",
+            status: "ready-for-editor",
+            pages: (existingBuildSpec as any).pages || [],
+            sections: (existingBuildSpec as any).sections || [],
+            components: (existingBuildSpec as any).components || [],
+            content: (existingBuildSpec as any).content || {},
+            interactions: (existingBuildSpec as any).interactions || [],
+            responsiveRules: (existingBuildSpec as any).responsiveRules || [],
+            acceptanceCriteria: (existingBuildSpec as any).acceptanceCriteria || [],
+            generatedAt: new Date().toISOString(),
+          }
+        : null;
+
       await supabase
         .from("projects")
         .update({
           status: "completed",
-          config: generationResult,
+          config: {
+            ...currentConfig,
+            generation: generationResult,
+            ...(siteArtifact ? { site: siteArtifact } : {}),
+            finalizedAt: new Date().toISOString(),
+          },
           updated_at: new Date().toISOString(),
         })
-        .eq("id", projectId);
+        .eq("id", projectId)
+        .eq("user_id", user.id);
     }
 
     return new Response(JSON.stringify({
