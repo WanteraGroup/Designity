@@ -56,17 +56,9 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-import './designly-brand-overrides.css';
-import './designly-dashboard-overrides.css';
-import './designly-forged-system.css';
-import './designly-forged-landing.css';
-import './designly-viking-frost.css';
-import './designly-odin-hall.css';
-import './designly-odin-hall-v2.css';
-import './designly-odin-hall-4.css';
-import './designly-odin-hall-max.css';
-import './designly-odin-hall-3.css';
-import './designly-visual-final.css';
+// Unified art-direction layer. Used to be 11 competing stylesheets with 1200+
+// !important flags; consolidated into one cascade. See designly-theme.css.
+import './designly-theme.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
