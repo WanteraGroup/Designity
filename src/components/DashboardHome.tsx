@@ -45,31 +45,115 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
 
   return (
     <div className="space-y-8">
-      {/* Welcome / Creative Command Center */}
-      <section className="dl-dashboard-hero">
-        <div className="dl-dashboard-hero-bg" aria-hidden="true" />
-        <div className="dl-dashboard-hero-shade" aria-hidden="true" />
-        <div className="dl-dashboard-hero-content">
-          <div>
-            <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.3em] text-gold-300/75">
-              <CelticEmblem size={24} animate showD={false} />
-              DESIGNLY CREATIVE COMMAND CENTER
-            </div>
-            <h1 className="mt-3 text-3xl lg:text-5xl font-display font-semibold text-cream-50">
+      {/* DESIGNLY CORE — Nordic command center */}
+      <section className="designly-core-dashboard">
+        <div className="designly-core-bg" aria-hidden="true" />
+        <div className="designly-core-runes" aria-hidden="true">ᛉ ᚨ ᛟ ᚱ ᚦ ᚷ ᛏ ᚹ ᛒ</div>
+
+        <div className="designly-core-top">
+          <div className="designly-core-kicker"><CelticEmblem size={26} animate showD={false} /> DESIGNLY · CREATIVE OPERATING SYSTEM</div>
+          <div className="designly-core-user">
+            <span className="designly-online-dot" />
+            {isUnlimited ? 'SYSTEM ONLINE · FULL ACCESS' : 'SYSTEM ONLINE'}
+          </div>
+        </div>
+
+        <div className="designly-core-main">
+          <div className="designly-core-copy">
+            <div className="text-[10px] uppercase tracking-[.32em] text-amber-200/70">ANCIENT WISDOM · MODERN CREATION</div>
+            <h1 className="mt-3 text-4xl lg:text-6xl font-display font-semibold text-cream-50">
               {t('dash.welcome')}, {profile?.full_name || profile?.email?.split('@')[0]}
             </h1>
-            <p className="max-w-2xl text-sm leading-7 text-cream-200/60 mt-3">
-              {isUnlimited ? (isOwner ? t('dash.ownerBadge') : 'FULL UNLOCK — Unlimited access') : t('dash.readyCreate')}
+            <p className="mt-4 max-w-xl text-sm leading-7 text-cream-200/65">
+              A DESIGNLY CORE összekapcsolja a kreatív eszközöket, az AI agenteket és a projektmunkát egyetlen műveleti térben.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <button onClick={() => onNavigate('create')} className="btn-gold text-sm shrink-0"><Plus className="w-4 h-4" /> {t('dash.quickCreate')}</button>
-              <button onClick={() => onNavigate('streamer')} className="btn-ghost text-sm"><Gamepad2 className="w-4 h-4" /> Streamer Studio</button>
-              <button onClick={() => onNavigate('creator')} className="btn-ghost text-sm"><Radio className="w-4 h-4" /> Merch Studio</button>
+              <button onClick={() => onNavigate('create')} className="btn-gold text-sm">
+                <Plus className="w-4 h-4" /> FORGE · CREATE
+              </button>
+              <button onClick={() => onNavigate('agents')} className="btn-ghost text-sm">
+                <Sparkles className="w-4 h-4" /> AGENT COMMAND
+              </button>
             </div>
           </div>
-          <div className="dl-dashboard-sigil"><CelticEmblem size={180} animate showD /></div>
+
+          <div className="designly-core-orbital" aria-label="DESIGNLY CORE module map">
+            <div className="designly-core-ring designly-core-ring-outer" />
+            <div className="designly-core-ring designly-core-ring-inner" />
+            {[
+              { id: 'create', label: 'CREATE', sub: 'FORGE', glyph: '⚒' },
+              { id: 'agents', label: 'AGENTS', sub: 'AI TEAM', glyph: '◈' },
+              { id: 'campaign', label: 'CAMPAIGNS', sub: 'WAR ROOM', glyph: '⚑' },
+              { id: 'music', label: 'MUSIC', sub: 'SOUND HALL', glyph: '♫' },
+              { id: 'voice', label: 'VOICE', sub: 'VOICE STUDIO', glyph: '◉' },
+              { id: 'translator', label: 'TRANSLATOR', sub: 'GLOBAL REACH', glyph: 'ᚱ' },
+              { id: 'shopify', label: 'SHOPIFY', sub: 'MERCHANT HALL', glyph: '◇' },
+              { id: 'cnc', label: 'CNC', sub: 'ENGINEERING', glyph: '⌘' },
+            ].map((m, i) => {
+              const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+              const x = 50 + Math.cos(angle) * 42;
+              const y = 50 + Math.sin(angle) * 42;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => onNavigate(m.id)}
+                  className="designly-core-module"
+                  style={{ left: `${x}%`, top: `${y}%` }}
+                >
+                  <span className="designly-core-module-glyph">{m.glyph}</span>
+                  <span className="designly-core-module-name">{m.label}</span>
+                  <span className="designly-core-module-sub">{m.sub}</span>
+                </button>
+              );
+            })}
+            <button onClick={() => onNavigate('agents')} className="designly-core-center">
+              <CelticEmblem size={132} animate />
+              <span className="designly-core-center-label">DESIGNLY CORE</span>
+              <span className="designly-core-center-sub">AI OPERATING SYSTEM</span>
+              <span className="designly-core-center-status">● ONLINE</span>
+            </button>
+          </div>
+
+          <div className="designly-core-side">
+            <div className="designly-system-panel">
+              <div className="designly-panel-title">SYSTEM STATUS</div>
+              <div className="designly-system-state"><span className="designly-online-dot" /> ONLINE</div>
+              <div className="designly-system-row"><span>Agents</span><strong>{isUnlimited ? '14 / 14' : 'ACTIVE'}</strong></div>
+              <div className="designly-system-row"><span>Projects</span><strong>{isUnlimited ? '∞' : projects.length}</strong></div>
+              <div className="designly-system-row"><span>Credits</span><strong>{isUnlimited ? '∞' : (profile?.credits ?? 0).toLocaleString('hu-HU')}</strong></div>
+              <div className="designly-system-row"><span>Access</span><strong>{isOwner ? 'OWNER' : isUnlimited ? 'FULL' : 'STANDARD'}</strong></div>
+            </div>
+            <div className="designly-huginn-card">
+              <div className="designly-panel-title">HUGINN AI</div>
+              <div className="designly-huginn-state"><span className="designly-online-dot" /> READY</div>
+              <p>Mit építsünk ma?</p>
+              <div className="designly-huginn-actions">
+                <button onClick={() => onNavigate('create')}>Új design</button>
+                <button onClick={() => onNavigate('campaign')}>Campaign</button>
+                <button onClick={() => onNavigate('agents')}>Elemzés</button>
+                <button onClick={() => onNavigate('translator')}>Fordítás</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="dl-dashboard-hero-runes">ᛉ · ᚨ · ᛟ · ᚱ · ᚦ · ᚷ · ᛏ · ᚹ · ᛒ</div>
+
+        <div className="designly-world-strip">
+          {[
+            { id: 'create', title: 'CREATE', sub: 'Forge Studio', icon: '⚒' },
+            { id: 'agents', title: 'AGENTS', sub: 'AI Command', icon: '◈' },
+            { id: 'campaign', title: 'CAMPAIGNS', sub: 'War Room', icon: '⚑' },
+            { id: 'music', title: 'MUSIC', sub: 'Sound Hall', icon: '♫' },
+            { id: 'shopify', title: 'SHOPIFY', sub: 'Merchant Hall', icon: '◇' },
+            { id: 'cnc', title: 'CNC', sub: 'Engineering', icon: '⌘' },
+          ].map((m) => (
+            <button key={m.id} onClick={() => onNavigate(m.id)} className="designly-world-card">
+              <span className="designly-world-glyph">{m.icon}</span>
+              <span className="designly-world-title">{m.title}</span>
+              <span className="designly-world-sub">{m.sub}</span>
+              <span className="designly-world-arrow">↗</span>
+            </button>
+          ))}
+        </div>
       </section>
 
       {/* Stats */}
