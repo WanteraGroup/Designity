@@ -57,16 +57,12 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
     const loadCosts = async () => {
       setLoadingCosts(true);
-      const { data, error } = await supabase
-        .from('system_settings')
-        .select('value')
-        .eq('key', 'generation_costs')
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('get_generation_costs');
 
       if (!active) return;
 
-      if (!error && data?.value && typeof data.value === 'object') {
-        const values = data.value as Record<string, unknown>;
+      if (!error && data && typeof data === 'object') {
+        const values = data as Record<string, unknown>;
         setEditCosts(GENERATION_COSTS.map((item, index) => {
           const raw = values[item.type];
           const value = typeof raw === 'number' ? raw : Number(raw);
@@ -148,16 +144,26 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
 
   const saveCosts = async () => {
     const value = GENERATION_COSTS.reduce<Record<string, number>>((acc, item, i) => {
-      acc[item.type] = Math.max(1, editCosts[i] || 1);
+      const raw = Number(editCosts[i]);
+      acc[item.type] = Number.isFinite(raw) && raw > 0 ? Math.round(raw) : 1;
       return acc;
     }, {});
-    const { error } = await supabase
-      .from('system_settings')
-      .upsert({ key: 'generation_costs', value, description: 'Credit costs per generation type', updated_at: new Date().toISOString() });
-    if (!error) {
-      setSavedMsg(true);
-      setTimeout(() => setSavedMsg(false), 2000);
+
+    setSavedMsg(false);
+    setGiftMessage('');
+
+    const { error } = await supabase.rpc('update_generation_costs', {
+      p_value: value,
+    });
+
+    if (error) {
+      setGiftMessage(hu ? `A generálási költségek mentése nem sikerült: ${error.message}` : `Failed to save generation costs: ${error.message}`);
+      return;
     }
+
+    setEditCosts(GENERATION_COSTS.map((item) => value[item.type]));
+    setSavedMsg(true);
+    setTimeout(() => setSavedMsg(false), 2500);
   };
 
   const grantGift = async () => {
