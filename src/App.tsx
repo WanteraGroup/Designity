@@ -8,6 +8,7 @@ import './designly-odin-hall-v2.css';
 import './designly-odin-hall-4.css';
 import './designly-odin-hall-max.css';
 import './designly-odin-hall-3.css';
+import './designly-visual-final.css';
 import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
