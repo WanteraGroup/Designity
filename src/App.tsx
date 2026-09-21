@@ -21,6 +21,7 @@ import Translator from '@/pages/Translator';
 import Shopify from '@/pages/Shopify';
 import Brands from '@/pages/Brands';
 import Templates from '@/pages/Templates';
+import Tattoo from '@/pages/Tattoo';
 import Projects from '@/pages/Projects';
 import CNC from '@/pages/CNC';
 import { AuthPage } from '@/components/AuthPage';
@@ -57,14 +58,14 @@ const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ def
 type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
-  | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
+  | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
-  'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
+  'templates', 'tattoo', 'tattoo-library', 'planner', 'assets', 'credits', 'billing',
   'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics',
 ];
 
@@ -190,7 +191,8 @@ function AppInner() {
       case 'projects': return <Projects onNavigate={navigate} />;
       case 'brands': return <Brands onNavigate={navigate} />;
       case 'templates': return <Templates onNavigate={navigate} />;
-      case 'tattoo': return <TattooLibraryPage onNavigate={navigate} />;
+      case 'tattoo': return <Tattoo onNavigate={navigate} />;
+      case 'tattoo-library': return <TattooLibraryPage onNavigate={navigate} />;
       case 'planner': return <DesignPlannerPage onNavigate={navigate} />;
       case 'assets': return <AssetsPage onNavigate={navigate} />;
       case 'credits': return <CreditsPage onNavigate={navigate} />;
@@ -238,7 +240,8 @@ function AppInner() {
     projects: 'PROJECTS',
     brands: 'BRAND VAULT',
     templates: 'TEMPLATE HALL',
-    tattoo: 'TATTOO LIBRARY',
+    tattoo: 'RUNE & SKIN STUDIO',
+    'tattoo-library': 'TATTOO LIBRARY',
     planner: 'DESIGN PLANNER',
     assets: 'ASSET LIBRARY',
     credits: 'CREDIT FORGE',
