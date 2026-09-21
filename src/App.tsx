@@ -18,6 +18,7 @@ import ForgeStudio from '@/pages/ForgeStudio';
 import Music from '@/pages/Music';
 import Voice from '@/pages/Voice';
 import Translator from '@/pages/Translator';
+import Shopify from '@/pages/Shopify';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -54,14 +55,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'planner' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'translator' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
+  | 'settings' | 'admin' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'cnc' | 'diagnostics';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'planner', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'translator', 'creator', 'streamer', 'shopify', 'cnc', 'diagnostics',
+  'settings', 'admin', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'diagnostics',
 ];
 
 function pageFromHash(): Page {
@@ -201,7 +202,8 @@ function AppInner() {
       case 'voice-workspace': return <VoiceAgentPage onNavigate={navigate} />;
       case 'translator': return <Translator onNavigate={navigate} />;
       case 'translator-workspace': return <RealtimeTranslatorPage onNavigate={navigate} />;
-      case 'translator': return <RealtimeTranslatorPage onNavigate={navigate} />;
+      case 'shopify': return <Shopify onNavigate={navigate} />;
+      case 'shopify-workspace': return <ShopifyStudioPage onNavigate={navigate} />;
       case 'creator': return <CreatorMerchPage onNavigate={navigate} />;
       case 'streamer': return <StreamerStudioPage onNavigate={navigate} />;
       case 'shopify': return <ShopifyStudioPage onNavigate={navigate} />;
@@ -247,7 +249,8 @@ function AppInner() {
     'voice-workspace': 'VOICE AGENT WORKSPACE',
     translator: 'GLOBAL RUNE NETWORK',
     'translator-workspace': 'REALTIME TRANSLATOR WORKSPACE',
-    translator: 'TRANSLATOR',
+    shopify: 'MERCHANT HALL',
+    'shopify-workspace': 'SHOPIFY STUDIO',
     creator: 'CREATOR MERCH',
     streamer: 'STREAMER STUDIO',
     shopify: 'SHOPIFY STUDIO',
