@@ -233,9 +233,11 @@ function AppInner() {
         )}
 
         {isDashboard && isEditor && (
-          <div className="min-h-screen">
-            {renderDashboardPage()}
-          </div>
+          <main className="section-pad designly-app-page designly-page-editor min-h-screen">
+            <Suspense fallback={<div className="min-h-[60vh] grid place-items-center"><div className="w-8 h-8 border-2 border-gold-600/30 border-t-gold-400 rounded-full animate-spin" /></div>}>
+              {renderDashboardPage()}
+            </Suspense>
+          </main>
         )}
 
         {isDashboard && !isEditor && (
