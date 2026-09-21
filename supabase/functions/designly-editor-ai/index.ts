@@ -191,7 +191,10 @@ Deno.serve(async (req: Request) => {
     }
 
     const editCost = 1;
-    const unlimited = profile.role === "owner" || profile.unlimited_access === true;
+    // Owner/Admin editor actions are billable so admin testing follows the same
+    // credit path as customer usage. Other explicitly unlimited users stay free.
+    const billableAdmin = profile.role === "owner" || profile.role === "admin";
+    const unlimited = !billableAdmin && profile.unlimited_access === true;
 
     if (mode === "final" && !unlimited && profile.credits < editCost) {
       return json({
