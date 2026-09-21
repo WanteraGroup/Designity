@@ -56,9 +56,9 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-// Unified art-direction layer. Used to be 11 competing stylesheets with 1200+
-// !important flags; consolidated into one cascade. See designly-theme.css.
-import './designly-theme.css';
+// Landing visuals (odin-hero etc.) live in index.css, imported from main.tsx.
+// This layer only ADDS application chrome — it never strips the landing shell.
+import './designly-theme-overrides.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
