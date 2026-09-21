@@ -7,6 +7,12 @@ const panelTextures = [
   '/kor keret.png',
 ];
 
+const fallbackPatterns = [
+  'radial-gradient(circle at 18% 22%, rgba(214,179,106,.22) 0 2px, transparent 3px), radial-gradient(circle at 82% 78%, rgba(214,179,106,.18) 0 2px, transparent 3px), repeating-linear-gradient(45deg, transparent 0 12px, rgba(214,179,106,.07) 12px 15px, transparent 15px 27px)',
+  'conic-gradient(from 45deg at 30% 50%, transparent 0 15%, rgba(156,238,229,.08) 16% 18%, transparent 19% 33%, rgba(214,179,106,.07) 34% 36%, transparent 37% 100%), repeating-radial-gradient(circle at 70% 35%, transparent 0 10px, rgba(214,179,106,.06) 11px 13px, transparent 14px 23px)',
+  'repeating-linear-gradient(90deg, transparent 0 20px, rgba(214,179,106,.06) 20px 22px, transparent 22px 40px), linear-gradient(135deg, transparent 35%, rgba(156,238,229,.07) 36% 38%, transparent 39% 64%, rgba(214,179,106,.06) 65% 67%, transparent 68%)',
+];
+
 interface PanelMorphingOverlayProps {
   intervalMs?: number;
   transitionMs?: number;
@@ -46,8 +52,12 @@ export function PanelMorphingOverlay({
     };
   }, [intervalMs]);
 
-  const resolveTexture = (src: string) =>
-    failed[src] ? '/kor keret.png' : src;
+  const textureStyle = (textureIndex: number): React.CSSProperties => {
+    const src = panelTextures[textureIndex];
+    return failed[src]
+      ? { backgroundImage: fallbackPatterns[textureIndex % fallbackPatterns.length] }
+      : { backgroundImage: `url("${src}")` };
+  };
 
   return (
     <div
@@ -57,14 +67,14 @@ export function PanelMorphingOverlay({
       <div
         className="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-[0.12]"
         style={{
-          backgroundImage: `url("${resolveTexture(panelTextures[previousIndex])}")`,
+          ...textureStyle(previousIndex),
         }}
       />
       <div
         key={index}
         className="absolute inset-0 bg-center bg-cover bg-no-repeat animate-[panelTextureMorph_var(--panel-morph-duration)_ease-in-out_forwards]"
         style={{
-          backgroundImage: `url("${resolveTexture(panelTextures[index])}")`,
+          ...textureStyle(index),
           '--panel-morph-duration': `${transitionMs}ms`,
         } as React.CSSProperties}
       />
