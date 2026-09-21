@@ -113,17 +113,20 @@ body::before{
 .odin-hero-scene{
   position:absolute;
   inset:0;
-  z-index:-4;
+  z-index:0;
   background:
-    linear-gradient(180deg,rgba(2,6,8,.18),rgba(2,6,8,.20) 48%,rgba(2,6,7,.78) 100%),
-    url('/designly-odin-hall-bg.svg') center center / cover no-repeat;
-  opacity:.92;
-  transform:scale(1.02);
-  animation:oh-scene-drift 28s ease-in-out infinite alternate;
-  filter:saturate(.82) contrast(1.08) brightness(.88);
+    linear-gradient(90deg,rgba(3,7,8,.40),rgba(3,7,8,.08) 48%,rgba(3,7,8,.26)),
+    linear-gradient(180deg,rgba(2,6,8,.08),rgba(2,6,7,.22) 52%,rgba(2,6,7,.72) 100%),
+    url('https://cdn.shopify.com/s/files/1/0966/9017/6380/files/designly-odin-hall-bg.png?v=1789955818') center center / cover no-repeat;
+  opacity:.98;
+  transform:scale(1.01);
+  animation:oh-scene-drift 32s ease-in-out infinite alternate;
+  filter:none;
 }
 @keyframes oh-scene-drift{
-  from{transform:scale(1.02) translate3d(0,0,0)}
+  from{transform:scale(1.01) translate3d(0,0,0)}
+  to{transform:scale(1.045) translate3d(0,-.8%,0)}
+}
   to{transform:scale(1.06) translate3d(0,-1%,0)}
 }
 .odin-hero-noise{
@@ -722,4 +725,41 @@ aside.hidden.lg\\:flex img{filter:saturate(.38) hue-rotate(150deg) brightness(1.
 }
 @media(prefers-reduced-motion:reduce){
   .odin-hero-aurora,.odin-wheel::after,.odin-raven{animation:none!important}
+}
+
+/* The generated Odin Hall scene is the hero artwork itself.
+   Suppress duplicate CSS-art overlays so the actual artwork remains visible. */
+.odin-hero-symbol,
+.odin-raven,
+.odin-mountain,
+.odin-mist,
+.odin-hero-aurora,
+.odin-sky-runes{display:none!important}
+.odin-hero-content{
+  grid-template-columns:1fr!important;
+  width:min(1400px,100%)!important;
+}
+.odin-hero-copy{
+  max-width:760px!important;
+  padding-left:5vw!important;
+  padding-right:4vw!important;
+}
+.odin-hero-copy>p{
+  max-width:610px!important;
+  text-shadow:0 2px 18px rgba(0,0,0,.90);
+}
+.odin-hero-title span,
+.odin-hero-title strong,
+.odin-eyebrow,
+.odin-proof,
+.odin-actions{
+  position:relative;
+  z-index:5;
+}
+.odin-proof{
+  background:rgba(3,8,9,.42);
+  backdrop-filter:blur(8px);
+}
+@media(max-width:720px){
+  .odin-hero-copy{padding-left:4vw!important;padding-right:4vw!important}
 }
