@@ -216,7 +216,7 @@ function AppInner() {
 
       <div className={contentWrapperClass}>
         {isPublic && (
-          <main className={page === 'landing' ? '' : 'pt-16 lg:pt-20'}>
+          <main className={`designly-public-page designly-page-${page} ${page === 'landing' ? '' : 'pt-16 lg:pt-20'}`}>
             {authPending ? (
               <div className="relative">
                 <LandingPage onNavigate={navigate} />
@@ -237,7 +237,7 @@ function AppInner() {
         )}
 
         {isDashboard && !isEditor && (
-          <main className="section-pad py-8 lg:py-10 max-w-7xl mx-auto">
+          <main className={`section-pad designly-app-page designly-page-${page} py-8 lg:py-10 max-w-7xl mx-auto`}>
             <Suspense fallback={<div className="min-h-[60vh] grid place-items-center"><div className="w-8 h-8 border-2 border-gold-600/30 border-t-gold-400 rounded-full animate-spin" /></div>}>
               {renderDashboardPage()}
             </Suspense>
