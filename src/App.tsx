@@ -5,6 +5,7 @@ import './designly-forged-landing.css';
 import './designly-viking-frost.css';
 import './designly-odin-hall.css';
 import './designly-odin-hall-v2.css';
+import './designly-odin-hall-4.css';
 import './designly-odin-hall-3.css';
 import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
