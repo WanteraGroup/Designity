@@ -8,6 +8,7 @@ import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
 import { GENERATION_COSTS } from '@/lib/constants';
 import { CelticEmblem } from './CelticEmblem';
+import { ForgedPanel } from './layout/ForgedPanel';
 import type { Project } from '@/types';
 
 interface DashboardHomeProps {
@@ -387,15 +388,15 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
 
 function StatCard({ icon: Icon, label, value, accent }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; accent: boolean }) {
   return (
-    <div className={`card-lux p-5 ${accent ? 'border-gold-600/30' : ''}`}>
+    <ForgedPanel className={accent ? 'border-[#D6B36A]/30' : ''}>
       <div className="flex items-center gap-3 mb-2">
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${accent ? 'bg-gold-600/20' : 'bg-ink-700/50'}`}>
-          <Icon className={`w-5 h-5 ${accent ? 'text-gold-300' : 'text-cream-300/60'}`} />
+        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${accent ? 'bg-[#D6B36A]/15' : 'bg-[#071311]/70'}`}>
+          <Icon className={`w-5 h-5 ${accent ? 'text-[#D6B36A]' : 'text-[#9CEEE5]/65'}`} />
         </div>
         <span className="text-xs text-cream-300/50 uppercase tracking-wider">{label}</span>
       </div>
-      <div className={`text-2xl font-display font-bold ${accent ? 'gold-text' : 'text-cream-50'}`}>{value}</div>
-    </div>
+      <div className={`text-2xl font-display font-bold ${accent ? 'text-[#E3FFFB]' : 'text-cream-50'}`}>{value}</div>
+    </ForgedPanel>
   );
 }
 
