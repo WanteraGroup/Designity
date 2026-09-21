@@ -1,0 +1,236 @@
+/* DESIGNLY — ODIN FORGE  (designly-forge.css) — part 3 of 3 */
+
+/* ========================================================== MANIFESTO */
+.odin-manifesto {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+  padding: clamp(80px, 9vw, 140px) clamp(20px, 5vw, 64px);
+  text-align: center;
+  border-top: 1px solid var(--fg-ice-line);
+  border-bottom: 1px solid var(--fg-ice-line);
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(85,201,202,.07), transparent 60%),
+              linear-gradient(180deg, rgba(10,24,23,.30), rgba(3,7,8,.22));
+}
+.odin-manifesto-runes {
+  font-family: var(--fg-display); font-size: 12px; letter-spacing: .58em;
+  color: rgba(201,138,92,.34);
+}
+.odin-manifesto-mark { opacity: .95; filter: drop-shadow(0 0 34px rgba(85,201,202,.14)); }
+.odin-manifesto h2 {
+  max-width: 22ch; font-size: clamp(1.9rem, 3.9vw, 3.9rem);
+  line-height: 1.1; color: #edf3ef;
+}
+.odin-manifesto p { max-width: 60ch; font-size: 14px; color: var(--fg-bone-dim); }
+
+/* ============================================================ PROCESS */
+.odin-pillar-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.odin-pillar {
+  position: relative;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 28px 24px 32px;
+  border-radius: 16px;
+  border: 1px solid var(--fg-ice-line);
+  background: linear-gradient(160deg, rgba(14,31,30,.9), rgba(4,10,11,.98));
+  transition: transform .3s var(--fg-ease), border-color .3s var(--fg-ease);
+}
+.odin-pillar::before {
+  content: ""; position: absolute; left: 24px; right: 24px; top: 0; height: 2px;
+  background: linear-gradient(90deg, var(--fg-copper), var(--fg-ice), transparent);
+  opacity: .5;
+}
+.odin-pillar:hover { transform: translateY(-4px); border-color: rgba(156,238,229,.32); }
+.odin-pillar-top { display: flex; align-items: center; justify-content: space-between; color: var(--fg-copper-hi); }
+.odin-pillar-top span {
+  font-family: var(--fg-display); font-size: 26px; letter-spacing: .08em;
+  color: rgba(156,238,229,.42);
+}
+.odin-pillar h3 {
+  font-family: var(--fg-mono); font-size: 13px; font-weight: 800;
+  letter-spacing: .18em; text-transform: uppercase; color: #eef4ef;
+}
+.odin-pillar p { font-size: 12.5px; color: rgba(239,233,221,.46); }
+
+/* ============================================================== ZONES */
+.odin-zones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.odin-zone {
+  display: flex; flex-direction: column; gap: 26px;
+  padding: 34px 30px; border-radius: 20px;
+  border: 1px solid var(--fg-ice-line);
+  background: linear-gradient(150deg, rgba(13,29,28,.96), rgba(3,8,9,.99));
+  box-shadow: var(--fg-shadow);
+}
+.odin-zone.zone-copper { box-shadow: inset 0 2px 0 rgba(232,177,131,.4), var(--fg-shadow); }
+.odin-zone.zone-ice    { box-shadow: inset 0 2px 0 rgba(156,238,229,.36), var(--fg-shadow); }
+.odin-zone-art {
+  position: relative; display: grid; place-items: center; height: 190px;
+  border-radius: 16px; border: 1px solid rgba(156,238,229,.15);
+  background: radial-gradient(circle at 50% 34%, rgba(85,201,202,.13), transparent 32%),
+              radial-gradient(circle at 50% 70%, rgba(201,138,92,.10), transparent 28%), #071212;
+  color: var(--fg-ice-soft); overflow: hidden;
+}
+.zone-copper .odin-zone-art { border-color: rgba(232,177,131,.24); color: var(--fg-copper-hi); }
+.odin-zone-halo {
+  position: absolute; width: 210px; height: 210px; border-radius: 50%;
+  border: 1px solid rgba(156,238,229,.12);
+  box-shadow: 0 0 60px rgba(85,201,202,.08) inset;
+  animation: fg-halo 26s linear infinite;
+}
+@keyframes fg-halo { to { transform: rotate(360deg); } }
+.odin-zone h2 { margin-top: 14px; font-size: clamp(1.5rem, 2.5vw, 2.4rem); line-height: 1.14; color: #eaf1ed; }
+.odin-zone p { margin-top: 12px; font-size: 13.5px; color: rgba(239,233,221,.46); }
+.odin-link {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin-top: 22px; padding-bottom: 4px;
+  border-bottom: 1px solid rgba(156,238,229,.3);
+  font-size: 10px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--fg-ice);
+  transition: gap .28s var(--fg-ease), border-color .28s var(--fg-ease);
+}
+.odin-link:hover { gap: 14px; border-color: var(--fg-ice); }
+
+/* ============================================================ PRICING */
+.odin-price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.odin-price-card {
+  position: relative; display: flex; flex-direction: column; gap: 10px;
+  padding: 28px 22px; border-radius: 16px;
+  border: 1px solid var(--fg-ice-line);
+  background: linear-gradient(160deg, rgba(13,29,28,.96), rgba(3,8,9,.99));
+  transition: transform .3s var(--fg-ease), border-color .3s var(--fg-ease);
+}
+.odin-price-card:hover { transform: translateY(-4px); border-color: rgba(156,238,229,.3); }
+.odin-price-card.hot {
+  border-color: rgba(232,177,131,.38);
+  background: radial-gradient(circle at 50% 0%, rgba(201,138,92,.12), transparent 44%),
+              linear-gradient(160deg, rgba(19,33,30,.99), rgba(3,8,9,.99));
+  box-shadow: 0 26px 62px rgba(0,0,0,.5), 0 0 30px rgba(201,138,92,.08);
+}
+.odin-price-badge {
+  position: absolute; top: 16px; right: 16px;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--fg-copper-hi); color: #12100d;
+  font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+}
+.odin-price-name { font-size: 11px; font-weight: 800; letter-spacing: .20em; text-transform: uppercase; color: rgba(239,233,221,.56); }
+.odin-price-card strong { font-family: var(--fg-display); font-size: 30px; font-weight: 500; color: #eaf1ed; }
+.odin-price-card strong small { font-size: 14px; color: rgba(239,233,221,.5); }
+.odin-price-period { font-size: 9px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-bone-faint); }
+.odin-price-credits { margin-top: 4px; font-family: var(--fg-display); font-size: 15px; color: var(--fg-ice); }
+.odin-price-card ul {
+  display: flex; flex-direction: column; gap: 9px;
+  margin: 14px 0 6px; padding-top: 14px;
+  border-top: 1px solid var(--fg-ice-line);
+}
+.odin-price-card li { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.5; color: rgba(239,233,221,.5); }
+.odin-price-card li svg { flex: 0 0 auto; margin-top: 2px; color: var(--fg-copper-hi); }
+.odin-price-card .odin-btn,
+.odin-price-card .odin-link { margin-top: auto; justify-content: center; }
+.odin-price-card .odin-link { border: 1px solid var(--fg-ice-line); border-radius: 12px; min-height: 46px; padding: 0 18px; width: 100%; }
+
+/* ================================================================ FAQ */
+.odin-faq-list { display: flex; flex-direction: column; border-top: 1px solid var(--fg-ice-line); }
+.odin-faq-item { border-bottom: 1px solid rgba(156,238,229,.10); }
+.odin-faq-item button { display: flex; align-items: center; gap: 20px; width: 100%; padding: 24px 6px; text-align: left; transition: color .25s var(--fg-ease); }
+.odin-faq-item button span { font-family: var(--fg-display); font-size: 13px; letter-spacing: .16em; color: var(--fg-copper-hi); flex: 0 0 auto; }
+.odin-faq-item button b { flex: 1; font-size: 15px; font-weight: 600; color: #e3ece8; }
+.odin-faq-item button svg { flex: 0 0 auto; color: rgba(156,238,229,.5); transition: transform .3s var(--fg-ease); }
+.odin-faq-item.open button { color: var(--fg-ice); }
+.odin-faq-item.open button svg { transform: rotate(180deg); }
+.odin-faq-item p { max-width: 78ch; padding: 0 6px 26px 39px; font-size: 13.5px; color: rgba(239,233,221,.48); }
+
+/* ============================================================= FINAL */
+.odin-final {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  padding: clamp(90px, 10vw, 160px) clamp(20px, 5vw, 64px);
+  text-align: center; overflow: hidden;
+  background: radial-gradient(ellipse 65% 55% at 50% 38%, rgba(85,201,202,.10), transparent 58%),
+              radial-gradient(ellipse 60% 45% at 50% 88%, rgba(201,138,92,.09), transparent 58%),
+              linear-gradient(180deg, #071213, #030708);
+}
+.odin-final-runes { font-family: var(--fg-display); font-size: 12px; letter-spacing: .58em; color: rgba(201,138,92,.36); }
+.odin-final h2 { max-width: 20ch; font-size: clamp(2.2rem, 5.4vw, 5.4rem); line-height: 1.04; color: #f0f6f2; text-shadow: 0 22px 60px rgba(0,0,0,.7); }
+.odin-final p { max-width: 58ch; font-size: 14px; color: var(--fg-bone-dim); }
+.odin-final .odin-btn { margin-top: 14px; }
+
+/* ============================================================ FOOTER */
+.odin-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap;
+  max-width: 1440px; margin: 0 auto;
+  padding: 28px clamp(20px, 5vw, 64px);
+  border-top: 1px solid var(--fg-ice-line);
+  font-size: 9px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--fg-bone-faint);
+}
+.odin-footer button { letter-spacing: .18em; text-transform: uppercase; color: var(--fg-copper-hi); transition: color .25s var(--fg-ease); }
+.odin-footer button:hover { color: var(--fg-ice); }
+
+/* ======================================================== HUGINN ORB */
+.huginn-agent { position: fixed; right: clamp(16px, 2.4vw, 30px); bottom: clamp(16px, 2.4vw, 30px); z-index: 70; }
+.huginn-orb {
+  display: inline-flex; align-items: center; gap: 11px;
+  padding: 11px 18px 11px 13px; border-radius: 999px;
+  border: 1px solid rgba(201,138,92,.34);
+  background: linear-gradient(150deg, rgba(20,34,32,.94), rgba(3,8,9,.97));
+  box-shadow: 0 18px 44px rgba(0,0,0,.5), 0 0 26px rgba(201,138,92,.09);
+  backdrop-filter: blur(16px);
+  transition: transform .3s var(--fg-ease), border-color .3s var(--fg-ease), box-shadow .3s var(--fg-ease);
+}
+.huginn-orb:hover { transform: translateY(-3px); border-color: rgba(232,177,131,.6); box-shadow: 0 24px 54px rgba(0,0,0,.6), 0 0 36px rgba(201,138,92,.18); }
+.huginn-orb > span:last-of-type { display: flex; flex-direction: column; line-height: 1; }
+.huginn-orb b { font-family: var(--fg-mono); font-size: 10px; font-weight: 800; letter-spacing: .18em; color: #e8f4f0; }
+.huginn-orb small { margin-top: 5px; font-size: 7.5px; font-weight: 700; letter-spacing: .14em; color: rgba(156,238,229,.52); }
+.huginn-orb-ravens { display: inline-flex; align-items: center; width: 40px; height: 26px; }
+.huginn-raven { width: 26px; height: 19px; }
+.huginn-raven + .huginn-raven { margin-left: -7px; }
+.huginn-wing { transform-origin: 60% 60%; animation: fg-flap 3.6s ease-in-out infinite; }
+.huginn-raven:last-child .huginn-wing { animation-delay: .5s; }
+@keyframes fg-flap { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-11deg); } }
+.huginn-eye { animation: fg-blink 5.2s steps(1) infinite; }
+@keyframes fg-blink { 0%,94%,100% { opacity: 1; } 96% { opacity: .25; } }
+
+/* ==================================================== PAGE SHELL */
+.designly-page-landing { background: var(--fg-void); }
+.designly-frame-spin { animation: fg-slow-spin 48s linear infinite; }
+@keyframes fg-slow-spin { to { transform: rotate(360deg); } }
+
+/* ============================================================ MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .odin-forge *, .odin-forge *::before, .odin-forge *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ====================================================== RESPONSIVE */
+@media (max-width: 1240px) {
+  .odin-tool-grid   { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .odin-pillar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1024px) {
+  .odin-hero-content { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 54px; }
+  .odin-hero-copy { display: flex; flex-direction: column; align-items: center; max-width: 640px; }
+  .odin-hero-copy > p { margin-inline: auto; }
+  .odin-actions, .odin-proof { justify-content: center; }
+  .odin-proof { width: 100%; }
+  .odin-wheel { width: min(430px, 72vw); }
+  .odin-raven { opacity: .4; }
+  .odin-zones { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .odin-hero { padding-top: 130px; }
+  .odin-hero::before { inset: 12px; }
+  .odin-raven, .odin-sky-runes, .odin-bottom-line { display: none; }
+  .odin-hero-bottom { grid-template-columns: 1fr; gap: 10px; }
+  .odin-hero-bottom .odin-scroll-mark:last-child { display: none; }
+  .odin-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .odin-proof span:nth-child(3) { border-left: 0; border-top: 1px solid var(--fg-ice-line); }
+  .odin-proof span:nth-child(4) { border-top: 1px solid var(--fg-ice-line); }
+  .odin-tool-grid, .odin-pillar-grid { grid-template-columns: 1fr; }
+  .odin-section-head { flex-direction: column; align-items: flex-start; }
+  .odin-section-intro { text-align: left; }
+  .odin-zone { padding: 26px 22px; }
+  .odin-wheel-rune { font-size: 12px; }
+  .odin-faq-item p { padding-left: 6px; }
+}
