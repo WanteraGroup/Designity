@@ -1,5 +1,5 @@
 import { useState, useEffect, type SyntheticEvent } from 'react';
-import { Sparkles, AlertCircle, Check, X, CreditCard } from 'lucide-react';
+import { Sparkles, AlertCircle, Check, X, CreditCard, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { supabase } from '@/lib/supabase';
@@ -135,7 +135,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         const allowed = GENERATION_COSTS.some((item) => item.type === tpl.type);
         if (allowed) {
           setSelectedType(tpl.type as ProjectType);
-          setBrief((current) => current.trim() ? current : `Use the \"${tpl.name || 'DESIGNLY template'}\" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
+          setBrief((current) => current.trim() ? current : `Use the "${tpl.name || 'DESIGNLY template'}" template as the starting point. ${tpl.description || ''} Style: ${tpl.style || 'premium'}. Effect: ${tpl.effect || 'Metallic sheen'}. Typography: ${tpl.fontPair || 'Cinzel + Inter'}. Palette: ${(tpl.palette || []).join(', ')}.`);
           setStep(2);
         }
         localStorage.removeItem('designly_selected_template');
@@ -193,6 +193,14 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     if (!canDownloadImages) {
       event.preventDefault();
     }
+  };
+
+  // Selecting a type now advances straight to the brief step so the tiles are real buttons.
+  const selectType = (type: ProjectType) => {
+    setSelectedType(type);
+    setError(null);
+    setPreviewError(null);
+    setStep(2);
   };
 
   const getAgentOutput = (): DesignOutput => {
@@ -271,7 +279,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     }
   };
 
-  // Automatic Business Builder: trigger the free AI preview after the dashboard handoff is loaded.
   useEffect(() => {
     if (!autoBuildRequested || !selectedType || brief.trim().length < 5 || previewLoading) return;
     setAutoBuildRequested(false);
@@ -311,9 +318,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       await new Promise((r) => setTimeout(r, 900));
     }
 
-    // Create the project first so the server-side generation job is linked
-    // to a real project from the beginning. This prevents a successful AI
-    // generation from becoming orphaned if project persistence fails later.
     const { data: projectData, error: insertError } = await supabase
       .from('projects')
       .insert({
@@ -334,9 +338,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       return;
     }
 
-    // A website is a real site artifact, not an image generation.
-    // Its buildSpec is already produced by the free Designly Master preview.
-    // Finalization persists that structured site and consumes the configured credits.
     if (selectedType === 'website') {
       const { data: deducted, error: deductError } = await supabase.rpc('deduct_credits', {
         p_user_id: profile.id,
@@ -384,7 +385,6 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
       return;
     }
 
-    // Non-website artifacts still run through the image/design pipeline.
     if (billableAccount) {
       const { data: deducted, error: deductError } = await supabase.rpc('deduct_credits', {
         p_user_id: profile.id,
@@ -443,9 +443,10 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
     setAutoBuildStatus(null);
   };
 
+  const selectedLabel = GENERATION_COSTS.find((c) => c.type === selectedType)?.label || '';
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-gold-600/15 border border-gold-600/20 flex items-center justify-center">
           <Sparkles className="w-5 h-5 text-gold-400" />
@@ -459,69 +460,105 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
         )}
       </div>
 
-      {/* Step 1: Type selection */}
+      {/* Step indicator */}
+      <div className="flex items-center gap-2 text-[10px] uppercase tracking-[.18em]">
+        {[['1', 'Típus'], ['2', 'Brief'], ['3', 'Előnézet'], ['4', 'Kész']].map(([n, label], i) => {
+          const active = step === Number(n);
+          const done = step > Number(n);
+          return (
+            <div key={n} className="flex items-center gap-2">
+              <span className={`w-6 h-6 grid place-items-center rounded-full border ${active ? 'border-gold-500/60 bg-gold-600/15 text-gold-200' : done ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200' : 'border-ink-600/50 text-cream-300/40'}`}>{n}</span>
+              <span className={active ? 'text-gold-200' : 'text-cream-300/40'}>{label}</span>
+              {i < 3 && <span className="w-6 h-px bg-ink-600/50" />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Step 1: Type selection — every tile is now a real, working button */}
       {step === 1 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {GENERATION_COSTS.map((item) => (
-            <button
-              key={item.type}
-              onClick={() => { setSelectedType(item.type); }}
-              className={`card-lux p-4 text-left transition-all ${selectedType === item.type ? 'border-gold-500/60 bg-gold-600/10' : 'hover:border-gold-600/40'}`}
-            >
-              <div className="w-9 h-9 rounded-lg bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mb-3">
-                <Sparkles className="w-5 h-5 text-gold-400" />
-              </div>
-              <div className="text-xs font-medium text-cream-100">{item.label}</div>
-              <div className="text-[10px] text-gold-400 mt-1">{billableAccount ? `${item.credits} credits` : (isUnlimited ? '∞' : `${item.credits} credits`)}</div>
-            </button>
-          ))}
+        <div className="space-y-4">
+          <div>
+            <div className="text-[10px] uppercase tracking-[.22em] text-gold-300/70">MIT HOZHATSZ LÉTRE</div>
+            <h2 className="mt-1 text-xl lg:text-2xl font-display text-cream-50">Válassz típust — azonnal továbblép a briefhez.</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {GENERATION_COSTS.map((item) => (
+              <button
+                key={item.type}
+                type="button"
+                onClick={() => selectType(item.type)}
+                className="card-lux p-4 text-left transition-all cursor-pointer hover:border-gold-500/60 hover:-translate-y-0.5"
+              >
+                <div className="w-9 h-9 rounded-lg bg-gold-600/10 border border-gold-600/20 flex items-center justify-center mb-3">
+                  <Sparkles className="w-5 h-5 text-gold-400" />
+                </div>
+                <div className="text-xs font-medium text-cream-100">{item.label}</div>
+                <div className="text-[10px] text-gold-400 mt-1">
+                  {billableAccount ? `${item.credits} credits` : (isUnlimited ? '∞' : `${item.credits} credits`)}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Step 2 */}
+      {/* Step 2: Brief */}
       {step === 2 && (
-        <div className="card-lux p-6 space-y-4">
-          <div className="text-sm font-medium text-cream-100">
-            {selectedType ? t('create.brief') : ''}
-          </div>
-          <textarea
-            value={brief}
-            onChange={(e) => setBrief(e.target.value)}
-            rows={6}
-            className="input-lux resize-none text-sm"
-            placeholder={t('create.briefPlaceholder')}
-          />
-          {brands.length > 0 && (
-            <div className="grid md:grid-cols-3 gap-3">
-              {brands.map((brand) => (
-                <button
-                  key={brand.id}
-                  onClick={() => setSelectedBrand(brand.id)}
-                  className={`p-3 rounded-lg border text-left text-xs transition-all ${selectedBrand === brand.id ? 'border-gold-500/60 bg-gold-600/10' : 'border-ink-600/40 hover:border-gold-600/40'}`}
-                >
-                  <div className="font-medium text-cream-100">{brand.name}</div>
-                  <div className="text-cream-300/50 mt-1">{brand.industry}</div>
-                </button>
-              ))}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <div className="text-[10px] uppercase tracking-[.22em] text-gold-300/70">BRIEF</div>
+              <h2 className="mt-1 text-xl lg:text-2xl font-display text-cream-50">{selectedLabel}</h2>
             </div>
-          )}
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => void handlePreview()}
-              disabled={brief.trim().length < 5 || previewLoading}
-              className="btn-gold disabled:opacity-40"
-            >
-              {previewLoading ? t('create.previewLoading') : t('create.preview')}
+            <button type="button" onClick={() => setStep(1)} className="btn-ghost text-xs">
+              <ArrowLeft className="w-4 h-4" /> Típus módosítása
             </button>
-            <button onClick={resetCreate} className="btn-ghost">{t('common.cancel')}</button>
           </div>
 
-          {previewError && (
-            <div className="rounded-lg border border-red-500/25 bg-red-500/10 p-3 text-xs text-red-300 flex gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              {previewError}
+          <div className="card-lux p-6 space-y-4">
+            <div className="text-sm font-medium text-cream-100">{t('create.brief')}</div>
+            <textarea
+              value={brief}
+              onChange={(e) => setBrief(e.target.value)}
+              rows={6}
+              className="input-lux resize-none text-sm"
+              placeholder={t('create.briefPlaceholder')}
+            />
+            {brands.length > 0 && (
+              <div className="grid md:grid-cols-3 gap-3">
+                {brands.map((brand) => (
+                  <button
+                    key={brand.id}
+                    type="button"
+                    onClick={() => setSelectedBrand(brand.id)}
+                    className={`p-3 rounded-lg border text-left text-xs transition-all ${selectedBrand === brand.id ? 'border-gold-500/60 bg-gold-600/10' : 'border-ink-600/40 hover:border-gold-600/40'}`}
+                  >
+                    <div className="font-medium text-cream-100">{brand.name}</div>
+                    <div className="text-cream-300/50 mt-1">{brand.industry}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => void handlePreview()}
+                disabled={brief.trim().length < 5 || previewLoading}
+                className="btn-gold disabled:opacity-40"
+              >
+                {previewLoading ? t('create.previewLoading') : t('create.preview')}
+              </button>
+              <button type="button" onClick={resetCreate} className="btn-ghost">{t('common.cancel')}</button>
             </div>
-          )}
+
+            {previewError && (
+              <div className="rounded-lg border border-red-500/25 bg-red-500/10 p-3 text-xs text-red-300 flex gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {previewError}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -549,15 +586,15 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
             )}
           </div>
           <div className="flex flex-wrap gap-3 items-center">
-            <button onClick={() => setApproved(true)} disabled={approved} className="btn-gold disabled:opacity-50">
+            <button type="button" onClick={() => setApproved(true)} disabled={approved} className="btn-gold disabled:opacity-50">
               <Check className="w-4 h-4" /> {approved ? t('create.approved') : t('create.approve')}
             </button>
             {approved && (
-              <button onClick={() => void handleGenerate()} disabled={generating} className="btn-gold disabled:opacity-50">
+              <button type="button" onClick={() => void handleGenerate()} disabled={generating} className="btn-gold disabled:opacity-50">
                 {generating ? `${t('create.generating')} ${stepsLabel(genStep, t)}` : `${t('create.finalize')} · ${cost} ${t('misc.creditsShort')}`}
               </button>
             )}
-            <button onClick={() => setStep(2)} className="btn-ghost">{t('common.back')}</button>
+            <button type="button" onClick={() => setStep(2)} className="btn-ghost">{t('common.back')}</button>
           </div>
         </div>
       )}
@@ -576,11 +613,11 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
           )}
           <div className="flex flex-wrap gap-3">
             {createdProject && (
-              <button onClick={() => onNavigate('editor')} className="btn-gold">
+              <button type="button" onClick={() => onNavigate('editor')} className="btn-gold">
                 {t('create.openEditor')}
               </button>
             )}
-            <button onClick={resetCreate} className="btn-ghost">{t('create.newProject')}</button>
+            <button type="button" onClick={resetCreate} className="btn-ghost">{t('create.newProject')}</button>
           </div>
         </div>
       )}
