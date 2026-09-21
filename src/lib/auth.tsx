@@ -69,12 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(newSession);
       setUser(newSession?.user ?? null);
       if (newSession?.user) {
-        const canonicalOwner = (newSession.user.email || '').toLowerCase() === 'kekmajomautokozmetika@gmail.com';
-        if (canonicalOwner) {
-          // Self-heal the owner's profile so old email/migration state cannot
-          // hide admin access from the canonical owner account.
-          await supabase.rpc('ensure_my_owner_access');
-        }
+        // Ownership is a server-owned property of the profile row. The client
+        // reads it, it never asserts it — so there is no email literal and no
+        // elevation call here.
         await loadProfile(newSession.user.id);
       } else {
         setProfile(null);
@@ -146,8 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   }, []);
 
-  const isCanonicalOwner = (user?.email || '').toLowerCase() === 'kekmajomautokozmetika@gmail.com';
-  const isOwner = isCanonicalOwner || profile?.role === 'owner';
+  const isOwner = profile?.role === 'owner';
   const isAdmin = isOwner || profile?.role === 'admin';
   const isUnlimited = isOwner || profile?.unlimited_access === true;
 
