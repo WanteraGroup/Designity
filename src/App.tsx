@@ -13,7 +13,7 @@ import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'rea
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
 import { PublicNav } from '@/components/PublicNav';
-import { LandingPage } from '@/components/LandingPage';
+import Landing from '@/pages/Landing';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -166,7 +166,7 @@ function AppInner() {
       case 'signup': return <AuthPage mode="signup" onNavigate={navigate} />;
       case 'reset': return <AuthPage mode="reset" onNavigate={navigate} />;
       case 'checkout': return <CheckoutPage onNavigate={navigate} checkoutItem={checkoutItem} />;
-      default: return <LandingPage onNavigate={navigate} />;
+      default: return <Landing onNavigate={navigate} />;
     }
   };
 
@@ -241,7 +241,7 @@ function AppInner() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      {isPublic && <PublicNav onNavigate={navigate} currentPage={page} />}
+      {isPublic && page !== 'landing' && <PublicNav onNavigate={navigate} currentPage={page} />}
       {isDashboard && <DashNav currentPage={page} onNavigate={navigate} />}
 
       <HuginnAgent onNavigate={navigate} />
