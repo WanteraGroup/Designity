@@ -29,7 +29,7 @@ const costDefaults = GENERATION_COSTS.map((item) => item.credits);
 
 export function AdminPage({ onNavigate }: AdminPageProps) {
   const { t, lang } = useI18n();
-  const { isOwner, isAdmin } = useAuth();
+  const { isOwner, isAdmin, profile } = useAuth();
   const hu = lang === 'hu';
 
   const [tab, setTab] = useState<AdminTab>('overview');
@@ -203,6 +203,27 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
     await loadUsers();
   };
 
+  const refillOwnCredits = async (amount = 1000000) => {
+    const email = (profile?.email || '').trim().toLowerCase();
+    if (!email || !isOwner) {
+      setGiftMessage(hu ? 'Saját kredit-visszatöltés csak Owner fiókból használható.' : 'Self credit refill is available to the Owner account only.');
+      return;
+    }
+    setGiftBusy(true);
+    setGiftMessage('');
+    const { data, error } = await supabase.functions.invoke('admin-gift', {
+      body: { action: 'grant_credits', email, credits: amount },
+    });
+    setGiftBusy(false);
+    if (error || !data?.success) {
+      setGiftMessage(data?.message || error?.message || (hu ? 'A kredit-visszatöltés nem sikerült.' : 'Credit refill failed.'));
+      return;
+    }
+    setGiftMessage(data.message || (hu ? `${amount.toLocaleString('hu-HU')} kredit hozzáadva a saját fiókhoz.` : `${amount.toLocaleString()} credits added to your account.`));
+    await loadUsers();
+    window.setTimeout(() => window.location.reload(), 400);
+  };
+
   const revokeGift = async (giftId: string) => {
     setGiftBusy(true);
     const { data, error } = await supabase.functions.invoke('admin-gift', {
@@ -253,6 +274,35 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
           </div>
         )}
       </div>
+
+      {isOwner && (
+        <section className="rounded-2xl border border-gold-600/25 bg-black/25 p-5 shadow-[0_20px_80px_rgba(0,0,0,.35)]">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <div>
+              <div className="text-[9px] uppercase tracking-[.28em] text-gold-300/70">OWNER CREDIT FORGE</div>
+              <h2 className="mt-2 font-display text-xl font-semibold text-cream-50">Saját kredit visszatöltés</h2>
+              <p className="mt-2 text-xs leading-6 text-cream-300/50">
+                Az Owner fiók végleges generálásai és AI szerkesztései most már a saját kredit-egyenlegből fogyasztanak.
+                Itt díjmentesen tölthetsz vissza kreditet adminisztrátori teszteléshez.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[1000000, 5000000, 10000000].map((amount) => (
+                <button
+                  key={amount}
+                  type="button"
+                  onClick={() => void refillOwnCredits(amount)}
+                  disabled={giftBusy}
+                  className="btn-gold text-xs disabled:opacity-40"
+                >
+                  +{(amount / 1000000).toLocaleString('hu-HU')}M KREDIT
+                </button>
+              ))}
+            </div>
+          </div>
+          {giftMessage && <div className="mt-4 rounded-lg border border-gold-600/15 bg-gold-600/5 px-3 py-2 text-xs text-gold-100">{giftMessage}</div>}
+        </section>
+      )}
 
       <div className="flex gap-1 border-b border-ink-600/40 overflow-x-auto">
         {tabs.map((tb) => (
