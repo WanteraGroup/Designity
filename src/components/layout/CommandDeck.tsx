@@ -26,7 +26,7 @@ function RuneIcon() {
   );
 }
 
-function CelticCorners() {
+export function CelticCorners() {
   return (
     <svg viewBox="0 0 400 64" preserveAspectRatio="none" aria-hidden="true" className="absolute inset-0 h-full w-full">
       <g fill="none" stroke="currentColor" strokeWidth="1.15" opacity=".52">
