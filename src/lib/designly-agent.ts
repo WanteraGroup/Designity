@@ -62,6 +62,17 @@ export async function runDesignlyMasterAgent(params: {
     if (!token) return { success: false, error: 'NO_SESSION' };
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) {
+      // Surface the real cause instead of a generic network message: without
+      // this the request would silently target "undefined/functions/v1/...".
+      console.error('DESIGNLY: VITE_SUPABASE_URL is not configured in this build.');
+      return {
+        success: false,
+        error: 'CONFIG_ERROR',
+        message: 'A Supabase URL nincs beallitva ehhez a buildhez (VITE_SUPABASE_URL).',
+      };
+    }
+
     const response = await fetch(`${supabaseUrl}/functions/v1/designly-agent`, {
       method: 'POST',
       headers: {
@@ -71,22 +82,37 @@ export async function runDesignlyMasterAgent(params: {
       body: JSON.stringify(params),
     });
 
-    const result = await response.json();
+    const raw = await response.text();
+    let result: MasterAgentResult & { error?: string; message?: string } = {} as never;
+    try {
+      result = raw ? JSON.parse(raw) : ({} as never);
+    } catch {
+      // A non-JSON body is usually an infrastructure error (gateway/CORS page).
+      result = {
+        error: 'BAD_RESPONSE',
+        message: `A szerver nem JSON valaszt adott (${response.status}).`,
+      } as never;
+    }
+
     if (!response.ok) {
       return {
         success: false,
         error: result.error || 'GENERATION_FAILED',
-        message: result.message,
+        message: result.message || `A szerver ${response.status} hibat adott.`,
         providerNotConfigured: result.providerNotConfigured,
       };
     }
 
     return result as MasterAgentResult;
-  } catch {
+  } catch (err) {
+    // Keep the real reason visible - the previous version collapsed every
+    // failure into one generic message, which hid CORS, DNS and TLS errors.
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error('DESIGNLY Master Agent request failed:', err);
     return {
       success: false,
       error: 'NETWORK_ERROR',
-      message: 'Could not connect to the DESIGNLY Master Agent.',
+      message: `Could not connect to the DESIGNLY Master Agent. (${detail})`,
     };
   }
 }
