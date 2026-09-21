@@ -395,3 +395,40 @@ aside.hidden.lg\\:flex nav button[class*="bg-gold"]{
   .designly-agent-orbit{display:none!important}
   .designly-agent-card{min-height:0!important}
 }
+
+
+/* HARD VISIBILITY FIX: the application shell must stay transparent so the
+   fixed Nordic artwork behind each page is actually visible. */
+#root > .min-h-screen.bg-transparent,
+#root > .min-h-screen,
+#root > .min-h-screen > div{
+  background:transparent!important;
+}
+.designly-app-page,
+.designly-public-page,
+.designly-agent-hub{
+  background:transparent!important;
+}
+.designly-app-page::before,
+.designly-public-page:not(.designly-page-landing)::before{
+  opacity:1!important;
+}
+
+/* Agent Hub must be visually unmistakable even if an older component class
+   or Tailwind surface is present. */
+.designly-page-agents .designly-agent-hero{
+  background:
+    linear-gradient(105deg,rgba(1,5,6,.72),rgba(4,12,12,.40) 52%,rgba(1,5,6,.68)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat!important;
+}
+.designly-page-agents .designly-agent-card{
+  background:
+    linear-gradient(145deg,rgba(8,22,20,.82),rgba(1,5,6,.90)),
+    url("/kor keret.png") center/cover no-repeat!important;
+}
+.designly-page-agents .designly-agent-pipeline,
+.designly-page-agents .designly-section-surface{
+  background:
+    linear-gradient(145deg,rgba(7,18,17,.84),rgba(1,5,6,.92)),
+    url("/designly-odin-hall-bg.svg") center/cover no-repeat!important;
+}
