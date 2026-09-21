@@ -184,6 +184,33 @@ function buildFallbackPreviewSvg(brief: DesignBrief, originalBrief: string): str
 }
 
 function normalizeBrief(raw: Record<string, unknown>, language: string, fallbackOutputs: DesignOutput[]): DesignBrief {
+  const arr = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? value.filter((v): v is string => typeof v === "string").slice(0, 8)
+      : [];
+  const outputs = Array.isArray(raw.requiredOutputs)
+    ? raw.requiredOutputs
+        .filter((v): v is DesignOutput => typeof v === "string" && allowedOutputs.has(v as DesignOutput))
+        .slice(0, 20)
+    : fallbackOutputs;
+
+  return {
+    businessName: typeof raw.businessName === "string" ? raw.businessName : null,
+    businessType: typeof raw.businessType === "string" ? raw.businessType : null,
+    targetAudience: typeof raw.targetAudience === "string" ? raw.targetAudience : null,
+    industry: typeof raw.industry === "string" ? raw.industry : null,
+    visualStyle: typeof raw.visualStyle === "string" ? raw.visualStyle : null,
+    mood: typeof raw.mood === "string" ? raw.mood : null,
+    primaryColors: arr(raw.primaryColors),
+    secondaryColors: arr(raw.secondaryColors),
+    typographyDirection: typeof raw.typographyDirection === "string" ? raw.typographyDirection : null,
+    imageryDirection: typeof raw.imageryDirection === "string" ? raw.imageryDirection : null,
+    requiredOutputs: outputs.length ? outputs : fallbackOutputs,
+    language,
+    additionalInstructions: typeof raw.additionalInstructions === "string" ? raw.additionalInstructions : null,
+  };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "METHOD_NOT_ALLOWED" }, 405);
