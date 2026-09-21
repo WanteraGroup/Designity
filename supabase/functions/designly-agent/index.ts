@@ -78,23 +78,29 @@ async function callGroqTeam(groqKey: string, model: string, system: string, user
 }
 
 function buildImagePrompt(brief: DesignBrief, originalBrief: string): string {
+  // The user's actual request leads the prompt. The structured brief only adds
+  // art direction around it — leading with the palette/style lines produced a
+  // generic brand panel that ignored what was asked for.
+  const subject = brief.businessName
+    ? `${originalBrief}. Subject/brand: ${brief.businessName}`
+    : originalBrief;
+
   return [
-    "Create a polished visual preview for DESIGNLY STUDIO based on the approved design direction below.",
-    "This is a preview of the actual final design, not a text description.",
-    `Original request: ${originalBrief}`,
-    `Business: ${brief.businessName || "not specified"}`,
-    `Industry: ${brief.industry || brief.businessType || "not specified"}`,
+    `Create the actual design the user asked for: ${subject}`,
+    "Render the requested visual literally and specifically — the named subject must be clearly recognisable and be the focus of the composition.",
+    brief.industry ? `Industry: ${brief.industry}` : "",
+    brief.targetAudience ? `Audience: ${brief.targetAudience}` : "",
     `Visual style: ${brief.visualStyle || "premium"}`,
     `Mood: ${brief.mood || "refined"}`,
-    `Primary colors: ${brief.primaryColors.join(", ")}`,
-    `Secondary colors: ${brief.secondaryColors.join(", ")}`,
-    `Typography: ${brief.typographyDirection || "premium modern"}`,
-    `Imagery: ${brief.imageryDirection || "brand-consistent"}`,
-    `Output: ${brief.requiredOutputs.join(", ")}`,
-    "Use strong art direction, hierarchy, spacing, premium typography and realistic production quality.",
-    "Prefer graphite/black, off-white and warm metallic gold when compatible with the brief.",
-    "Do not add watermarks. Do not create a generic stock image. Show the actual design composition."
-  ].join("\n");
+    brief.primaryColors.length ? `Primary colors: ${brief.primaryColors.join(", ")}` : "",
+    brief.secondaryColors.length ? `Secondary colors: ${brief.secondaryColors.join(", ")}` : "",
+    brief.typographyDirection ? `Typography: ${brief.typographyDirection}` : "",
+    brief.imageryDirection ? `Imagery direction: ${brief.imageryDirection}` : "",
+    `Output format: ${brief.requiredOutputs.join(", ")}`,
+    "Use strong art direction, hierarchy, spacing and realistic production quality.",
+    "Prefer graphite/black, off-white and warm metallic gold where it suits the request, but never at the expense of the requested subject.",
+    "Do not add watermarks. Do not create a generic stock image or a placeholder brand panel. Show the actual requested design composition.",
+  ].filter(Boolean).join("\n");
 }
 
 function escapeSvgText(value: string): string {
