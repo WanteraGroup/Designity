@@ -20,7 +20,7 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
 
   const navItems = [
     { id: 'dashboard', label: 'COMMAND', icon: LayoutDashboard },
-    { id: 'create', label: 'FORGE', icon: Hammer },
+    { id: 'forge', label: 'FORGE', icon: Hammer },
     { id: 'projects', label: 'PROJECTS', icon: FolderOpen },
     { id: 'agents', label: 'AGENTS', icon: Network },
     { id: 'campaign', label: 'CAMPAIGNS', icon: Layers },
