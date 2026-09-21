@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
 import { PublicNav } from '@/components/PublicNav';
 import LandingPage from '@/pages/Landing';
+import WorksPage from '@/pages/Works';
 import ForgeStudio from '@/pages/ForgeStudio';
 import Music from '@/pages/Music';
 import Voice from '@/pages/Voice';
@@ -68,13 +69,13 @@ import PageTransition from '@/components/ui/PageTransition';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
-  | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
+  | 'landing' | 'works' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'editor-workspace' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'creator-workspace' | 'streamer' | 'streamer-workspace' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
-const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
+const PUBLIC_PAGES: Page[] = ['landing', 'works', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
@@ -184,6 +185,7 @@ function AppInner() {
 
   const renderPublicPage = (): ReactNode => {
     switch (page) {
+      case 'works': return <WorksPage onNavigate={navigate} />;
       case 'login': return <AuthPage mode="login" onNavigate={navigate} />;
       case 'signup': return <AuthPage mode="signup" onNavigate={navigate} />;
       case 'reset': return <AuthPage mode="reset" onNavigate={navigate} />;
