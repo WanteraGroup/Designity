@@ -1,14 +1,3 @@
-import './designly-brand-overrides.css';
-import './designly-dashboard-overrides.css';
-import './designly-forged-system.css';
-import './designly-forged-landing.css';
-import './designly-viking-frost.css';
-import './designly-odin-hall.css';
-import './designly-odin-hall-v2.css';
-import './designly-odin-hall-4.css';
-import './designly-odin-hall-max.css';
-import './designly-odin-hall-3.css';
-import './designly-visual-final.css';
 import { useState, useEffect, useRef, lazy, Suspense, type ReactNode } from 'react';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { I18nProvider } from '@/lib/i18n';
@@ -35,6 +24,7 @@ import Creator from '@/pages/Creator';
 import Streamer from '@/pages/Streamer';
 import Dashboard from '@/pages/Dashboard';
 import CNC from '@/pages/CNC';
+import Websites from '@/pages/Websites';
 import { AuthPage } from '@/components/AuthPage';
 import { DashNav } from '@/components/DashNav';
 import { DashboardHome } from '@/components/DashboardHome';
@@ -66,18 +56,29 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
+import './designly-brand-overrides.css';
+import './designly-dashboard-overrides.css';
+import './designly-forged-system.css';
+import './designly-forged-landing.css';
+import './designly-viking-frost.css';
+import './designly-odin-hall.css';
+import './designly-odin-hall-v2.css';
+import './designly-odin-hall-4.css';
+import './designly-odin-hall-max.css';
+import './designly-odin-hall-3.css';
+import './designly-visual-final.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
   | 'landing' | 'works' | 'login' | 'signup' | 'reset' | 'checkout'
-  | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
+  | 'dashboard' | 'forge' | 'create' | 'websites' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
   | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'editor-workspace' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'creator-workspace' | 'streamer' | 'streamer-workspace' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'works', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
-  'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
+  'dashboard', 'forge', 'create', 'websites', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
   'settings', 'admin', 'admin-workspace', 'editor', 'editor-workspace', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'creator-workspace', 'streamer', 'streamer-workspace', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
 ];
@@ -85,8 +86,6 @@ const DASHBOARD_PAGES: Page[] = [
 function pageFromHash(): Page {
   if (typeof window === 'undefined') return 'landing';
   const hash = window.location.hash.slice(1);
-  // Supabase password-recovery links arrive with auth tokens in the hash.
-  // Keep the recovery screen active so the user can set a new password.
   if (hash.includes('type=recovery')) return 'reset';
   const value = hash as Page;
   return [...PUBLIC_PAGES, ...DASHBOARD_PAGES].includes(value) ? value : 'landing';
@@ -102,24 +101,14 @@ function AppInner() {
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-      return true;
-    }
+    if (el) { el.scrollIntoView({ behavior: 'smooth' }); return true; }
     return false;
   };
 
   const navigate = (p: string, item?: CheckoutItem) => {
     if (item) setCheckoutItem(item);
-    if (LANDING_SECTIONS.includes(p) && page === 'landing') {
-      scrollToSection(p);
-      return;
-    }
-    if (LANDING_SECTIONS.includes(p)) {
-      pendingScrollRef.current = p;
-      setPage('landing');
-      return;
-    }
+    if (LANDING_SECTIONS.includes(p) && page === 'landing') { scrollToSection(p); return; }
+    if (LANDING_SECTIONS.includes(p)) { pendingScrollRef.current = p; setPage('landing'); return; }
 
     const next = p as Page;
     if (DASHBOARD_PAGES.includes(next) && !user && authKnown) {
@@ -132,7 +121,7 @@ function AppInner() {
       setPage('dashboard');
       return;
     }
-    window.history.pushState({}, '', `#${next}`);
+    window.history.pushState({}, '', '#' + next);
     setPage(next);
     if (PUBLIC_PAGES.includes(next) || DASHBOARD_PAGES.includes(next)) {
       window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
@@ -143,11 +132,7 @@ function AppInner() {
     if (page === 'landing' && pendingScrollRef.current) {
       const sectionId = pendingScrollRef.current;
       pendingScrollRef.current = null;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          scrollToSection(sectionId);
-        });
-      });
+      requestAnimationFrame(() => { requestAnimationFrame(() => { scrollToSection(sectionId); }); });
     }
   }, [page]);
 
@@ -161,13 +146,9 @@ function AppInner() {
     };
   }, []);
 
-  // Global content protection: non-admin users cannot open the browser context menu.
-  // Admin users keep normal right-click access across the entire application.
   useEffect(() => {
     if (isAdmin) return;
-    const preventContextMenu = (event: MouseEvent) => {
-      event.preventDefault();
-    };
+    const preventContextMenu = (event: MouseEvent) => { event.preventDefault(); };
     document.addEventListener('contextmenu', preventContextMenu, true);
     return () => document.removeEventListener('contextmenu', preventContextMenu, true);
   }, [isAdmin]);
@@ -199,6 +180,7 @@ function AppInner() {
       case 'dashboard': return <Dashboard onNavigate={navigate} />;
       case 'forge': return <ForgeStudio onNavigate={navigate} />;
       case 'create': return <CreatePage onNavigate={navigate} />;
+      case 'websites': return <Websites onNavigate={navigate} />;
       case 'advertising': return <AdvertisingStudio onNavigate={navigate} />;
       case 'campaign': return <Campaigns onNavigate={navigate} />;
       case 'campaign-workspace': return <CampaignGenerator onNavigate={navigate} />;
@@ -238,57 +220,28 @@ function AppInner() {
     }
   };
 
-  // Determine which shell to show. During initial auth resolution we
-  // default to the public shell so the landing page is visible immediately
-  // — no full-tree swap when auth completes.
   const authPending = loading && !authKnown;
   const isPublic = authPending || PUBLIC_PAGES.includes(page);
   const isDashboard = !isPublic;
-  const isEditor = page === 'editor-workspace';
+  const isEditor = page === 'editor-workspace' || page === 'websites';
 
-  const contentWrapperClass = isDashboard
-    ? 'lg:pl-72 pt-14 lg:pt-0'
-    : '';
+  const contentWrapperClass = isDashboard ? 'lg:pl-72 pt-14 lg:pt-0' : '';
 
   const pageTitles: Partial<Record<Page, string>> = {
-    dashboard: 'DESIGNLY CORE',
-    forge: 'FORGE STUDIO',
-    create: 'FORGE WORKSPACE',
-    advertising: 'ADVERTISING STUDIO',
-    campaign: 'STRATEGIC WAR ROOM',
-    'campaign-workspace': 'CAMPAIGN GENERATOR',
-    projects: 'PROJECTS',
-    brands: 'BRAND VAULT',
-    templates: 'TEMPLATE HALL',
-    tattoo: 'RUNE & SKIN STUDIO',
-    'tattoo-library': 'TATTOO LIBRARY',
-    planner: 'STRATEGIC PLANNER',
-    'planner-workspace': 'DESIGN PLANNER & VISUALIZER',
-    assets: 'ASSET LIBRARY',
-    credits: 'CREDIT FORGE',
-    billing: 'BILLING',
-    settings: 'SYSTEM SETTINGS',
-    admin: 'CONTROL HALL',
-    'admin-workspace': 'ADMIN COMMAND',
-    music: 'SOUND HALL',
-    'music-workspace': 'MUSIC FORGE WORKSPACE',
-    agents: 'AGENT HUB',
-    voice: 'COMMUNICATION CHAMBER',
-    'voice-workspace': 'VOICE AGENT WORKSPACE',
-    translator: 'GLOBAL RUNE NETWORK',
-    'translator-workspace': 'REALTIME TRANSLATOR WORKSPACE',
-    shopify: 'MERCHANT HALL',
-    'shopify-workspace': 'SHOPIFY STUDIO',
-    cnc: 'ENGINEERING FORGE',
-    'cnc-workspace': 'CNC CAM WORKSPACE',
-    creator: 'CREATOR HUB',
-    'creator-workspace': 'CREATOR / GAMER PRODUCT STUDIO',
-    streamer: 'STREAM HALL',
-    'streamer-workspace': 'STREAMER STUDIO',
-    diagnostics: 'SYSTEM DIAGNOSTICS',
-    'diagnostics-workspace': 'QA CENTER',
-    editor: 'ARTIFACT EDITOR',
-    'editor-workspace': 'EDITOR WORKSPACE',
+    dashboard: 'DESIGNLY CORE', forge: 'FORGE STUDIO', create: 'FORGE WORKSPACE',
+    websites: 'WEBSITE FORGE', advertising: 'ADVERTISING STUDIO', campaign: 'STRATEGIC WAR ROOM',
+    'campaign-workspace': 'CAMPAIGN GENERATOR', projects: 'PROJECTS', brands: 'BRAND VAULT',
+    templates: 'TEMPLATE HALL', tattoo: 'RUNE & SKIN STUDIO', 'tattoo-library': 'TATTOO LIBRARY',
+    planner: 'STRATEGIC PLANNER', 'planner-workspace': 'DESIGN PLANNER & VISUALIZER', assets: 'ASSET LIBRARY',
+    credits: 'CREDIT FORGE', billing: 'BILLING', settings: 'SYSTEM SETTINGS', admin: 'CONTROL HALL',
+    'admin-workspace': 'ADMIN COMMAND', music: 'SOUND HALL', 'music-workspace': 'MUSIC FORGE WORKSPACE',
+    agents: 'AGENT HUB', voice: 'COMMUNICATION CHAMBER', 'voice-workspace': 'VOICE AGENT WORKSPACE',
+    translator: 'GLOBAL RUNE NETWORK', 'translator-workspace': 'REALTIME TRANSLATOR WORKSPACE',
+    shopify: 'MERCHANT HALL', 'shopify-workspace': 'SHOPIFY STUDIO', cnc: 'ENGINEERING FORGE',
+    'cnc-workspace': 'CNC CAM WORKSPACE', creator: 'CREATOR HUB', 'creator-workspace': 'CREATOR / GAMER PRODUCT STUDIO',
+    streamer: 'STREAM HALL', 'streamer-workspace': 'STREAMER STUDIO',
+    diagnostics: 'SYSTEM DIAGNOSTICS', 'diagnostics-workspace': 'QA CENTER',
+    editor: 'ARTIFACT EDITOR', 'editor-workspace': 'EDITOR WORKSPACE',
   };
   const dashboardTitle = pageTitles[page] ?? 'DESIGNLY';
 
@@ -302,10 +255,7 @@ function AppInner() {
 
       <div className={contentWrapperClass}>
         {isDashboard && !isEditor && (
-          <NordicHeader
-            title={dashboardTitle}
-            userLabel="DESIGNLY OPERATOR"
-          />
+          <NordicHeader title={dashboardTitle} userLabel="DESIGNLY OPERATOR" />
         )}
         {isPublic && (
           <main className={`designly-public-page designly-page-${page} ${page === 'landing' ? '' : 'pt-16 lg:pt-20'}`}>
