@@ -74,25 +74,7 @@ export function CommandDeck({
               key={item.id}
               onClick={() => onNavigate(item.id)}
               aria-current={active === item.id ? 'page' : undefined}
-              className={[
-                'relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]',
-                'transition-all duration-200',
-                isActive
-                  ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
-                  : 'border border-transparent hover:bg-[#071311]/40',
-              ].join(' ')}
-            >
-              <item.icon
-                className={[
-                  'w-5 h-5 shrink-0',
-                  isActive ? 'text-[#9CEEE5]' : 'text-[#EEE8DC]/60',
-                ].join(' ')}
-              />
-              <span
-                className={[
-                  'text-sm tracking-wide text-left truncate',
-                  isActive ? 'text-[#E3FFFB]' : 'text-[#EEE8DC]/70',
-                ].join(' ')}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-[14px] bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)] relative"
               >
                 {item.label}
               </span>
@@ -119,59 +101,5 @@ export function CommandDeck({
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
                   aria-current={active === item.id ? 'page' : undefined}
-                  className={[
-                    'relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]',
-                    'transition-all duration-200',
-                    isActive
-                      ? 'bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)]'
-                      : 'border border-transparent hover:bg-[#071311]/40',
-                  ].join(' ')}
-                >
-                  <item.icon className={isActive ? 'w-5 h-5 text-[#9CEEE5]' : 'w-5 h-5 text-[#EEE8DC]/60'} />
-                  <span className={isActive ? 'text-sm tracking-wide text-[#E3FFFB] truncate' : 'text-sm tracking-wide text-[#EEE8DC]/70 truncate'}>
-                    {item.label}
-                  </span>
-                  {item.id === 'admin' && isOwner && (
-                    <InfinityIcon className="w-3.5 h-3.5 text-[#D6B36A] ml-auto" />
-                  )}
-                  {isActive && (
-                    <div className="absolute left-0 top-0 h-full w-[3px] bg-[#9CEEE5] rounded-r-md shadow-[0_0_10px_rgba(156,238,229,0.55)]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-[14px] bg-[#071311]/80 border border-[#9CEEE5]/40 shadow-[0_0_12px_rgba(156,238,229,0.25)] relative"
 
-      <div className="p-5 border-t border-[#263636] bg-[#020505]/60 relative z-10">
-        <div className="text-[#9CEEE5] font-serif text-lg">HUGINN</div>
-        <div className="text-xs text-[#EEE8DC]/60">AI SYSTEM ONLINE</div>
-
-        <div className="mt-3 text-xs text-[#D6B36A]/80">
-          {isUnlimited ? '14 AGENTS CONNECTED' : 'AI AGENTS READY'}
-        </div>
-        <div className="text-xs text-[#EEE8DC]/50">
-          SYSTEM OPERATIONAL
-        </div>
-      </div>
-
-      <div className="p-3 pt-2 border-t border-[#263636]/80 relative z-10">
-        <div className="px-2 text-[9px] text-[#EEE8DC]/40 truncate">
-          {profile?.email}
-        </div>
-        <div className="flex gap-1.5 flex-wrap mt-2 px-2">
-          <span className="chip text-[7px]">{isOwner ? 'OWNER' : isUnlimited ? 'FULL UNLOCK ∞' : profile?.plan_id}</span>
-          <span className="chip text-[7px]">{isUnlimited ? '∞ KORLÁTLAN' : `${(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT`}</span>
-        </div>
-        <button
-          onClick={handleSignOut}
-          className="mt-2 w-full flex items-center justify-center gap-2 min-h-[34px] rounded-[10px] border border-[#9CEEE5]/10 bg-black/25 text-[8px] font-bold tracking-[.08em] text-[#EEE8DC]/45 hover:text-white hover:border-[#9CEEE5]/25 transition-all"
-        >
-          <LogOut className="w-4 h-4" />
-          {t('nav.logout')}
-        </button>
-      </div>
-    </aside>
-  );
-}
