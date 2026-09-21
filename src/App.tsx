@@ -65,14 +65,14 @@ type Page =
   | 'landing' | 'login' | 'signup' | 'reset' | 'checkout'
   | 'dashboard' | 'forge' | 'create' | 'advertising' | 'campaign' | 'campaign-workspace' | 'projects' | 'brands'
   | 'templates' | 'tattoo' | 'tattoo-library' | 'planner' | 'planner-workspace' | 'assets' | 'credits' | 'billing'
-  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics';
+  | 'settings' | 'admin' | 'admin-workspace' | 'editor' | 'music' | 'music-workspace' | 'agents' | 'voice' | 'voice-workspace' | 'translator' | 'translator-workspace' | 'creator' | 'streamer' | 'shopify' | 'shopify-workspace' | 'cnc' | 'cnc-workspace' | 'diagnostics' | 'diagnostics-workspace';
 
 const LANDING_SECTIONS = ['features', 'workflow', 'templates', 'pricing', 'faq', 'credits'];
 const PUBLIC_PAGES: Page[] = ['landing', 'login', 'signup', 'reset', 'checkout'];
 const DASHBOARD_PAGES: Page[] = [
   'dashboard', 'forge', 'create', 'advertising', 'campaign', 'campaign-workspace', 'projects', 'brands',
   'templates', 'tattoo', 'tattoo-library', 'planner', 'planner-workspace', 'assets', 'credits', 'billing',
-  'settings', 'admin', 'admin-workspace', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics',
+  'settings', 'admin', 'admin-workspace', 'editor', 'music', 'music-workspace', 'agents', 'voice', 'voice-workspace', 'translator', 'translator-workspace', 'creator', 'streamer', 'shopify', 'shopify-workspace', 'cnc', 'cnc-workspace', 'diagnostics', 'diagnostics-workspace',
 ];
 
 function pageFromHash(): Page {
