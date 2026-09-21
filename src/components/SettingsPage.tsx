@@ -254,7 +254,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
             <div className="mt-2 text-2xl font-display font-bold gold-text">
               {(profile?.credits ?? 0).toLocaleString('hu-HU')}
             </div>
-            <div className="mt-1 text-xs text-cream-300/45">{isUnlimited ? (hu ? 'Korlátlan hozzáférés' : 'Unlimited access') : 'credits'}</div>
+            <div className="mt-1 text-xs text-cream-300/45">{hu ? 'Kreditkeret' : 'Credit balance'}</div>
           </div>
 
           <div className="rounded-2xl border border-gold-600/20 bg-black/20 p-4">
@@ -322,7 +322,7 @@ export function SettingsPage({ onNavigate }: SettingsPageProps) {
           </h3>
           <p className="text-sm text-cream-300/60">
             {isOwner
-              ? (hu ? 'Tulajdonosi hozzáférés: korlátlan kredit és adminisztrációs jogosultság.' : 'Owner access: unlimited credits and administration privileges.')
+              ? (hu ? 'Tulajdonosi hozzáférés: adminisztrációs jogosultság és valódi kreditelszámolás.' : 'Owner access: administration privileges with real credit billing.')
               : (hu ? 'Admin hozzáférés: adminisztrációs funkciók és a beállított kreditkeret használata.' : 'Admin access: administration features and the configured credit balance.')}
           </p>
         </div>
