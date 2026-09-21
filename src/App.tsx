@@ -212,7 +212,7 @@ function AppInner() {
     : '';
 
   return (
-    <div className="min-h-screen bg-ink-950">
+    <div className="min-h-screen bg-transparent">
       {isPublic && <PublicNav onNavigate={navigate} currentPage={page} />}
       {isDashboard && <DashNav currentPage={page} onNavigate={navigate} />}
 
