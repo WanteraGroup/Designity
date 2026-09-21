@@ -3,6 +3,7 @@ import { Infinity as InfinityIcon, LogOut } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
+import { SidebarMorphingBackground } from '@/components/ui';
 
 export interface CommandDeckMenuItem {
   id: string;
@@ -111,6 +112,7 @@ export function CommandDeck({
 
   return (
     <aside className="designly-command-deck hidden lg:flex">
+      <SidebarMorphingBackground />
       <div className="p-6 pb-4 relative z-10">
         <button
           onClick={() => onNavigate('landing')}
