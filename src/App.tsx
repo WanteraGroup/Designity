@@ -285,8 +285,6 @@ function AppInner() {
     'creator-workspace': 'CREATOR / GAMER PRODUCT STUDIO',
     streamer: 'STREAM HALL',
     'streamer-workspace': 'STREAMER STUDIO',
-    streamer: 'STREAMER STUDIO',
-    cnc: 'CNC CAM',
     diagnostics: 'SYSTEM DIAGNOSTICS',
     'diagnostics-workspace': 'QA CENTER',
     editor: 'ARTIFACT EDITOR',
