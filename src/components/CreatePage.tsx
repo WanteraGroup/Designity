@@ -443,7 +443,7 @@ export function CreatePage({ onNavigate }: CreatePageProps) {
 
   return (
     <>
-      <div className={`w-full mx-auto space-y-8 ${step === 3 ? 'max-w-[1700px]' : 'max-w-5xl'}`}>
+      <div className={`designly-create-forge w-full mx-auto space-y-8 ${step === 3 ? 'max-w-[1700px]' : 'max-w-5xl'}`}>
       {/* Stepper */}
       <div className="flex items-center justify-center gap-2">
         {[1, 2, 3].map((s) => (
