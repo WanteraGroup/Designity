@@ -19,34 +19,27 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { id: 'dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { id: 'create', label: 'AI Website Builder', icon: Plus },
-    { id: 'advertising', label: 'Ad Studio', icon: Megaphone },
-    { id: 'campaign', label: 'Campaign Engine', icon: Layers },
-    { id: 'music', label: 'AI Music Studio', icon: Music2 },
-    { id: 'agents', label: 'Agent Hub', icon: Network },
-    { id: 'voice', label: 'Voice Agent', icon: Mic },
-    { id: 'translator', label: 'Realtime Translator', icon: Languages },
-    { id: 'creator', label: 'Creator / Gamer Merch', icon: Gamepad2 },
-    { id: 'streamer', label: 'Streamer Studio', icon: Radio },
-    { id: 'tattoo', label: 'Tattoo Library', icon: PenTool },
-    { id: 'planner', label: 'Planner & Visualizer', icon: Ruler },
-    { id: 'cnc', label: 'CNC CAM', icon: Hammer },
-    { id: 'projects', label: t('nav.projects'), icon: FolderOpen },
-    { id: 'brands', label: t('nav.brands'), icon: Palette },
-    { id: 'templates', label: '100K+ Templates', icon: LayoutTemplate },
-    { id: 'assets', label: 'Asset Vault', icon: ImageIcon },
-    { id: 'credits', label: 'Credit Center', icon: Coins },
-    { id: 'billing', label: 'Plans & Billing', icon: CreditCard },
-    { id: 'settings', label: 'Workspace Settings', icon: Settings },
-    ...(isAdmin ? [{ id: 'shopify', label: 'Shopify Studio', icon: ShoppingBag }] : [])
+    { id: 'dashboard', label: 'COMMAND', icon: LayoutDashboard },
+    { id: 'create', label: 'FORGE', icon: Hammer },
+    { id: 'projects', label: 'PROJECTS', icon: FolderOpen },
+    { id: 'agents', label: 'AGENTS', icon: Network },
+    { id: 'campaign', label: 'CAMPAIGNS', icon: Layers },
+    { id: 'music', label: 'MUSIC', icon: Music2 },
+    { id: 'voice', label: 'VOICE', icon: Mic },
+    { id: 'translator', label: 'TRANSLATOR', icon: Languages },
+    { id: 'shopify', label: 'SHOPIFY', icon: ShoppingBag },
+    { id: 'cnc', label: 'CNC', icon: Hammer },
+    { id: 'tattoo', label: 'TATTOO', icon: PenTool },
+    { id: 'planner', label: 'PLANNER', icon: Ruler },
+    { id: 'brands', label: 'BRANDS', icon: Palette },
+    { id: 'templates', label: 'TEMPLATES', icon: LayoutTemplate },
+    { id: 'assets', label: 'ASSETS', icon: ImageIcon },
+    { id: 'credits', label: 'CREDITS', icon: Coins },
+    { id: 'billing', label: 'BILLING', icon: CreditCard },
+    { id: 'settings', label: 'SETTINGS', icon: Settings },
+    ...(isAdmin ? [{ id: 'advertising', label: 'AD STUDIO', icon: Megaphone }, { id: 'admin', label: 'ADMIN', icon: Shield }] : []),
   ];
-
-  if (isAdmin) {
-    navItems.push({ id: 'admin', label: t('nav.admin'), icon: Shield });
-    navItems.push({ id: 'diagnostics', label: 'QA Center', icon: FlaskConical });
-  }
-  const privilegedIds = ['shopify', 'admin', 'diagnostics'];
+  const privilegedIds = ['admin'];
   const primaryNavItems = navItems.filter((item) => !privilegedIds.includes(item.id));
   const privilegedNavItems = navItems.filter((item) => privilegedIds.includes(item.id));
 
