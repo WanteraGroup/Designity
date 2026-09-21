@@ -22,28 +22,31 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
   const resourcesRef = useRef<HTMLDivElement>(null);
 
   const primary: NavItem[] = [
-    { id: 'home', label: t('nav.home'), page: 'landing' },
-    { id: 'create', label: t('nav.create'), page: 'create' },
-    { id: 'templates', label: t('nav.templates'), page: 'templates' },
-    { id: 'streamer', label: lang === 'hu' ? 'Streamer Studio' : 'Streamer Studio', page: 'streamer' },
-    { id: 'merch', label: lang === 'hu' ? 'Merch Studio' : 'Merch Studio', page: 'creator' },
-    { id: 'pricing', label: t('nav.pricing'), page: 'pricing' },
+    { id: 'home', label: lang === 'hu' ? 'FŐOLDAL' : 'HOME', page: 'landing' },
+    { id: 'works', label: lang === 'hu' ? 'MUNKÁK' : 'WORKS', page: 'create' },
+    { id: 'shopify', label: lang === 'hu' ? 'SAJÁT SHOPIFY' : 'OWN SHOPIFY', page: 'shopify' },
+    { id: 'agents', label: lang === 'hu' ? 'AI STUDIO' : 'AI STUDIO', page: 'agents' },
+    { id: 'portfolio', label: lang === 'hu' ? 'PORTFÓLIÓ' : 'PORTFOLIO', page: 'projects' },
+    { id: 'pricing', label: lang === 'hu' ? 'ÁRAK' : 'PRICING', page: 'pricing' },
   ];
 
   const resources: NavItem[] = [
-    { id: 'features', label: t('nav.features'), page: 'features' },
-    { id: 'advertising', label: lang === 'hu' ? 'AI Reklám Studio' : 'AI Ad Studio', page: 'advertising' },
-    { id: 'tattoo', label: lang === 'hu' ? 'Tattoo Library' : 'Tattoo Library', page: 'tattoo' },
-    { id: 'planner', label: lang === 'hu' ? 'Tervező & Vizualizáló' : 'Planner & Visualizer', page: 'planner' },
-    { id: 'music', label: t('nav.music'), page: 'music' },
-    { id: 'workflow', label: t('nav.workflow'), page: 'workflow' },
-    { id: 'projects', label: t('nav.projectsPublic'), page: 'projects' },
-    { id: 'credits', label: t('nav.credits'), page: 'credits' },
-    { id: 'faq', label: t('nav.faq'), page: 'faq' },
+    { id: 'web', label: 'WEB', page: 'create' },
+    { id: 'brand', label: 'BRAND', page: 'brands' },
+    { id: 'design', label: 'DIGITÁLIS DESIGN', page: 'create' },
+    { id: 'creator', label: 'CREATOR', page: 'creator' },
+    { id: 'art', label: 'ART', page: 'tattoo' },
+    { id: 'planning', label: 'TERVEZÉS', page: 'planner' },
+    { id: 'vector', label: 'VEKTOR', page: 'create' },
+    { id: 'content', label: 'CONTENT', page: 'create' },
   ];
 
   const activePages: Record<string, string> = {
     landing: 'home',
+    works: 'works',
+    shopify: 'shopify',
+    agents: 'agents',
+    portfolio: 'portfolio',
     create: 'create',
     advertising: 'studio',
     templates: 'templates',
@@ -93,12 +96,12 @@ export function PublicNav({ onNavigate, currentPage = 'landing' }: PublicNavProp
         <button
           onClick={() => go('landing')}
           className="flex items-center shrink-0 transition-opacity hover:opacity-90"
-          aria-label="DESIGNLY STUDIO home"
+          aria-label="DESIGNITY STUDIO home"
         >
           <div className="designly-public-brand">
             <Logo size={42} showText={false} />
             <div className="hidden sm:flex flex-col leading-none text-left">
-              <span className="designly-public-brand-title">DESIGNLY</span>
+              <span className="designly-public-brand-title">DESIGNITY</span>
               <span className="designly-public-brand-sub">CREATIVE OPERATING SYSTEM</span>
             </div>
           </div>
