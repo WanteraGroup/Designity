@@ -269,7 +269,7 @@ export function AdminPage({ onNavigate }: AdminPageProps) {
               <InfinityIcon className="w-3 h-3" /> OWNER
             </span>
             <span className="chip border-gold-600/40 bg-gold-600/15 text-gold-300">
-              100 000 000 KREDIT · KORLÁTLAN
+              {(profile?.credits ?? 0).toLocaleString('hu-HU')} KREDIT · FIZETŐS TESZT
             </span>
           </div>
         )}
