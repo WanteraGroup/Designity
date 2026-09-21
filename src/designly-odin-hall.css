@@ -110,6 +110,22 @@ body::before{
   box-shadow:0 0 18px rgba(85,201,202,.12);
   z-index:8;
 }
+.odin-hero-scene{
+  position:absolute;
+  inset:0;
+  z-index:-4;
+  background:
+    linear-gradient(180deg,rgba(2,6,8,.18),rgba(2,6,8,.20) 48%,rgba(2,6,7,.78) 100%),
+    url('/designly-odin-hall-bg.svg') center center / cover no-repeat;
+  opacity:.92;
+  transform:scale(1.02);
+  animation:oh-scene-drift 28s ease-in-out infinite alternate;
+  filter:saturate(.82) contrast(1.08) brightness(.88);
+}
+@keyframes oh-scene-drift{
+  from{transform:scale(1.02) translate3d(0,0,0)}
+  to{transform:scale(1.06) translate3d(0,-1%,0)}
+}
 .odin-hero-noise{
   position:absolute;inset:0;z-index:-3;pointer-events:none;
   background:
@@ -673,6 +689,8 @@ aside.hidden.lg\\:flex img{filter:saturate(.38) hue-rotate(150deg) brightness(1.
   .odin-price-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:720px){
+  .odin-hero-scene{background-position:center center;opacity:.82;}
+
   .celtic-header{height:64px!important}
   .odin-hero{padding:90px 20px 36px!important}
   .odin-hero-content{min-height:780px;display:block!important}
