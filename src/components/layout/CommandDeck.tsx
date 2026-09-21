@@ -144,30 +144,15 @@ export function CommandDeck({
         </div>
       )}
 
-      <div className="px-3 pt-2 pb-2 relative z-10">
-        <div className="rounded-[16px] border border-[#9CEEE5]/16 bg-[#071311]/65 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,.04),0_18px_40px_rgba(0,0,0,.32)]">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(127,245,199,.75)]" />
-            <div>
-              <div className="text-[9px] font-bold tracking-[.18em] text-[#E3FFFB]">HUGINN</div>
-              <div className="text-[7px] uppercase tracking-[.14em] text-[#9CEEE5]/45 mt-1">AI SYSTEM ONLINE</div>
-            </div>
-            <span className="ml-auto text-[#D6B36A]/70">◈</span>
-          </div>
-          <div className="grid grid-cols-3 gap-1 mt-3">
-            <div className="rounded-lg border border-[#9CEEE5]/8 bg-black/20 py-2 text-center">
-              <strong className="block text-[10px] text-[#E3FFFB]">{isUnlimited ? '14' : '—'}</strong>
-              <span className="block mt-1 text-[5px] uppercase tracking-[.08em] text-[#9CEEE5]/35">agents</span>
-            </div>
-            <div className="rounded-lg border border-[#9CEEE5]/8 bg-black/20 py-2 text-center">
-              <strong className="block text-[10px] text-[#E3FFFB]">∞</strong>
-              <span className="block mt-1 text-[5px] uppercase tracking-[.08em] text-[#9CEEE5]/35">routes</span>
-            </div>
-            <div className="rounded-lg border border-[#9CEEE5]/8 bg-black/20 py-2 text-center">
-              <strong className="block text-[10px] text-[#7FF5C7]">LIVE</strong>
-              <span className="block mt-1 text-[5px] uppercase tracking-[.08em] text-[#9CEEE5]/35">core</span>
-            </div>
-          </div>
+      <div className="p-5 border-t border-[#263636] bg-[#020505]/60 relative z-10">
+        <div className="text-[#9CEEE5] font-serif text-lg">HUGINN</div>
+        <div className="text-xs text-[#EEE8DC]/60">AI SYSTEM ONLINE</div>
+
+        <div className="mt-3 text-xs text-[#D6B36A]/80">
+          {isUnlimited ? '14 AGENTS CONNECTED' : 'AI AGENTS READY'}
+        </div>
+        <div className="text-xs text-[#EEE8DC]/50">
+          SYSTEM OPERATIONAL
         </div>
       </div>
 
