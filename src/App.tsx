@@ -54,14 +54,16 @@ import { CncCamPage } from '@/components/CncCamPage';
 import { DiagnosticsPage } from '@/components/DiagnosticsPage';
 import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
-import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
 // Visual system.
-//   index.css   - Tailwind base + shared primitives (imported in main.tsx)
-//   forge       - the public landing surface, written from scratch
-//   shell       - application chrome (dashboard sidebar, nordic header)
-import './designly-forge-part2.css';
-import './designly-forge-part3.css';
+//   index.css  - Tailwind base + shared primitives (imported in main.tsx)
+//   forge      - the public landing surface, written from scratch
+//   overrides  - application chrome (dashboard sidebar, nordic header)
+//
+// MorphingBackground was removed: it cycled seven /bg/nordic/*.jpg files that
+// do not exist in the repo, which produced eight 404s on every page load. The
+// forge layer paints its own atmosphere in pure CSS, so nothing is lost.
+import './designly-forge.css';
 import './designly-theme-overrides.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
@@ -243,7 +245,6 @@ function AppInner() {
 
   return (
     <div className="relative min-h-screen bg-transparent">
-      <MorphingBackground global className="mix-blend-soft-light opacity-[0.18]" />
       {isPublic && page !== 'landing' && <PublicNav onNavigate={navigate} currentPage={page} />}
       {isDashboard && <DashNav currentPage={page} onNavigate={navigate} />}
 
