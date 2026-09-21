@@ -111,7 +111,7 @@ export function CommandDeck({
   };
 
   return (
-    <aside className="designly-command-deck hidden lg:flex">
+    <aside className="designly-command-deck relative w-72 h-full hidden lg:flex">
       <SidebarMorphingBackground />
       <div className="p-6 pb-4 relative z-10">
         <button
