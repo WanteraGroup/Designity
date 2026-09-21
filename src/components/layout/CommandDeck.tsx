@@ -112,13 +112,13 @@ export function CommandDeck({
           </div>
           <div className="space-y-1">
             {controlItems.map((item) => {
-              const isActive = active === item.id;
+              const isActive = true;
 
               return (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  aria-current={isActive ? 'page' : undefined}
+                  aria-current={active === item.id ? 'page' : undefined}
                   className={[
                     'relative w-full flex items-center gap-3 px-4 py-3 rounded-[14px]',
                     'transition-all duration-200',
