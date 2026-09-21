@@ -45,9 +45,9 @@ export function DashNav({ currentPage, onNavigate }: DashNavProps) {
     navItems.push({ id: 'admin', label: t('nav.admin'), icon: Shield });
     navItems.push({ id: 'diagnostics', label: 'QA Center', icon: FlaskConical });
   }
-  const privilegedIds = new Set(['shopify', 'admin', 'diagnostics']);
-  const primaryNavItems = navItems.filter((item) => !privilegedIds.has(item.id));
-  const privilegedNavItems = navItems.filter((item) => privilegedIds.has(item.id));
+  const privilegedIds = ['shopify', 'admin', 'diagnostics'];
+  const primaryNavItems = navItems.filter((item) => !privilegedIds.includes(item.id));
+  const privilegedNavItems = navItems.filter((item) => privilegedIds.includes(item.id));
 
   const handleNav = (page: string) => {
     onNavigate(page);
