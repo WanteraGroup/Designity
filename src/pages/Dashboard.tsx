@@ -92,7 +92,6 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#020505] text-[#E3FFFB]">
-      <MorphingBackground />
 
       <NordicHeader title="DESIGNLY CORE — Kreatív Operációs Rendszer" />
 
