@@ -14,6 +14,7 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import {
   CelticGoldFrame,
+  FogAndEmbers,
   ForgedButton,
   ForgedPanel,
   HuginnPanel,
@@ -156,7 +157,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                   >
                     {isCampaign && (
                       <>
-                        <MorphingBackground />
+                        <FogAndEmbers />
                         <CelticGoldFrame />
                         <RunePulse rune="ᚱ" duration="2s" />
                       </>
