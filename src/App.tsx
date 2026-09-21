@@ -56,12 +56,14 @@ import { TattooLibraryPage } from '@/components/TattooLibraryPage';
 import { NordicHeader } from '@/components/ui';
 import MorphingBackground from '@/components/ui/MorphingBackground';
 import PageTransition from '@/components/ui/PageTransition';
-// Brand system - two files, one layer.
-//   index.css             Tailwind base + shared primitives (imported in main.tsx)
-//   designly-brand        public landing: black + gold Celtic knotwork
-//   designly-brand-shell  app chrome: CommandDeck, NordicHeader, app background
+// Brand system - three files, one layer.
+//   index.css                    Tailwind base + shared primitives (in main.tsx)
+//   designly-brand               public landing: black + gold Celtic knotwork
+//   designly-brand-shell         app chrome: CommandDeck, NordicHeader, backdrop
+//   designly-brand-dashboard     recolours the OLD inline palette in the panels
 import './designly-brand.css';
 import './designly-brand-shell.css';
+import './designly-brand-dashboard.css';
 const MusicPage = lazy(() => import('@/components/MusicPage').then((m) => ({ default: m.MusicPage })));
 
 type Page =
@@ -215,13 +217,13 @@ function AppInner() {
     }
   };
 
-  // The public landing renders immediately: it needs no session, so gating it
-  // behind authKnown only produced a spinner under the finished page. That
-  // spinner used to be rendered inside this branch, which left a stray
-  // animate-spin div in the DOM beneath every landing view.
+  // The public landing renders immediately: it needs no session. The dashboard
+  // gets its header from THIS shell only - Dashboard.tsx used to render its own
+  // NordicHeader too, which printed the title twice.
   const isPublic = PUBLIC_PAGES.includes(page);
   const isDashboard = !isPublic;
   const isEditor = page === 'editor-workspace' || page === 'websites';
+  const isCoreDashboard = page === 'dashboard';
 
   const contentWrapperClass = isDashboard ? 'lg:pl-72 pt-14 lg:pt-0' : '';
 
@@ -252,7 +254,7 @@ function AppInner() {
       <HuginnAgent onNavigate={navigate} />
 
       <div className={contentWrapperClass}>
-        {isDashboard && !isEditor && (
+        {isDashboard && !isEditor && !isCoreDashboard && (
           <NordicHeader title={dashboardTitle} userLabel="DESIGNLY OPERATOR" />
         )}
         {isPublic && (
