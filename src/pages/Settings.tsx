@@ -328,8 +328,8 @@ export default function Settings({ onNavigate }: SettingsProps) {
             <div className="text-[9px] uppercase tracking-[.22em] text-[#D6B36A]/60">ACCESS LEVEL</div>
             <div className="font-serif text-2xl mt-1">{isOwner ? 'OWNER' : 'ADMIN'}</div>
             <p className="mt-2 text-sm text-[#EEE8DC]/45">
-              {isOwner ? 'Tulajdonosi hozzáférés és korlátlan rendszerhasználat.' : 'Adminisztrációs hozzáférés és rendszerfelügyelet.'}
-              {isUnlimited ? ' Unlimited credit access.' : ''}
+              {isOwner ? 'Tulajdonosi hozzáférés; a végleges generálások és AI szerkesztések a saját kreditkeretet használják.' : 'Adminisztrációs hozzáférés és rendszerfelügyelet.'}
+              {isUnlimited ? ' Final generations and AI editor actions use the owner's credit balance.' : ''}
             </p>
           </ForgedPanel>
         )}
