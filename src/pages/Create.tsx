@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight, RotateCcw, Pencil, Save } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { useCreateFlow } from '@/lib/use-create-flow';
+import { useTemplateSeed } from '@/lib/use-template-seed';
 import { parseSiteDocument, applySiteEdits, type SiteDocument } from '@/lib/site-schema';
 import { getCreditsForType, DESIGN_STYLES } from '@/lib/constants';
 import { SiteRenderer } from '@/components/site/SiteRenderer';
@@ -18,6 +19,7 @@ export default function Create() {
   const { lang } = useI18n();
   const navigate = useNavigate();
   const flow = useCreateFlow();
+  const template = useTemplateSeed();
 
   const [brief, setBrief] = useState('');
   const [instruction, setInstruction] = useState('');
@@ -26,6 +28,15 @@ export default function Create() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const refineRef = useRef<HTMLInputElement>(null);
+  const seededRef = useRef(false);
+
+  // A template prefills the brief once. Writing it on every render would fight
+  // the user's own edits the moment they started typing.
+  useEffect(() => {
+    if (seededRef.current || !template.brief) return;
+    seededRef.current = true;
+    setBrief(template.brief);
+  }, [template.brief]);
 
   const busy = flow.stage === 'plan' || flow.stage === 'building';
   const cost = flow.plan?.project_type ? getCreditsForType(flow.plan.project_type) : 10;
@@ -43,8 +54,9 @@ export default function Create() {
     const before = site;
     await flow.refine(instruction.trim());
 
-    // The edit agent returns a diff against the document it was given, so a
-    // partial response is applied here rather than replacing the page wholesale.
+    // The edit agent returns a diff against the document it was given. A
+    // partial response is applied here rather than replacing the page
+    // wholesale, so a dropped field cannot blank a section nobody asked about.
     const edits = (flow.document as { edits?: { path: string; value: unknown }[] })?.edits;
     if (Array.isArray(edits)) setSite(applySiteEdits(before, edits));
     else setSite(parseSiteDocument(flow.document) ?? before);
@@ -84,6 +96,13 @@ export default function Create() {
           Describe it in a sentence. The AI team handles the structure, the copy and the visuals.
         </p>
       </header>
+
+      {template.name && (
+        <div className="mb-5 rounded-lg border border-gold-700/25 bg-gold-600/[0.07] px-4 py-3 text-sm text-cream-300/70">
+          Started from <span className="text-gold-200">{template.name}</span> — the brief below is
+          only a starting point. Edit it freely.
+        </div>
+      )}
 
       {/* Stage 1 — the brief */}
       <section className="rounded-xl border border-gold-700/25 bg-ink-850/60 p-6">
@@ -202,13 +221,10 @@ export default function Create() {
             </p>
           )}
 
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-gold-300 hover:text-gold-200"
-          >
-            Continue in the editor <ArrowRight className="h-4 w-4" />
-          </a>
+          <p className="mt-6 flex items-center gap-2 text-sm text-cream-300/50">
+            Save the project to open it in the editor
+            <ArrowRight className="h-4 w-4" />
+          </p>
           <p className="sr-only">{lang}</p>
         </section>
       )}
