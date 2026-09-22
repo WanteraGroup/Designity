@@ -36,9 +36,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Marcellus"', '"Cormorant Garamond"', 'Georgia', 'serif'],
-        sans: ['"Manrope"', '"Inter"', 'system-ui', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        display: ['Marcellus', 'Cormorant Garamond', 'Georgia', 'serif'],
+        sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'spin-slow': 'spin 80s linear infinite',
@@ -51,18 +51,18 @@ export default {
       },
       keyframes: {
         'spin-reverse': {
-          'from': { transform: 'rotate(360deg)' },
-          'to': { transform: 'rotate(0deg)' },
+          from: { transform: 'rotate(360deg)' },
+          to: { transform: 'rotate(0deg)' },
         },
         'fade-in': {
-          'from': { opacity: '0' },
-          'to': { opacity: '1' },
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
         'fade-up': {
-          'from': { opacity: '0', transform: 'translateY(24px)' },
-          'to': { opacity: '1', transform: 'translateY(0)' },
+          from: { opacity: '0', transform: 'translateY(24px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
         },
-        'shimmer': {
+        shimmer: {
           '0%, 100%': { opacity: '0.4' },
           '50%': { opacity: '1' },
         },
@@ -76,8 +76,10 @@ export default {
         },
       },
       backgroundImage: {
-        'gold-gradient': 'linear-gradient(135deg, #d4ab3d 0%, #f5ebcc 30%, #c49a2e 50%, #e0c066 70%, #a87f24 100%)',
-        'gold-sheen': 'linear-gradient(110deg, transparent 30%, rgba(229,201,107,0.15) 50%, transparent 70%)',
+        'gold-gradient':
+          'linear-gradient(135deg, #d4ab3d 0%, #f5ebcc 30%, #c49a2e 50%, #e0c066 70%, #a87f24 100%)',
+        'gold-sheen':
+          'linear-gradient(110deg, transparent 30%, rgba(229,201,107,0.15) 50%, transparent 70%)',
         'radial-gold': 'radial-gradient(circle at center, rgba(196,154,46,0.12) 0%, transparent 60%)',
       },
     },
