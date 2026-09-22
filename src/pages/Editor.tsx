@@ -7,14 +7,20 @@ import { useI18n } from '@/lib/i18n';
 import { ai } from '@/lib/ai';
 import { useAsync } from '@/lib/hooks';
 import { downloadHtml } from '@/lib/export-site';
-import { exportPdf, PdfNotConfiguredError } from '@/lib/export-pdf';
+import { exportPdf } from '@/lib/export-pdf';
 import { parseSiteDocument, applySiteEdits, type SiteDocument, type SiteEdit } from '@/lib/site-schema';
 import { SiteRenderer } from '@/components/site/SiteRenderer';
+import { ThemePanel } from '@/components/editor/ThemePanel';
+import { EditorDrawer } from '@/components/editor/EditorDrawer';
 
 /**
- * Opens a saved project, refines it and exports it.
- * The document is stored in `projects.config.site`, so the editor needs no
- * separate fetch of its own.
+ * Opens a saved project, refines it, retheme it and exports it.
+ *
+ * Three ways in, and they do not overlap:
+ *   - the refine input changes copy (through the editor agent, as a diff)
+ *   - the theme drawer changes the theme object only, locally
+ *   - export writes a file and does not touch the document
+ * Keeping copy and theme separate means the two controls cannot fight.
  */
 export default function Editor() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -24,6 +30,7 @@ export default function Editor() {
   const [site, setSite] = useState<SiteDocument | null>(null);
   const [name, setName] = useState('project');
   const [instruction, setInstruction] = useState('');
+  const [reply, setReply] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,16 +55,18 @@ export default function Editor() {
     if (!site || !instruction.trim() || busy) return;
     setBusy(true);
     setError(null);
+    setReply(null);
 
     try {
       const result = await ai.edit(site, instruction.trim(), lang, session?.access_token);
-      const edits = (result.document as { edits?: SiteEdit[] })?.edits;
+      const body = result.document as { reply?: string; edits?: SiteEdit[] };
 
       // The agent returns a diff against the document it received. Applying it
       // locally keeps the view canonical and means a dropped field in the
       // response cannot blank out a section that was not asked about.
-      const next = Array.isArray(edits) ? applySiteEdits(site, edits) : site;
+      const next = Array.isArray(body.edits) ? applySiteEdits(site, body.edits) : site;
       setSite(next);
+      setReply(body.reply ?? null);
       setDirty(true);
       setInstruction('');
     } catch (e) {
@@ -81,19 +90,22 @@ export default function Editor() {
   }
 
   /**
-   * The HTML download is client-side: the file the user gets is exactly the
-   * document on screen, with no round trip that can fail.
+   * Theme edits are local until saved. That is deliberate: a palette change is
+   * cheap to make and cheap to undo, and round-tripping every swatch to the
+   * database would make the control feel broken on a slow connection.
    */
+  function applyTheme(next: SiteDocument['site']['theme']) {
+    if (!site) return;
+    setSite({ ...site, site: { ...site.site, theme: next } });
+    setDirty(true);
+  }
+
   function exportHtml() {
     if (!site) return;
     downloadHtml(site, name);
     setNotice('Downloaded as a standalone HTML file.');
   }
 
-  /**
-   * The PDF goes through PDFMonkey. It needs a template id, so an account with
-   * none configured is reported as a setup step rather than a failed export.
-   */
   async function exportAsPdf() {
     if (!site) return;
     setExporting(true);
@@ -133,6 +145,9 @@ export default function Editor() {
         <h1 className="font-display text-2xl text-cream-100">{name}</h1>
 
         <div className="flex flex-wrap gap-2">
+          <EditorDrawer title="Theme">
+            <ThemePanel theme={site.site.theme} onChange={applyTheme} />
+          </EditorDrawer>
           <button type="button" onClick={exportHtml} className="designly-btn-ghost">
             <FileCode className="h-4 w-4" /> HTML
           </button>
@@ -156,6 +171,12 @@ export default function Editor() {
         <p className="mb-4 flex items-center gap-2 rounded-lg border border-gold-700/25 bg-gold-600/[0.07] px-4 py-3 text-sm text-cream-200">
           <Download className="h-4 w-4 text-gold-300" />
           {notice}
+        </p>
+      )}
+
+      {reply && (
+        <p className="mb-4 rounded-lg border border-gold-700/20 bg-ink-900/60 px-4 py-3 text-sm text-cream-300/70">
+          {reply}
         </p>
       )}
 
