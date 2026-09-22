@@ -1,22 +1,20 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Pencil } from 'lucide-react';
+import { Download, FileCode, FileText } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
 import { useI18n } from '@/lib/i18n';
 import { ai } from '@/lib/ai';
 import { useAsync } from '@/lib/hooks';
-import { supabase } from '@/lib/supabase';
-import {
-  parseSiteDocument,
-  applySiteEdits,
-  type SiteDocument,
-  type SiteEdit,
-} from '@/lib/site-schema';
+import { downloadHtml } from '@/lib/export-site';
+import { exportPdf, PdfNotConfiguredError } from '@/lib/export-pdf';
+import { parseSiteDocument, applySiteEdits, type SiteDocument, type SiteEdit } from '@/lib/site-schema';
 import { SiteRenderer } from '@/components/site/SiteRenderer';
 
 /**
- * Opens a saved project and refines it. The document is stored in
- * `projects.config.site`, so the editor needs no separate fetch of its own.
+ * Opens a saved project, refines it and exports it.
+ * The document is stored in `projects.config.site`, so the editor needs no
+ * separate fetch of its own.
  */
 export default function Editor() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -24,19 +22,23 @@ export default function Editor() {
   const { lang } = useI18n();
 
   const [site, setSite] = useState<SiteDocument | null>(null);
+  const [name, setName] = useState('project');
   const [instruction, setInstruction] = useState('');
   const [busy, setBusy] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   const { loading } = useAsync(async () => {
     const { data, error: e } = await supabase
       .from('projects')
-      .select('config')
+      .select('name, config')
       .eq('id', projectId!)
       .maybeSingle();
 
     if (e) throw e;
+    setName(data?.name ?? 'project');
     const parsed = parseSiteDocument((data?.config as { site?: unknown })?.site);
     setSite(parsed);
     return parsed;
@@ -75,6 +77,38 @@ export default function Editor() {
     setBusy(false);
     if (e) return setError(e.message);
     setDirty(false);
+    setNotice('Saved.');
+  }
+
+  /**
+   * The HTML download is client-side: the file the user gets is exactly the
+   * document on screen, with no round trip that can fail.
+   */
+  function exportHtml() {
+    if (!site) return;
+    downloadHtml(site, name);
+    setNotice('Downloaded as a standalone HTML file.');
+  }
+
+  /**
+   * The PDF goes through PDFMonkey. It needs a template id, so an account with
+   * none configured is reported as a setup step rather than a failed export.
+   */
+  async function exportAsPdf() {
+    if (!site) return;
+    setExporting(true);
+    setError(null);
+    setNotice(null);
+
+    try {
+      const { url } = await exportPdf(site, session?.access_token);
+      window.open(url, '_blank', 'noreferrer');
+      setNotice('PDF ready — opened in a new tab.');
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setExporting(false);
+    }
   }
 
   if (loading) {
@@ -95,14 +129,35 @@ export default function Editor() {
 
   return (
     <div>
-      <header className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl text-cream-100">{site.site.title}</h1>
-        {dirty && (
-          <button type="button" onClick={save} disabled={busy} className="designly-btn">
-            {busy ? 'Saving…' : 'Save changes'}
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl text-cream-100">{name}</h1>
+
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={exportHtml} className="designly-btn-ghost">
+            <FileCode className="h-4 w-4" /> HTML
           </button>
-        )}
+          <button
+            type="button"
+            onClick={exportAsPdf}
+            disabled={exporting}
+            className="designly-btn-ghost"
+          >
+            <FileText className="h-4 w-4" /> {exporting ? 'Rendering…' : 'PDF'}
+          </button>
+          {dirty && (
+            <button type="button" onClick={save} disabled={busy} className="designly-btn">
+              {busy ? 'Saving…' : 'Save changes'}
+            </button>
+          )}
+        </div>
       </header>
+
+      {notice && (
+        <p className="mb-4 flex items-center gap-2 rounded-lg border border-gold-700/25 bg-gold-600/[0.07] px-4 py-3 text-sm text-cream-200">
+          <Download className="h-4 w-4 text-gold-300" />
+          {notice}
+        </p>
+      )}
 
       <SiteRenderer document={site} embedded />
 
@@ -120,7 +175,6 @@ export default function Editor() {
           disabled={busy || !instruction.trim()}
           className="designly-btn"
         >
-          <Pencil className="h-4 w-4" />
           {busy ? '…' : 'Apply'}
         </button>
       </div>
