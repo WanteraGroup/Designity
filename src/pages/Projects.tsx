@@ -1,230 +1,101 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Archive, FolderOpen, Layers3, Plus, Sparkles } from 'lucide-react';
-import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
-import { useAuth } from '@/lib/auth';
+import { Link } from 'react-router-dom';
+import { useAsync } from '@/lib/hooks';
 import { supabase } from '@/lib/supabase';
-import type { Project } from '@/types';
+import { getCreditsForType } from '@/lib/constants';
+import type { Project, ProjectStatus } from '@/types';
 
-interface ProjectsProps {
-  onNavigate: (page: string) => void;
-}
+const STATUS_STYLE: Record<ProjectStatus, string> = {
+  draft: 'bg-ink-700 text-cream-300/70',
+  generating: 'bg-gold-600/20 text-gold-200',
+  completed: 'bg-emerald-500/15 text-emerald-300',
+  failed: 'bg-red-500/15 text-red-300',
+};
 
-export default function Projects({ onNavigate }: ProjectsProps) {
-  const { profile } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [brand, setBrand] = useState('');
-  const [saved, setSaved] = useState(false);
-  const [creating, setCreating] = useState(false);
+const STATUS_LABEL: Record<ProjectStatus, string> = {
+  draft: 'Draft',
+  generating: 'Generating',
+  completed: 'Ready',
+  failed: 'Failed',
+};
 
-  useEffect(() => {
-    async function load() {
-      if (!profile) return;
-      const { data } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('updated_at', { ascending: false });
-      setProjects((data as Project[]) || []);
-      setLoading(false);
-    }
-    load();
-  }, [profile]);
+/**
+ * The project list. RLS scopes this to the signed-in user's own rows, so no
+ * filter is needed here — but the ordering is explicit, because a list that
+ * arrives unordered reshuffles between renders.
+ */
+export default function Projects() {
+  const { data, loading, error } = useAsync(async () => {
+    const { data: rows, error: e } = await supabase
+      .from('projects')
+      .select('id, name, type, status, brief, preview_url, created_at, updated_at')
+      .order('updated_at', { ascending: false });
+    if (e) throw e;
+    return (rows ?? []) as Project[];
+  }, []);
 
-  const activeProjects = projects.length;
-  const archived = 0;
-
-  const createProject = () => {
-    const trimmed = name.trim();
-    if (!trimmed) return;
-    localStorage.setItem(
-      'designly_project_brief',
-      JSON.stringify({ name: trimmed, type: type.trim(), brand: brand.trim() }),
+  if (loading) {
+    return (
+      <div className="grid min-h-[40vh] place-items-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold-600/30 border-t-gold-400" />
+      </div>
     );
-    setCreating(true);
-    window.setTimeout(() => {
-      setCreating(false);
-      onNavigate('create');
-    }, 350);
-  };
-
-  const saveDraft = () => {
-    localStorage.setItem(
-      'designly_project_draft',
-      JSON.stringify({ name: name.trim(), type: type.trim(), brand: brand.trim(), savedAt: new Date().toISOString() }),
-    );
-    setSaved(true);
-  };
-
-  const visibleProjects = useMemo(() => projects.slice(0, 6), [projects]);
-
-  const openProject = (project: Project) => {
-    localStorage.setItem('designly_selected_project', project.id);
-    onNavigate('editor');
-  };
-
-  const archiveProject = async (project: Project) => {
-    // The current project schema has no archive flag. Keep the action safe by
-    // opening the project rather than silently deleting production data.
-    openProject(project);
-  };
+  }
 
   return (
-    <div className="relative min-h-screen bg-[#020505] text-[#E3FFFB] overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.24]"
-        style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95"
-        aria-hidden="true"
-      />
+    <div>
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-3xl text-cream-100">Projects</h1>
+          <p className="mt-2 text-sm text-cream-300/60">
+            {data?.length ? `${data.length} saved` : 'Everything you generate lands here.'}
+          </p>
+        </div>
+        <Link to="/app/create" className="designly-btn">
+          New project
+        </Link>
+      </header>
 
-      <NordicHeader title="PROJECTS — DESIGNLY WORKSPACE" />
+      {error && (
+        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </p>
+      )}
 
-      <main className="relative z-10 px-6 lg:px-8 pt-12 lg:pt-16 pb-24 space-y-12 max-w-[1700px] mx-auto">
-        <section>
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">
-                <Layers3 className="w-4 h-4" /> PROJECT COMMAND
-              </div>
-              <h1 className="mt-2 font-serif text-4xl lg:text-5xl">Project Overview</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
-                A DESIGNLY projektjei egyetlen Nordic Workspace felületen kezelhetők, az editorba vezető közvetlen munkafolyamattal.
-              </p>
-            </div>
-            <ForgedButton variant="secondary" onClick={() => onNavigate('dashboard')}>← Command</ForgedButton>
-          </div>
+      {!loading && data?.length === 0 && (
+        <div className="rounded-xl border border-gold-700/20 bg-ink-850/60 p-12 text-center">
+          <p className="text-sm text-cream-300/60">Nothing here yet.</p>
+          <Link to="/app/create" className="mt-5 inline-block text-sm text-gold-300 hover:text-gold-200">
+            Create your first project →
+          </Link>
+        </div>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Metric label="Total Projects" value={String(projects.length)} icon={FolderOpen} />
-            <Metric label="Active" value={String(activeProjects)} icon={Sparkles} />
-            <Metric label="Archived" value={String(archived)} icon={Archive} />
-          </div>
-        </section>
-
-        <section>
-          <div className="mb-6">
-            <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">WORKSPACE ENTRY</div>
-            <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Create New Project</h2>
-          </div>
-
-          <ForgedPanel className="max-w-4xl">
-            <div className="grid md:grid-cols-3 gap-5 text-xs">
-              <Field label="Project Name" placeholder="Pl. Nordic Brand 2026" value={name} onChange={setName} />
-              <Field label="Type" placeholder="Campaign / Website / Logo / Product / CNC" value={type} onChange={setType} />
-              <Field label="Brand" placeholder="Márkanév" value={brand} onChange={setBrand} />
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {data?.map((p) => (
+          <Link
+            key={p.id}
+            to={`/app/projects/${p.id}`}
+            className="group rounded-xl border border-gold-700/20 bg-ink-850/60 p-5 transition hover:border-gold-600/45"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="line-clamp-1 font-display text-lg text-cream-100">{p.name}</h2>
+              <span className={`shrink-0 rounded px-2 py-0.5 text-[11px] ${STATUS_STYLE[p.status]}`}>
+                {STATUS_LABEL[p.status]}
+              </span>
             </div>
 
-            <div className="mt-7 flex flex-wrap gap-3">
-              <ForgedButton variant="primary" onClick={createProject} disabled={creating || !name.trim()}>
-                <Plus className="w-4 h-4" /> {creating ? 'Preparing…' : 'Create Project'}
-              </ForgedButton>
-              <ForgedButton variant="secondary" onClick={saveDraft}>
-                <FolderOpen className="w-4 h-4" /> {saved ? 'Draft Saved' : 'Save Draft'}
-              </ForgedButton>
-            </div>
-            <p className="mt-3 text-[11px] text-[#EEE8DC]/35">
-              A projektadatokat a meglévő Create / Editor munkafolyamat kapja meg; nincs külön párhuzamos projekt-rendszer.
+            <p className="mt-2 text-xs text-cream-300/45">
+              {p.type.replace(/_/g, ' ')} · {getCreditsForType(p.type)} cr
             </p>
-          </ForgedPanel>
-        </section>
 
-        <section>
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <div className="text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">PROJECT VAULT</div>
-              <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Projects</h2>
-            </div>
-            <ForgedButton variant="secondary" onClick={() => onNavigate('create')}>
-              <Sparkles className="w-4 h-4" /> Open Create Workspace
-            </ForgedButton>
-          </div>
+            {p.brief && <p className="mt-3 line-clamp-2 text-sm text-cream-300/60">{p.brief}</p>}
 
-          {loading ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {[1, 2].map((id) => <ForgedPanel key={id} className="h-44 animate-pulse"><div className="h-full rounded-2xl bg-black/20" /></ForgedPanel>)}
-            </div>
-          ) : visibleProjects.length === 0 ? (
-            <ForgedPanel className="p-12 text-center">
-              <FolderOpen className="w-12 h-12 mx-auto mb-4 text-[#EEE8DC]/20" />
-              <div className="font-serif text-2xl">No projects yet</div>
-              <p className="mt-2 text-sm text-[#EEE8DC]/40">Hozd létre az első projektet a Forge Workspace-ben.</p>
-              <div className="mt-6"><ForgedButton variant="primary" onClick={() => onNavigate('create')}><Sparkles className="w-4 h-4" /> Start Creating</ForgedButton></div>
-            </ForgedPanel>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {visibleProjects.map((project) => (
-                <ForgedPanel key={project.id}>
-                  <div className="flex justify-between items-start gap-4 mb-5">
-                    <div className="min-w-0">
-                      <div className="font-serif text-2xl truncate">{project.name}</div>
-                      <div className="text-xs text-[#EEE8DC]/55 mt-1 capitalize">
-                        {project.type.replace('_', ' ')}
-                      </div>
-                    </div>
-                    <div className="text-[9px] uppercase tracking-[.18em] text-[#9CEEE5]/70">ACTIVE</div>
-                  </div>
-                  <div className="flex gap-3">
-                    <ForgedButton variant="secondary" className="flex-1" onClick={() => openProject(project)}>
-                      <FolderOpen className="w-4 h-4" /> Open
-                    </ForgedButton>
-                    <ForgedButton variant="secondary" className="flex-1" onClick={() => archiveProject(project)}>
-                      <Archive className="w-4 h-4" /> Archive
-                    </ForgedButton>
-                  </div>
-                </ForgedPanel>
-              ))}
-            </div>
-          )}
-        </section>
-      </main>
+            <p className="mt-4 text-[11px] text-cream-300/35">
+              {new Date(p.updated_at).toLocaleDateString('hu-HU')}
+            </p>
+          </Link>
+        ))}
+      </div>
     </div>
-  );
-}
-
-function Field({
-  label,
-  placeholder,
-  value,
-  onChange,
-}: {
-  label: string;
-  placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <label className="space-y-1 block">
-      <span className="text-[#EEE8DC]/70">{label}</span>
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full bg-[#071311]/75 border border-[#263636] rounded-[10px] px-3 py-2.5 text-xs text-[#E3FFFB] placeholder:text-[#EEE8DC]/35 outline-none focus:border-[#9CEEE5]/40 focus:ring-2 focus:ring-[#9CEEE5]/5"
-        placeholder={placeholder}
-      />
-    </label>
-  );
-}
-
-function Metric({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: typeof FolderOpen;
-}) {
-  return (
-    <ForgedPanel>
-      <Icon className="w-5 h-5 mb-3 text-[#D6B36A]/75" />
-      <div className="text-xs text-[#EEE8DC]/55">{label}</div>
-      <div className="font-serif text-4xl mt-2">{value}</div>
-    </ForgedPanel>
   );
 }
