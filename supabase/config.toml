@@ -1,6 +1,6 @@
 # Designity supabase config
 #
-# v2 exposes two functions, both JWT-verified. Wave 1 shipped twelve, several
+# v2 exposes three functions, all JWT-verified. Wave 1 shipped twelve, several
 # with verify_jwt = false; the public ones are gone rather than carried over.
 
 project_id = "your-project-ref"
@@ -12,3 +12,7 @@ entrypoint = "./functions/designly-agent/index.ts"
 [functions.designly-editor-ai]
 verify_jwt = true
 entrypoint = "./functions/designly-editor-ai/index.ts"
+
+[functions.designly-export-pdf]
+verify_jwt = true
+entrypoint = "./functions/designly-export-pdf/index.ts"
