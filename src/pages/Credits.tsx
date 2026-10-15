@@ -1,152 +1,89 @@
-import { useMemo } from 'react';
-import { Coins, Infinity as InfinityIcon, Plus, Sparkles, TrendingUp } from 'lucide-react';
-import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
-import { useAuth } from '@/lib/auth';
-import { CREDIT_PACKAGES, formatPrice, GENERATION_COSTS } from '@/lib/constants';
+import { useAsync } from '@/lib/hooks';
+import { supabase } from '@/lib/supabase';
 
-interface CreditsProps {
-  onNavigate: (
-    page: string,
-    item?: { type: 'subscription' | 'credit_package'; itemId: string }
-  ) => void;
+interface Row {
+  id: string;
+  created_at: string;
+  amount: number;
+  type: string;
+  description: string;
+  balance_after: number;
 }
 
-export default function Credits({ onNavigate }: CreditsProps) {
-  const { profile, isUnlimited } = useAuth();
-
-  const availableCredits = profile?.credits ?? 0;
-  const planName = profile?.plan_id || '—';
-  const generationSummary = useMemo(
-    () => GENERATION_COSTS.filter((item) => item.credits > 0).slice(0, 3),
-    [],
-  );
+/**
+ * The credit ledger. Reads the user's own transactions through RLS — the table
+ * has no write policy at all, so this view can only ever be a read.
+ */
+export default function Credits() {
+  const { data, loading, error } = useAsync(async () => {
+    const { data: rows, error: e } = await supabase
+      .from('credit_transactions')
+      .select('id, created_at, amount, type, description, balance_after')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (e) throw e;
+    return (rows ?? []) as Row[];
+  }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#020505] text-[#E3FFFB] overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.24]"
-        style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95"
-        aria-hidden="true"
-      />
+    <div>
+      <header className="mb-8">
+        <h1 className="font-display text-3xl text-cream-100">Credits</h1>
+        <p className="mt-2 text-sm text-cream-300/60">Every charge and top-up, newest first.</p>
+      </header>
 
-      <NordicHeader title="CREDITS — SYSTEM CREDITS" />
+      {error && (
+        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </p>
+      )}
 
-      <main className="relative z-10 px-6 lg:px-8 pt-12 lg:pt-16 pb-24 space-y-12 max-w-[1700px] mx-auto">
-        <section>
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">
-                <Coins className="w-4 h-4" /> CREDIT COMMAND
-              </div>
-              <h1 className="mt-2 font-serif text-4xl lg:text-5xl">Credit Overview</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
-                Kredit-egyenleg, csomagok és generálási költségek egyetlen DESIGNLY System Credits felületen.
-              </p>
-            </div>
-            <ForgedButton variant="secondary" onClick={() => onNavigate('dashboard')}>← Command</ForgedButton>
-          </div>
+      {loading && <div className="h-24 animate-pulse rounded-xl bg-ink-850/60" />}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <ForgedPanel>
-              <Coins className="w-5 h-5 mb-3 text-[#D6B36A]/75" />
-              <div className="text-xs text-[#EEE8DC]/60">Available Credits</div>
-              <div className="font-serif text-4xl mt-2">{isUnlimited ? '∞' : availableCredits.toLocaleString('hu-HU')}</div>
-            </ForgedPanel>
+      {!loading && data?.length === 0 && (
+        <div className="rounded-xl border border-gold-700/20 bg-ink-850/60 p-12 text-center">
+          <p className="text-sm text-cream-300/60">No credit activity yet.</p>
+        </div>
+      )}
 
-            <ForgedPanel>
-              <TrendingUp className="w-5 h-5 mb-3 text-[#9CEEE5]/75" />
-              <div className="text-xs text-[#EEE8DC]/60">Used This Month</div>
-              <div className="font-serif text-4xl mt-2">—</div>
-              <div className="text-[10px] text-[#EEE8DC]/35 mt-2">Részletes havi usage-log nincs jelenleg bekötve.</div>
-            </ForgedPanel>
-
-            <ForgedPanel>
-              {isUnlimited ? <InfinityIcon className="w-5 h-5 mb-3 text-[#D6B36A]/75" /> : <Sparkles className="w-5 h-5 mb-3 text-[#D6B36A]/75" />}
-              <div className="text-xs text-[#EEE8DC]/60">Plan</div>
-              <div className="font-serif text-2xl mt-2 capitalize">{isUnlimited ? 'Unlimited / Owner' : planName}</div>
-            </ForgedPanel>
-          </div>
-        </section>
-
-        {isUnlimited ? (
-          <section>
-            <ForgedPanel className="p-8 lg:p-10 border-[#D6B36A]/25">
-              <div className="flex items-center gap-3">
-                <InfinityIcon className="w-8 h-8 text-[#D6B36A]" />
-                <div>
-                  <div className="text-[9px] uppercase tracking-[.25em] text-[#D6B36A]/70">OWNER ACCESS</div>
-                  <h2 className="font-serif text-3xl mt-1">Unlimited Credits</h2>
-                </div>
-              </div>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
-                Az OWNER tesztmód valódi krediteket használ a végleges generálásokhoz. Az Admin menüből saját kredit visszatöltés kérhető.
-              </p>
-            </ForgedPanel>
-          </section>
-        ) : (
-          <section>
-            <div className="mb-6">
-              <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">CREDIT FORGE</div>
-              <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Buy Credits</h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {CREDIT_PACKAGES.map((pkg) => (
-                <ForgedPanel key={pkg.id} className="flex flex-col">
-                  <div className="text-3xl font-serif text-[#F5DFA3]">{pkg.credits.toLocaleString('hu-HU')}</div>
-                  <div className="text-xs text-[#EEE8DC]/45 mt-1">credits</div>
-                  <div className="text-lg text-[#EEE8DC] mt-5">{formatPrice(pkg.price)}</div>
-                  <ForgedButton
-                    variant="primary"
-                    className="mt-6 w-full"
-                    onClick={() => onNavigate('checkout', { type: 'credit_package', itemId: pkg.id })}
+      {!!data?.length && (
+        <div className="overflow-hidden rounded-xl border border-gold-700/20">
+          <table className="w-full text-sm">
+            <thead className="bg-ink-900/70 text-xs text-cream-300/50">
+              <tr>
+                <th className="px-4 py-3 text-left font-medium">Date</th>
+                <th className="px-4 py-3 text-left font-medium">Description</th>
+                <th className="px-4 py-3 text-right font-medium">Change</th>
+                <th className="px-4 py-3 text-right font-medium">Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((r) => (
+                <tr key={r.id} className="border-t border-gold-700/10">
+                  <td className="px-4 py-3 text-cream-300/55">
+                    {new Date(r.created_at).toLocaleString('hu-HU', {
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })}
+                  </td>
+                  <td className="px-4 py-3 text-cream-200">{r.description || r.type}</td>
+                  <td
+                    className={`px-4 py-3 text-right font-mono text-xs ${
+                      r.amount < 0 ? 'text-cream-300/60' : 'text-emerald-300'
+                    }`}
                   >
-                    <Plus className="w-4 h-4" /> Buy Now
-                  </ForgedButton>
-                </ForgedPanel>
+                    {r.amount > 0 ? '+' : ''}
+                    {r.amount}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono text-xs text-gold-300">
+                    {r.balance_after}
+                  </td>
+                </tr>
               ))}
-            </div>
-          </section>
-        )}
-
-        <section>
-          <div className="mb-6">
-            <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">USAGE HISTORY</div>
-            <h2 className="mt-2 font-serif text-3xl lg:text-4xl">Usage History</h2>
-          </div>
-
-          <ForgedPanel>
-            <div className="space-y-3 text-xs">
-              {generationSummary.map((item) => (
-                <div key={item.type} className="flex items-center justify-between gap-4 border-b border-[#263636]/70 pb-3 last:border-0 last:pb-0">
-                  <span className="text-[#EEE8DC]/75">{item.label}</span>
-                  <span className="text-[#D6B36A]">{item.credits} credits</span>
-                </div>
-              ))}
-              <div className="pt-2 text-[10px] text-[#EEE8DC]/35">
-                A tényleges terhelés a meglévő generálási és kredit-RPC folyamatokból történik.
-              </div>
-            </div>
-          </ForgedPanel>
-        </section>
-
-        <ForgedPanel className="max-w-4xl">
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-[#D6B36A]/75 mt-0.5" />
-            <div>
-              <div className="text-[9px] uppercase tracking-[.22em] text-[#D6B36A]/60">SYSTEM CREDIT BRIDGE</div>
-              <div className="font-serif text-2xl mt-1">Credits → checkout → generation</div>
-              <p className="mt-2 text-sm leading-7 text-[#EEE8DC]/45">
-                A vásárlás a meglévő Checkout folyamatba kerül, a generálások pedig a jelenlegi kreditellenőrzést és levonást használják.
-              </p>
-            </div>
-          </div>
-        </ForgedPanel>
-      </main>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

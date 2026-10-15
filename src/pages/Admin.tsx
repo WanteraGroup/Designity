@@ -1,194 +1,185 @@
-import { useEffect, useMemo, useState } from 'react';
-import { KeyRound, Shield, UserCog, Users, Plus, Settings2 } from 'lucide-react';
-import { ForgedPanel, ForgedButton, NordicHeader } from '@/components/ui';
-import { useAuth } from '@/lib/auth';
+import { useState } from 'react';
+import { useAsync } from '@/lib/hooks';
 import { supabase } from '@/lib/supabase';
+import type { UserProfile } from '@/types';
 
-interface AdminProps {
-  onNavigate: (page: string) => void;
+interface SettingsRow {
+  key: string;
+  value: unknown;
+  description: string;
 }
 
-export default function Admin({ onNavigate }: AdminProps) {
-  const { isAdmin, isOwner } = useAuth();
-  const [users, setUsers] = useState<any[]>([]);
-  const [roleName, setRoleName] = useState('');
-  const [savedRole, setSavedRole] = useState(false);
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    supabase.from('profiles').select('id,email,role,plan_id,unlimited_access').order('created_at', { ascending: false }).limit(100)
-      .then(({ data }) => setUsers(data || []));
-  }, [isAdmin]);
-
-  const roles = useMemo(() => {
-    const discovered = users.map((user) => user.role).filter(Boolean);
-    return Array.from(new Set(['Owner', 'Admin', 'Editor', 'Viewer', ...discovered]));
-  }, [users]);
-
-  const saveRoleDraft = () => {
-    if (!roleName.trim()) return;
-    localStorage.setItem('designly_role_draft', JSON.stringify({
-      name: roleName.trim(),
-      savedAt: new Date().toISOString(),
-    }));
-    setSavedRole(true);
-    window.setTimeout(() => setSavedRole(false), 2000);
-    setRoleName('');
-  };
-
-  if (!isAdmin) {
-    return (
-      <div className="relative min-h-screen bg-[#020505] text-[#E3FFFB] overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-[0.24]" style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }} aria-hidden="true" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95" aria-hidden="true" />
-        <NordicHeader title="ADMIN — CONTROL HALL" />
-        <main className="relative z-10 p-8">
-          <ForgedPanel className="max-w-2xl mx-auto p-12 text-center">
-            <Shield className="w-10 h-10 mx-auto mb-4 text-red-300/60" />
-            <div className="font-serif text-3xl">Access Restricted</div>
-            <p className="mt-3 text-sm text-[#EEE8DC]/45">Admin jogosultság szükséges a Control Hall megnyitásához.</p>
-          </ForgedPanel>
-        </main>
-      </div>
-    );
-  }
+/**
+ * Control hall. Three surfaces, all of which the RLS policies already permit
+ * for an owner or admin: the user list, the credit grant, and the settings the
+ * agents read server-side.
+ */
+export default function Admin() {
+  const [tab, setTab] = useState<'users' | 'settings'>('users');
 
   return (
-    <div className="relative min-h-screen bg-[#020505] text-[#E3FFFB] overflow-hidden">
-      <div className="absolute inset-0 bg-cover bg-center opacity-[0.24]" style={{ backgroundImage: "url('/designly-odin-hall-bg.svg')" }} aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#020505]/35 to-[#020505]/95" aria-hidden="true" />
+    <div>
+      <header className="mb-8">
+        <h1 className="font-display text-3xl text-cream-100">Control Hall</h1>
+      </header>
 
-      <NordicHeader title="ADMIN — CONTROL HALL" />
+      <div className="mb-6 flex gap-2">
+        {(['users', 'settings'] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={`rounded-full border px-4 py-1.5 text-xs capitalize transition ${
+              tab === t
+                ? 'border-gold-600/60 bg-gold-600/15 text-gold-200'
+                : 'border-gold-700/25 text-cream-300/60 hover:text-cream-200'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
 
-      <main className="relative z-10 px-6 lg:px-8 pt-12 lg:pt-16 pb-24 space-y-12 max-w-[1700px] mx-auto">
-        <section>
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-[9px] uppercase tracking-[.28em] text-[#D6B36A]/65">
-                <Shield className="w-4 h-4" /> CONTROL COMMAND
-              </div>
-              <h1 className="mt-2 font-serif text-4xl lg:text-5xl">Administration Hall</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#EEE8DC]/55">
-                Felhasználók, szerepkörök és a teljes adminisztrációs vezérlőközpont egyetlen DESIGNLY felületen.
-              </p>
-            </div>
-            <ForgedButton variant="secondary" onClick={() => onNavigate('dashboard')}>← Command</ForgedButton>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Metric icon={Users} label="Users" value={String(users.length || '—')} />
-            <Metric icon={UserCog} label="Roles" value={String(roles.length)} />
-            <Metric icon={Shield} label="Access" value={isOwner ? 'OWNER' : 'ADMIN'} />
-          </div>
-        </section>
-
-        <section>
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <div>
-              <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">USER COMMAND</div>
-              <h2 className="mt-2 font-serif text-3xl">Users</h2>
-            </div>
-            <ForgedButton variant="secondary" onClick={() => onNavigate('admin-workspace')}>
-              <Settings2 className="w-4 h-4" /> Open Admin Console
-            </ForgedButton>
-          </div>
-
-          <ForgedPanel>
-            <div className="space-y-3">
-              {users.length === 0 ? (
-                <div className="text-sm text-[#EEE8DC]/40">Felhasználók betöltése…</div>
-              ) : (
-                users.slice(0, 8).map((user) => (
-                  <div key={user.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#263636] bg-black/15 px-4 py-3">
-                    <div className="min-w-0">
-                      <div className="text-sm text-[#EEE8DC] truncate">{user.email || '—'}</div>
-                      <div className="text-[10px] text-[#EEE8DC]/40 mt-1">
-                        {user.role || 'viewer'} · {user.unlimited_access ? 'FULL UNLOCK' : user.plan_id || '—'}
-                      </div>
-                    </div>
-                    <span className="chip border-[#D6B36A]/20 text-[#F5DFA3]">{user.role || 'viewer'}</span>
-                  </div>
-                ))
-              )}
-            </div>
-          </ForgedPanel>
-        </section>
-
-        <section>
-          <div className="mb-6">
-            <div className="text-[9px] uppercase tracking-[.28em] text-[#9CEEE5]/60">ROLE FORGE</div>
-            <h2 className="mt-2 font-serif text-3xl">Roles</h2>
-          </div>
-
-          <ForgedPanel className="max-w-4xl">
-            <div className="flex items-center gap-3 mb-5">
-              <KeyRound className="w-5 h-5 text-[#D6B36A]/75" />
-              <div className="font-serif text-2xl">Create Role</div>
-            </div>
-
-            <div className="grid md:grid-cols-[1fr_auto] gap-3 items-end">
-              <label className="space-y-1 block text-xs">
-                <span className="text-[#EEE8DC]/70">Role Name</span>
-                <input
-                  value={roleName}
-                  onChange={(event) => setRoleName(event.target.value)}
-                  className="w-full bg-[#071311]/75 border border-[#263636] rounded-[10px] px-3 py-2.5 text-xs text-[#E3FFFB] placeholder:text-[#EEE8DC]/35 outline-none focus:border-[#9CEEE5]/40"
-                  placeholder="Admin / Editor / Viewer"
-                />
-              </label>
-              <ForgedButton variant="primary" onClick={saveRoleDraft} disabled={!roleName.trim()}>
-                <Plus className="w-4 h-4" /> {savedRole ? 'Saved' : 'Create Role'}
-              </ForgedButton>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {roles.map((role) => (
-                <span key={role} className="chip border-[#263636] text-[#EEE8DC]/60">{role}</span>
-              ))}
-            </div>
-
-            <p className="mt-4 text-[11px] text-[#EEE8DC]/35">
-              A jelenlegi adatmodellben nincs külön szerepkör-létrehozási tábla, ezért a Role Forge itt biztonságos draftként ment; a tényleges jogosultságkezelés a meglévő Admin Console-ban történik.
-            </p>
-          </ForgedPanel>
-        </section>
-
-        <ForgedPanel className="max-w-4xl">
-          <div className="flex items-start gap-3">
-            <Settings2 className="w-5 h-5 text-[#D6B36A]/75 mt-0.5" />
-            <div>
-              <div className="text-[9px] uppercase tracking-[.22em] text-[#D6B36A]/60">ADMINISTRATION BRIDGE</div>
-              <div className="font-serif text-2xl mt-1">Control Hall → Admin Console</div>
-              <p className="mt-2 text-sm leading-7 text-[#EEE8DC]/45">
-                A részletes user management, csomag- és árkezelés, credit package, gifting és owner generation-cost vezérlés az eredeti Admin Console-ban maradt meg.
-              </p>
-              <div className="mt-4">
-                <ForgedButton variant="secondary" onClick={() => onNavigate('admin-workspace')}>
-                  Open Full Admin Console
-                </ForgedButton>
-              </div>
-            </div>
-          </div>
-        </ForgedPanel>
-      </main>
+      {tab === 'users' ? <UserTable /> : <SettingsTable />}
     </div>
   );
 }
 
-function Metric({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Users;
-  label: string;
-  value: string;
-}) {
+function UserTable() {
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const { data, loading, error, reload } = useAsync(async () => {
+    const { data: rows, error: e } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+    if (e) throw e;
+    return (rows ?? []) as UserProfile[];
+  }, []);
+
+  async function grant(userId: string, amount: number) {
+    setBusy(userId);
+    // add_credits is SECURITY DEFINER and writes the ledger entry itself, so
+    // the balance and the audit log cannot drift apart.
+    await supabase.rpc('add_credits', {
+      p_user_id: userId,
+      p_amount: amount,
+      p_type: 'admin_grant',
+      p_description: `Admin grant: ${amount} credits`,
+    });
+    await reload();
+    setBusy(null);
+  }
+
+  async function toggleUnlimited(userId: string, enabled: boolean) {
+    setBusy(userId);
+    await supabase.rpc('grant_unlimited', { p_user_id: userId, p_enabled: enabled });
+    await reload();
+    setBusy(null);
+  }
+
+  if (loading) return <div className="h-40 animate-pulse rounded-xl bg-ink-850/60" />;
+
+  if (error) {
+    return (
+      <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        {error}
+      </p>
+    );
+  }
+
   return (
-    <ForgedPanel>
-      <Icon className="w-5 h-5 mb-3 text-[#D6B36A]/75" />
-      <div className="text-xs text-[#EEE8DC]/55">{label}</div>
-      <div className="font-serif text-4xl mt-2">{value}</div>
-    </ForgedPanel>
+    <div className="overflow-x-auto rounded-xl border border-gold-700/20">
+      <table className="w-full text-sm">
+        <thead className="bg-ink-900/70 text-xs text-cream-300/50">
+          <tr>
+            <th className="px-4 py-3 text-left font-medium">User</th>
+            <th className="px-4 py-3 text-left font-medium">Plan</th>
+            <th className="px-4 py-3 text-right font-medium">Credits</th>
+            <th className="px-4 py-3 text-right font-medium">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data?.map((u) => (
+            <tr key={u.id} className="border-t border-gold-700/10">
+              <td className="px-4 py-3">
+                <span className="text-cream-100">{u.full_name || '—'}</span>
+                <span className="ml-2 text-xs text-cream-300/45">{u.email}</span>
+                {u.role !== 'user' && (
+                  <span className="ml-2 rounded bg-gold-600/15 px-1.5 py-0.5 text-[10px] text-gold-200">
+                    {u.role}
+                  </span>
+                )}
+              </td>
+              <td className="px-4 py-3 text-cream-300/60">{u.plan_id}</td>
+              <td className="px-4 py-3 text-right font-mono text-xs text-gold-300">
+                {u.unlimited_access ? '∞' : u.credits}
+              </td>
+              <td className="px-4 py-3">
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    disabled={busy === u.id}
+                    onClick={() => grant(u.id, 100)}
+                    className="rounded border border-gold-700/30 px-2.5 py-1 text-xs text-cream-300/70 transition hover:border-gold-600/50 hover:text-cream-100"
+                  >
+                    +100
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy === u.id}
+                    onClick={() => toggleUnlimited(u.id, !u.unlimited_access)}
+                    className="rounded border border-gold-700/30 px-2.5 py-1 text-xs text-cream-300/70 transition hover:border-gold-600/50 hover:text-cream-100"
+                  >
+                    {u.unlimited_access ? 'Lock' : 'Unlock'}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SettingsTable() {
+  const { data, loading, error } = useAsync(async () => {
+    const { data: rows, error: e } = await supabase
+      .from('system_settings')
+      .select('key, value, description')
+      .order('key');
+    if (e) throw e;
+    return (rows ?? []) as SettingsRow[];
+  }, []);
+
+  if (loading) return <div className="h-40 animate-pulse rounded-xl bg-ink-850/60" />;
+
+  if (error) {
+    return (
+      <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        {error}
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {data?.map((s) => (
+        <div key={s.key} className="rounded-xl border border-gold-700/20 bg-ink-850/60 p-5">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="font-mono text-xs text-gold-300">{s.key}</span>
+            <span className="text-xs text-cream-300/45">{s.description}</span>
+          </div>
+          <pre className="mt-3 overflow-x-auto rounded-lg bg-ink-900 p-3 font-mono text-xs text-cream-300/70">
+            {JSON.stringify(s.value, null, 2)}
+          </pre>
+        </div>
+      ))}
+      <p className="text-xs text-cream-300/40">
+        Edit these with a row update; the agents read them server-side on every call.
+      </p>
+    </div>
   );
 }

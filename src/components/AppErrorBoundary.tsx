@@ -1,57 +1,40 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-interface Props {
-  children: ReactNode;
-}
-
 interface State {
-  hasError: boolean;
-  message: string;
+  error: Error | null;
 }
 
-export class AppErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false, message: '' };
+export class AppErrorBoundary extends Component<{ children: ReactNode }, State> {
+  state: State = { error: null };
 
-  static getDerivedStateFromError(error: unknown): State {
-    return {
-      hasError: true,
-      message: error instanceof Error ? error.message : 'Ismeretlen alkalmazási hiba.',
-    };
+  static getDerivedStateFromError(error: Error): State {
+    return { error };
   }
 
-  componentDidCatch(error: unknown, info: ErrorInfo) {
-    console.error('DESIGNLY runtime error:', error, info);
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Unhandled render error', error, info.componentStack);
   }
-
-  private reload = () => {
-    window.location.reload();
-  };
 
   render() {
-    if (!this.state.hasError) return this.props.children;
+    const { error } = this.state;
+    if (!error) return this.props.children;
 
     return (
-      <div className="min-h-screen bg-[#030405] text-[#f3eee2] grid place-items-center p-6">
-        <div className="w-full max-w-xl rounded-3xl border border-[#d8b45a33] bg-[#0a0c0e] p-8 text-center shadow-2xl">
-          <div className="mx-auto mb-5 h-16 w-16 rounded-full border border-[#d8b45a66] grid place-items-center text-2xl text-[#d8b45a]">
-            ᛟ
-          </div>
-          <div className="text-[10px] uppercase tracking-[.28em] text-[#d8b45a]">DESIGNLY · RUNTIME GUARD</div>
-          <h1 className="mt-3 text-2xl font-semibold">A modul hibába ütközött.</h1>
-          <p className="mt-3 text-sm leading-6 text-[#f3eee2aa]">
-            A munkamenetet nem töröltük. Töltsd újra az oldalt, és a DESIGNLY megpróbálja újra betölteni az alkalmazást.
+      <div className="min-h-screen grid place-items-center bg-ink-950 p-6">
+        <div className="max-w-lg w-full rounded-xl border border-gold-700/40 bg-ink-900 p-8 text-center">
+          <h1 className="font-display text-2xl text-gold-200 mb-3">Something broke</h1>
+          <p className="text-sm text-cream-300/70 mb-6">
+            The interface hit an error it could not recover from.
           </p>
-          {this.state.message && (
-            <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-left text-xs text-red-200 break-words">
-              {this.state.message}
-            </div>
-          )}
+          <pre className="text-left text-xs text-cream-400/60 bg-ink-850 rounded-lg p-4 overflow-auto max-h-40 mb-6">
+            {error.message}
+          </pre>
           <button
             type="button"
-            onClick={this.reload}
-            className="mt-6 inline-flex items-center justify-center rounded-xl border border-[#fff0b188] bg-gradient-to-r from-[#8e681e] via-[#f7e4aa] to-[#b88b31] px-5 py-3 text-sm font-extrabold text-[#171106]"
+            onClick={() => window.location.reload()}
+            className="rounded-lg bg-gold-600 px-5 py-2.5 text-sm font-semibold text-ink-950 hover:bg-gold-500 transition"
           >
-            ALKALMAZÁS ÚJRATÖLTÉSE
+            Reload
           </button>
         </div>
       </div>

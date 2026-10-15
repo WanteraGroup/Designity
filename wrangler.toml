@@ -1,0 +1,9 @@
+name = "designly-v2"
+main = "worker/index.js"
+compatibility_date = "2026-09-01"
+
+# Static assets come from the Vite build and are bound as ASSETS.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"

@@ -1,126 +1,84 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
-import { supabase } from './supabase';
-import type { AppRole, PlanId, UserProfile } from '@/types';
+import { supabase } from '@/lib/supabase';
+import type { UserProfile } from '@/types';
 
-interface AuthContextValue {
-  session: Session | null;
+interface AuthValue {
   user: User | null;
+  session: Session | null;
   profile: UserProfile | null;
-  loading: boolean;
-  authKnown: boolean;
-  isOwner: boolean;
+  /** False until the first session check resolves, so guards do not flash. */
+  ready: boolean;
   isAdmin: boolean;
-  isUnlimited: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
+  isOwner: boolean;
+  /** True while signed in but the profile row has not loaded yet. */
+  loadingProfile: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: string | null }>;
-  updatePassword: (password: string) => Promise<{ error: string | null }>;
   refreshProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+const AuthContext = createContext<AuthValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [authKnown, setAuthKnown] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
-  const loadProfile = useCallback(async (uid: string) => {
+  const loadProfile = useCallback(async (userId: string) => {
+    setLoadingProfile(true);
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, email, role, plan_id, credits, unlimited_access, full_name, avatar_url, phone, created_at')
-      .eq('id', uid)
+      .select('*')
+      .eq('id', userId)
       .maybeSingle();
 
     if (error) {
-      console.error('Failed to load profile:', error.message);
-      return;
-    }
-
-    if (data) {
-      setProfile(data as UserProfile);
+      console.error('profile load failed', error.message);
+      setProfile(null);
     } else {
-      const fallback: UserProfile = {
-        id: uid,
-        email: '',
-        role: 'user',
-        plan_id: 'free',
-        credits: 10,
-        unlimited_access: false,
-        full_name: null,
-        avatar_url: null,
-        phone: null,
-        created_at: new Date().toISOString(),
-      };
-      setProfile(fallback);
+      setProfile((data as UserProfile) ?? null);
     }
+    setLoadingProfile(false);
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-    let initialHandled = false;
-
-    const applySession = async (newSession: Session | null) => {
-      if (!mounted) return;
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-      if (newSession?.user) {
-        // Ownership is a server-owned property of the profile row. The client
-        // reads it, it never asserts it — so there is no email literal and no
-        // elevation call here.
-        await loadProfile(newSession.user.id);
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
-      setAuthKnown(true);
-    };
+    let active = true;
 
     supabase.auth.getSession().then(({ data }) => {
-      if (!mounted || initialHandled) return;
-      initialHandled = true;
-      applySession(data.session);
+      if (!active) return;
+      setSession(data.session);
+      setReady(true);
+      if (data.session?.user) void loadProfile(data.session.user.id);
     });
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      if (event === 'INITIAL_SESSION') {
-        if (initialHandled) return;
-        initialHandled = true;
-      }
-      applySession(newSession);
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+      setSession(next);
+      if (next?.user) void loadProfile(next.user.id);
+      else setProfile(null);
     });
 
     return () => {
-      mounted = false;
-      authListener.subscription.unsubscribe();
+      active = false;
+      sub.subscription.unsubscribe();
     };
-  }, [loadProfile]);
-
-  const refreshProfile = useCallback(async () => {
-    if (user) await loadProfile(user.id);
-  }, [user, loadProfile]);
-
-  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
-    if (error) return { error: error.message };
-    if (data.user) {
-      await loadProfile(data.user.id);
-    }
-    return { error: null };
   }, [loadProfile]);
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: error.message };
-    return { error: null };
+    return { error: error?.message ?? null };
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string, fullName?: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName ?? '' } },
+    });
+    return { error: error?.message ?? null };
   }, []);
 
   const signOut = useCallback(async () => {
@@ -129,50 +87,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
-    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/` : undefined;
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo,
+      redirectTo: `${window.location.origin}/reset`,
     });
-    if (error) return { error: error.message };
-    return { error: null };
+    return { error: error?.message ?? null };
   }, []);
 
-  const updatePassword = useCallback(async (password: string) => {
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) return { error: error.message };
-    return { error: null };
-  }, []);
+  const refreshProfile = useCallback(async () => {
+    if (session?.user) await loadProfile(session.user.id);
+  }, [session, loadProfile]);
 
-  const isOwner = profile?.role === 'owner';
-  const isAdmin = isOwner || profile?.role === 'admin';
-  const isUnlimited = isOwner || profile?.unlimited_access === true;
+  const value: AuthValue = {
+    user: session?.user ?? null,
+    session,
+    profile,
+    ready,
+    isAdmin: profile?.role === 'admin' || profile?.role === 'owner',
+    isOwner: profile?.role === 'owner',
+    loadingProfile,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+    refreshProfile,
+  };
 
-  return (
-    <AuthContext.Provider value={{
-      session, user, profile, loading, authKnown, isOwner, isAdmin, isUnlimited,
-      signUp, signIn, signOut, resetPassword, updatePassword, refreshProfile,
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
   return ctx;
-}
-
-export function useCredits() {
-  const { profile, isUnlimited, isOwner, refreshProfile } = useAuth();
-  const credits = isUnlimited ? Infinity : (profile?.credits ?? 0);
-  return { credits, refreshProfile, isOwner };
-}
-
-export function planIdToString(planId: PlanId | undefined): string {
-  return planId || 'free';
-}
-
-export function roleToString(role: AppRole | undefined): string {
-  return role || 'user';
 }

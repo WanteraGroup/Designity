@@ -1,43 +1,18 @@
-[functions.ai-generate]
-verify_jwt = true
-entrypoint = "./functions/ai-generate/index.ts"
+# Designity supabase config
+#
+# v2 exposes three functions, all JWT-verified. Wave 1 shipped twelve, several
+# with verify_jwt = false; the public ones are gone rather than carried over.
 
-[functions.payment-checkout]
-verify_jwt = true
-entrypoint = "./functions/payment-checkout/index.ts"
+project_id = "your-project-ref"
 
 [functions.designly-agent]
 verify_jwt = true
 entrypoint = "./functions/designly-agent/index.ts"
 
-[functions.designly-huginn]
-verify_jwt = false
-entrypoint = "./functions/designly-huginn/index.ts"
-
-[functions.admin-gift]
-verify_jwt = true
-entrypoint = "./functions/admin-gift/index.ts"
-
-[functions.music-generate]
-verify_jwt = true
-entrypoint = "./functions/music-generate/index.ts"
-
-[functions.music-library]
-verify_jwt = true
-entrypoint = "./functions/music-library/index.ts"
-
-[functions.payment-webhook]
-verify_jwt = false
-entrypoint = "./functions/payment-webhook/index.ts"
-
 [functions.designly-editor-ai]
 verify_jwt = true
 entrypoint = "./functions/designly-editor-ai/index.ts"
 
-[functions.designly-vision]
+[functions.designly-export-pdf]
 verify_jwt = true
-entrypoint = "./functions/designly-vision/index.ts"
-
-[functions.designly-voice]
-verify_jwt = true
-entrypoint = "./functions/designly-voice/index.ts"
+entrypoint = "./functions/designly-export-pdf/index.ts"
