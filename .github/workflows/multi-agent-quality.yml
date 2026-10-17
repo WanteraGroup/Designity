@@ -1,0 +1,85 @@
+name: Multi-agent Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: multi-agent-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  code-quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Production build
+        run: npm run build
+
+  dependency-audit:
+    name: Dependency security audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Audit production dependencies
+        run: npm audit --omit=dev
+
+  secret-scan:
+    name: Secret exposure scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan repository for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  review-guidance:
+    name: Multi-agent review guidance
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Publish review checklist
+        run: |
+          {
+            echo "## Multi-agent review checklist"
+            echo ""
+            echo "- [ ] Architect: boundaries, data flow, compatibility"
+            echo "- [ ] Security: auth, RLS, secrets, validation, dependencies"
+            echo "- [ ] Test engineer: regression and failure-path coverage"
+            echo "- [ ] Release reviewer: environment, migration, rollback impact"
+            echo ""
+            echo "See `.github/agents/` for the role instructions. Request Gemini review with `/gemini-review` if `GEMINI_API_KEY` is configured."
+          } >> "$GITHUB_STEP_SUMMARY"
